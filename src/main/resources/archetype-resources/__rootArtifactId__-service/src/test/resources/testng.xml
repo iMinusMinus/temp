@@ -1,0 +1,24 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+#if($showComment)
+<!-- TestNG can be invoked in different ways:
+    1. Command line: java org.testng.TestNG testng.xml [testngX.xml]
+    2. ANT: <taskdef resource="testngtasks" classpath="testng.jar"/>. See http://testng.org/doc/ant.html
+    3. Maven
+    4. Eclipse
+    5. IDEA
+-->
+#end
+<suite name="all" junit="true">
+    <test name="legacy">
+        <packages>
+            <package name="${groupId}.${artifactId}" />
+        </packages>
+    </test>
+    <test name="group">
+        <groups>
+            <run>
+                <include name="module.*" />
+            </run>
+        </groups>
+    </test>
+</suite>

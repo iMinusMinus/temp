@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+#if($showDefault)
+    <display-name>Root WebApplicationContext</display-name>
+#end
+#if($showDefault and $framework.contains('spring'))
+    <context-param>
+#if($showComment)##
+        <description>#[[set or remove! See org.springframework.web.context.ContextLoader#configureAndRefreshWebApplicationContext]]#</description>
+#end ##
+        <param-name>contextId</param-name>
+        <param-value>org.springframework.web.context.WebApplicationContext:$!contextPath</param-value>
+    </context-param>
+#end
+#if($framework.contains('spring') and ($showDefault or $configType.contains('@java')))
+    <context-param>
+#if($showComment)
+        <description>#[[optional. See org.springframework.web.context.support.XmlWebApplicationContext#loadBeanDefinitions(org.springframework.beans.factory.xml.XmlBeanDefinitionReader)]]#</description>
+#end
+        <param-name>contextConfigLocation</param-name>
+#if($showDefault or !$configType.contains('@java'))
+        <param-value>/WEB-INF/applicationContext.xml</param-value>
+#else
+        <param-value>${groupId}.${artifactId}.AppConfig</param-value>
+#end
+    </context-param>
+#end
+#if($framework.contains('spring') and ($showDefault or $configType.contains('@java')))
+    <context-param>
+#if($showComment)
+        <description>optional. See ContextLoader.properties; See org.springframework.web.context.ContextLoader#determineContextClass</description>
+#end
+        <param-name>contextClass</param-name>
+#if($configType.contains('@java'))
+        <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+#else
+        <param-value>org.springframework.web.context.support.XmlWebApplicationContext</param-value>
+#end
+    </context-param>
+#end
+#if($contextInitializerClasses != '' and $framework.contains('spring'))
+    <context-param>
+#if($$showComment)
+        <description>See org.springframework.web.context.ContextLoader#determineContextInitializerClasses</description>
+#end
+        <param-name>contextInitializerClasses</param-name>
+        <param-value>$contextInitializerClasses</param-value>
+    </context-param>
+#end
+#if($globalInitializerClasses != '' and $framework.contains('spring'))
+    <context-param>
+#if($$showComment)
+        <description>See org.springframework.web.context.ContextLoader#determineContextInitializerClasses,
+            See org.springframework.web.servlet.FrameworkServlet#applyInitializers</description>
+#end
+        <param-name>globalInitializerClasses</param-name>
+        <param-value>${globalInitializerClasses}</param-value>
+    </context-param>
+#end
+#if($parentContextKey != '' and $framework.contains('spring'))
+#if($showDefault)
+    <context-param>
+#if($showComment)
+        <description>Optional. See org.springframework.web.context.ContextLoader#loadParentContext</description>
+#end
+        <param-name>locatorFactorySelector</param-name>
+        <param-value>classpath*:beanRefContext.xml</param-value>
+    </context-param>
+#end
+    <context-param>
+#if($showComment)
+        <description>See org.springframework.web.context.ContextLoader#loadParentContext</description>
+#end
+        <param-name>parentContextKey</param-name>
+        <param-value>org.springframework.beans.factory.BeanFactory</param-value>
+    </context-param>
+#end
+
+#if($framework.contains('spring'))
+    <listener>
+#if($showComment)
+        <description>This will create a parent ApplicationContext of servlet's ApplicationContext.
+        You can Specify a context-param named parentContextKey make a parent ApplicationContext of this.
+        </description>
+#end
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <listener>
+#if($showComment)
+        <description>clean introspector for Struts and Quartz</description>
+#end
+        <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+    </listener>
+#end
+#if($framework.contains('spring'))
+    <filter>
+#if($showComment)
+        <description>It converts posted method parameters into HTTP methods by special request parameter:
+            _method=HTTP_METHOD -> HTTP METHOD.
+        Referer: org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
+        </description>
+#end
+        <filter-name>rest</filter-name>
+        <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>rest</filter-name>
+        <servlet-name>${servletName}</servlet-name>
+    </filter-mapping>
+    <filter>
+        <filter-name>characterEncodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>characterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+#if($showComment)
+        <description>Refer: org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter#requestContextFilter</description>
+#end
+        <filter-name>requestContextFilter</filter-name>
+        <filter-class>org.springframework.web.filter.RequestContextFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>rest</filter-name>
+    </filter-mapping>
+#end
+#if($framework.contains('struct2'))
+    <filter>
+        <filter-name>struts2</filter-name>
+        <filter-class>org.apache.struts2.dispatcher.filter.StrutsPrepareAndExecuteFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+#end
+#if($framework.contains('springMVC'))
+    <servlet>
+#if($showComment)
+        <description>init-param and bean properties: See org.springframework.web.servlet.HttpServletBean#init</description>
+#end
+        <servlet-name>${servletName}</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+#if($contextId != '')
+        <init-param>
+#if($showDefault)
+            <description>Optional. See org.springframework.web.servlet.FrameworkServlet#configureAndRefreshWebApplicationContext</description>
+#end
+            <param-name>contextId</param-name>
+            <param-value>org.springframework.web.context.WebApplicationContext:$!contextPath/${servletName}</param-value>
+        </init-param>
+#end
+#if($namespace != '')
+        <init-param>
+            <param-name>namespace</param-name>
+            <param-value>${namespace}</param-value>
+        </init-param>
+#end
+#if($showDefault or $configType.contains('@java'))
+        <init-param>
+            <param-name>contextClass</param-name>
+#if($configType.contains('@java'))
+            <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+#else
+            <param-value>org.springframework.web.context.support.XmlWebApplicationContext</param-value>
+#end
+        </init-param>
+#end
+#if($showDefault or $configType.contains('@java'))
+        <init-param>
+#if($showComment)
+            <description>Optional</description>
+#end
+            <param-name>contextConfigLocation</param-name>
+#if($showDefault or !$configType.contains('@java'))
+            <param-value>/WEB-INF/#if($namespace != '')${namespace}#{else}${servletName}-servlet #{end}.xml</param-value>
+#else
+            <param-value>${groupId}.${artifactId}.MvcConfig</param-value>
+#end
+        </init-param>
+#end
+#if($contextAttribute != '')
+        <init-param>
+#if($$showComment)
+            <description>See org.springframework.web.servlet.FrameworkServlet#findWebApplicationContext</description>
+#end
+            <param-name>contextAttribute</param-name>
+            <param-value>${contextAttribute}</param-value>
+        </init-param>
+#end
+#if($contextInitializerClasses != '')
+        <init-param>
+#if($showComment)
+            <description>See org.springframework.web.servlet.FrameworkServlet#applyInitializers</description>
+#end
+            <param-name>contextInitializerClasses</param-name>
+            <param-value>${contextInitializerClasses}</param-value>
+        </init-param>
+#end
+#if($showDefault)
+        # FrameworkServlet #
+        <init-param>
+#if($showDefault)
+            <description>Optional</description>
+#end
+            <param-name>publishContext</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+#if($showDefault)
+            <description>Optional</description>
+#end
+            <param-name>publishEvents</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+#if($showDefault)
+            <description>Optional</description>
+#end
+            <param-name>threadContextInheritable</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <init-param>
+#if($showDefault)
+            <description>Optional</description>
+#end
+            <param-name>dispatchOptionsRequest</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <init-param>
+#if($showDefault)
+            <description>Optional</description>
+#end
+            <param-name>dispatchTraceRequest</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        # DispatcherServlet #
+        <init-param>
+#if($showDefault)
+            <description>Optional</description>
+#end
+            <param-name>detectAllHandlerMappings</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+#if($showDefault)
+            <description>Optional</description>
+#end
+            <param-name>detectAllHandlerAdapters</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+#if($showDefault)
+            <description>Optional</description>
+#end
+            <param-name>detectAllHandlerExceptionResolvers</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+#if($showDefault)
+            <description>Optional</description>
+#end
+            <param-name>detectAllViewResolvers</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+#if($showDefault)
+            <description>Optional</description>
+#end
+            <param-name>cleanupAfterInclude</param-name>
+            <param-value>true</param-value>
+        </init-param>
+#end
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>${servletName}</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+#end
+</web-app>

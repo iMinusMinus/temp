@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0"
+             xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+    <persistence-unit name="JPA" transaction-type="RESOURCE_LOCAL">
+#if($showComment)
+        <description>JPA implemention: Hibernate EntityManager, Oracle Toplink/EclipseLink, Apache  OpenJPA</description>
+#end
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>${groupId}.${artifactId}.Domain</class>
+        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+#if($showComment)
+        <!-- JPA offers two mapping options: annotations and XML mappings.
+        The XML mappings take precedence over its annotation counterpart -->
+#end
+#if($configType.contains('xml'))
+        <mapping-file>orm.xml</mapping-file>
+        <mapping-file>hbm.xml</mapping-file>
+#end
+        <properties>
+            <property name="javax.persistence.transactionType" value="JTA|RESOURCE_LOCAL" />
+            <property name="javax.persistence.jtaDataSource" value="" />
+            <property name="javax.persistence.nonJtaDataSource" value="" />
+            <property name="javax.persistence.jdbc.driver" value="" />
+            <property name="javax.persistence.jdbc.url" value="" />
+            <property name="javax.persistence.jdbc.user" value="" />
+            <property name="javax.persistence.jdbc.password" value="" />
+            <property name="javax.persistence.create-database-schemas" value="false" />
+#if($showComment)
+            <!-- http://docs.jboss.org/hibernate/orm/5.3/userguide/html_single/Hibernate_User_Guide.html#configurations -->
+            <!-- EclipseLink properties: http://www.eclipse.org/eclipselink/api/2.4/index.html?org/eclipse/persistence/config/PersistenceUnitProperties.html -->
+#end
+#if($showComment)
+            <!-- properties for Hibernate -->
+#end
+#if($showDefault and $framework.contains('hibernate'))
+            <property name="hibernate.connection.autocommit" value="false" />
+            <property name="hibernate.connection.provider_disables_autocommit" value="false" />
+            <property name="hibernate.connection.release_mode" value="auto" />
+            <property name="hibernate.connection.initial_pool_size" value="1" />
+            <property name="hibernate.connection.pool_size" value="20" />
+            <property name="hibernate.connection.pool_validation_interval" value="30" />
+            <property name="hibernate.id.new_generator_mappings" value="true" />
+            <property name="hibernate.use_identifier_rollback" value="false" />
+            <property name="hibernate.id.optimizer.pooled.preferred" value="pooled" />
+            <property name="hibernate.id.generator.stored_last_used" value="true" />
+            <property name="hibernate.model.generator_name_as_sequence_name" value="true" />
+            <property name="hibernate.globally_quoted_identifiers" value="false" />
+            <property name="hibernate.globally_quoted_identifiers_skip_column_definitions" value="false" />
+            <property name="hibernate.auto_quote_keyword" value="false" />
+            <property name="hibernate.discriminator.implicit_for_joined" value="false" />
+            <property name="hibernate.discriminator.ignore_explicit_for_joined" value="false" />
+            <property name="hibernate.implicit_naming_strategy" value="false" />
+            <property name="hibernate.physical_naming_strategy"
+                      value="org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl" />
+            <property name="hibernate.archive.autodetection" value="hbm,class" />
+            <property name="hibernate.mapping.precedence" value="hbm,class" />
+            <property name="hibernate.use_nationalized_character_data" value="false" />
+            <property name="hibernate.jdbc.lob.non_contextual_creation" value="false" />
+            <property name="hibernate.dialect.oracle.prefer_long_raw" value="false" />
+            <property name="hibernate.validator.apply_to_ddl" value="true" />
+            <property name="hibernate.create_empty_composites.enabled" value="false" />
+            <property name="hibernate.default_entity_mode" value="pojo" />
+            <property name="hibernate.enhancer.enableDirtyTracking" value="false" />
+            <property name="hibernate.enhancer.enableLazyInitialization" value="false" />
+            <property name="hibernate.enhancer.enableAssociationManagement" value="false" />
+            <property name="hibernate.bytecode.provider" value="bytebuddy " />
+            <property name="hibernate.bytecode.use_reflection_optimizer" value="false" />
+            <property name="hibernate.bytecode.enforce_legacy_proxy_classnames" value="false" />
+            <property name="hibernate.query.plan_cache_max_size" value="2048" />
+            <property name="hibernate.query.plan_parameter_metadata_max_size" value="128" />
+            <property name="hibernate.discriminator.force_in_select" value="false" />
+            <property name="hibernate.query.jpaql_strict_compliance" value="false" />
+            <property name="hibernate.query.startup_check" value="true" />
+            <property name="hibernate.proc.param_null_passing" value="false" />
+            <property name="hibernate.query.validate_parameters" value="true" />
+            <property name="hibernate.criteria.literal_handling_mode" value="AUTO" />
+            <property name="hibernate.query.fail_on_pagination_over_collection_fetch" value="false" />
+            <property name="hibernate.hql.bulk_id_strategy.global_temporary.drop_tables" value="false" />
+            <property name="hibernate.hql.bulk_id_strategy.persistent.drop_tables" value="false" />
+            <property name="hibernate.legacy_limit_handler" value="false" />
+            <property name="hibernate.query.conventional_java_constants" value="true" />
+            <property name="hibernate.order_inserts" value="false" />
+            <property name="hibernate.order_updates" value="false" />
+            <property name="hibernate.jdbc.batch_versioned_data" value="true" />
+            <property name="hibernate.batch_fetch_style" value="LEGACY" />
+            <property name="hibernate.jdbc.use_streams_for_binary" value="false" />
+            <property name="hibernate.jdbc.wrap_result_sets" value="false" />
+            <property name="hibernate.enable_lazy_load_no_trans" value="false" />
+            <property name="hibernate.show_sql" value="false" />
+            <property name="hibernate.format_sql" value="false" />
+            <property name="hibernate.use_sql_comments" value="false" />
+            <property name="hibernate.cache.use_minimal_puts" value="true" />
+            <property name="hibernate.cache.use_query_cache" value="false" />
+            <property name="hibernate.cache.use_second_level_cache" value="true" />
+            <property name="hibernate.cache.use_structured_entries" value="false" />
+            <property name="hibernate.cache.auto_evict_collection_cache" value="false" />
+            <property name="hibernate.jta.prefer_user_transaction" value="false" />
+            <property name="hibernate.jta.cacheTransactionManager" value="true" />
+            <property name="hibernate.jta.cacheUserTransaction" value="false" />
+            <property name="hibernate.transaction.flush_before_completion" value="false" />
+            <property name="hibernate.transaction.auto_close_session" value="false" />
+            <property name="hibernate.jta.track_by_thread" value="true" />
+            <property name="hibernate.jta.allowTransactionAccess" value="true" />
+            <property name="hibernate.multiTenancy" value="NONE" />
+            <property name="hibernate.multi_tenant_connection_provider" value="false" />
+            <property name="hibernate.multi_tenant.datasource.identifier_for_any" value="false" />
+            <property name="hibernate.hbm2ddl.auto" value="none" />
+            <property name="javax.persistence.schema-generation.database.action" value="none" />
+            <property name="javax.persistence.schema-generation.scripts.action" value="nonw" />
+            <property name="javax.persistence.hibernate.hbm2ddl.import_files" value="import.sql" />
+            <property name="hibernate.hbm2dll.create_namespaces" value="false" />
+            <property name="hibernate.hbm2ddl.jdbc_metadata_extraction_strategy" value="grouped" />
+            <property name="hibernate.synonyms" value="false" />
+            <property name="hibernate.hbm2ddl.halt_on_error" value="false" />
+            <property name="hibernate.native_exception_handling_51_compliance" value="false" />
+            <property name="hibernate.session_factory.interceptor" value="org.hibernate.EmptyInterceptor" />
+            <property name="hibernate.jmx.enabled" value="false" />
+            <property name="hibernate.jmx.usePlatformServer" value="false" />
+            <property name="hibernate.jacc.enabled" value="false" />
+            <property name="hibernate.service.allow_crawling" value="true" />
+            <property name="hibernate.session_factory_name_is_jndi" value="true" />
+            <property name="hibernate.ejb.cfgfile" value="hibernate.cfg.xml" />
+            <property name="hibernate.ejb.discard_pc_on_close" value="false" />
+            <property name="hibernate.ejb.metamodel.population" value="ignoreUnsupported" />
+            <property name="hibernate.jpa.static_metamodel.population" value="skipUnsupported" />
+            <property name="hibernate.delay_cdi_access" value="false" />
+            <property name="hibernate.allow_update_outside_transaction" value="false" />
+            <property name="hibernate.collection_join_subquery" value="true" />
+            <property name="hibernate.use_entity_where_clause_for_collections" value="true" />
+            <property name="hibernate.event.merge.entity_copy_observer" value="disallow" />
+            <property name="hibernate.envers.autoRegisterListeners" value="true" />
+            <property name="hibernate.integration.envers.enabled" value="true" />
+            <property name="hibernate.integration.spatial.enabled" value="true" />
+ #end
+#if($showComment)
+            <!-- properties for EclipseLink -->
+#end
+#if($showDefault and $framework.contains('eclipselink'))
+            <property name="eclipselink.jdbc.native-sql" value="false" />
+            <property name="eclipselink.jdbc.sql-cast" value="false" />
+            <property name="eclipselink.jpql.parser" value="org.eclipse.persistence.internal.jpa.jpql.HermesParser" />
+            <property name="eclipselink.jpql.validation" value="EclipseLink" />
+            <property name="eclipselink.jdbc.connection_pool.default.wait" value="180000" />
+            <property name="eclipselink.jdbc.connection_pool.read.shared" value="false" />
+            <property name="eclipselink.jdbc.bind-parameters" value="true" />
+            <property name="eclipselink.jdbc.exclusive-connection.mode" value="Transactional" />
+            <property name="eclipselink.jdbc.exclusive-connection.is-lazy" value="true" />
+            <property name="eclipselink.jdbc.cache-statements.size" value="50" />
+            <property name="eclipselink.jdbc.cache-statements" value="false" />
+            <property name="eclipselink.logging.level" value="INFO" />
+            <property name="eclipselink.logging.timestamp" value="true" />
+            <property name="eclipselink.multitenant.shared-emf" value="true" />
+            <property name="eclipselink.logging.thread" value="true" />
+            <property name="eclipselink.logging.connection" value="true" />
+            <property name="eclipselink.target-database" value="TargetDatabase.Auto" />
+            <property name="eclipselink.exclude-eclipselink-orm" value="META-INF/eclipselink-orm.xml" />
+            <property name="eclipselink.weaving" value="true" />
+            <property name="eclipselink.weaving.internal" value="true" />
+            <property name="eclipselink.weaving.lazy" value="true" />
+            <property name="eclipselink.weaving.eager" value="false" />
+            <property name="eclipselink.weaving.changetracking" value="true" />
+            <property name="eclipselink.weaving.fetchgroups" value="true" />
+            <property name="eclipselink.jpa.uppercase-column-names" value="false" />
+            <property name="eclipselink.jdbc.batch-writing" value="None" />
+            <property name="eclipselink.persistencexml" value="META-INF/persistence.xml" />
+            <property name="eclipselink.session.include.descriptor.queries" value="true" />
+            <property name="eclipselink.temporal.mutable" value="false" />
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true" />
+            <property name="eclipselink.deploy-on-startup" value="false" />
+            <property name="eclipselink.validation-only" value="False" />
+            <property name="eclipselink.metadata-source.send-refresh-command" value="true" />
+            <property name="eclipselink.validate-existence" value="false" />
+            <property name="eclipselink.profiler" value="NoProfiler" />
+            <property name="eclipselink.transaction.join-existing" value="false" />
+            <property name="eclipselink.persistence-context.close-on-commit" value="false" />
+            <property name="eclipselink.persistence-context.persist-on-commit" value="true" />
+            <property name="eclipselink.persistence-context.commit-without-persist-rules" value="false" />
+            <property name="eclipselink.cache.coordination.jms.topic" value="jms/EclipseLinkTopic" />
+            <property name="eclipselink.cache.coordination.jms.factory" value="jms/EclipseLinkTopicConnectionFactory" />
+            <property name="eclipselink.cache.coordination.rmi.announcement-delay" value="1000" />
+            <property name="eclipselink.cache.coordination.rmi.multicast-group" value="239.192.0.0" />
+            <property name="eclipselink.cache.coordination.rmi.multicast-group.port" value="3121" />
+            <property name="eclipselink.cache.coordination.rmi.packet-time-to-live" value="2" />
+            <property name="eclipselink.cache.coordination.channel" value="EclipseLinkCommandChannel" />
+            <property name="eclipselink.weaving.rest" value="true" />
+#end
+        </properties>
+    </persistence-unit>
+</persistence>

@@ -1,0 +1,6 @@
+#if($showComment)
+#Provides namespace handler classes for specific namespaces.
+#see org.springframework.beans.factory.xml.DefaultNamespaceHandlerResolver#resolve
+#Example:
+#http\://dubbo.apache.org/schema/dubbo=org.apache.dubbo.config.spring.schema.DubboNamespaceHandler
+#end

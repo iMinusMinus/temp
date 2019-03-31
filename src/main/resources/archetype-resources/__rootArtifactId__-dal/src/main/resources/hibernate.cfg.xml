@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+#if($showComment)
+    <!-- @see http://docs.jboss.org/hibernate/orm/4.3/manual/en-US/html_single -->
+    <!-- @see http://docs.jboss.org/hibernate/orm/5.3/userguide/html_single/Hibernate_User_Guide.html -->
+#end
+<hibernate-configuration>
+    <session-factory name="java:hibernate/SessionFactory">
+        <property name="connection.datasource"></property>
+        <mapping resource="*.hbm.xml" />
+    </session-factory>
+</hibernate-configuration>

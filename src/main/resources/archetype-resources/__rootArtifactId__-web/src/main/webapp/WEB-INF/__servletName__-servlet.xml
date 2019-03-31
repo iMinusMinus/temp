@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+#if($configType.contains('xml:'))
+        xmlns:mvc="http://www.springframework.org/schema/mvc"
+        xmlns:context="http://www.springframework.org/schema/context"
+#end
+#if(!$configType.contains('xml:'))
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+#{else}
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+#end
+#if($configType.contains('xml') and $showDefault)
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver"#if(!$showComment) />#{else}>
+        <description>Optional. See org.springframework.web.servlet.DispatcherServlet#initLocaleResolver</description>
+    </bean>
+#{end}
+    <bean id="themeResolver" class="org.springframework.web.servlet.theme.FixedThemeResolver"#if(!$showComment) />#{else}>
+        <description>Optional. See org.springframework.web.servlet.DispatcherServlet#initThemeResolver</description>
+    </bean>
+#{end}
+#if($showComment)
+    <!--
+    <bean id="themeSource" class="org.springframework.ui.context.support.DelegatingThemeSource">
+        <description>See org.springframework.ui.context.support.UiApplicationContextUtils#initThemeSource.
+        Can't invoke setParentThemeSource until ApplicationContext bean available.
+        An AbstractRefreshableWebApplicationContext is ThemeSource!
+        </description>
+    </bean>
+    -->
+    <!-- handlerMapping, org.springframework.web.servlet.DispatcherServlet#initHandlerMappings -->
+#{end}
+    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"#if(!$showComment) />#{else}>
+        <description>Optional. Name a bean '/foo' or '/foo*', when SimpleControllerHandlerAdapter registed,
+        then use bean which type is org.springframework.web.servlet.mvc.Controller to handleRequest</description>
+    </bean>
+#{end}
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"#if(!$showComment) />#{else}>
+        <description>Optional. Given org.springframework.web.bind.annotation.RequestMapping on class and method,
+        when AnnotationMethodHandlerAdapter registed, invoke method</description>
+    </bean>
+#{end}
+#if($showComment)
+    <!-- handlerAdapter, org.springframework.web.servlet.DispatcherServlet#initHandlerAdapters -->
+#end
+    <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"#if(!$showComment) />#{else}>
+        <description>Optional. Only supports org.springframework.web.HttpRequestHandler</description>
+    </bean>
+#{end}
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"#if(!$showComment) />#{else}>
+        <description>Optional. Only supports org.springframework.web.portlet.mvc.Controller</description>
+    </bean>
+#{end}
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"#if(!$showComment) />#{else}>
+        <description>Optional. Only supports class with @RequestMapping</description>
+    </bean>
+#{end}
+#if($showComment)
+    <!-- handlerExceptionResolver, org.springframework.web.servlet.DispatcherServlet#initHandlerExceptionResolvers -->
+#end
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver"#if(!$showComment) />#{else}>
+        <description>Optional. Find best match method which with @ExceptionHandler</description>
+    </bean>
+#{end}
+    <bean class="org.springframework.web.servlet.mvc.annotation.ResponseStatusExceptionResolver"#if(!$showComment) />#{else}>
+        <description>Optional. Resolves exceptions with the @ResponseStatus annotation and maps them to HTTP status codes based on the value in the annotation.</description>
+    </bean>
+#{end}
+    <bean class="org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver"#if(!$showComment) />#{else}>
+        <description>Optional. Resolves exceptions raised by Spring MVC and maps them to HTTP status codes. </description>
+    </bean>
+#{end}
+    <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"#if(!$showComment) />#{else}>
+        <description>Optional. See org.springframework.web.servlet.DispatcherServlet#initRequestToViewNameTranslator</description>
+    </bean>
+#{end}
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"#if(!$showComment) />#{else}>
+        <description>Optional. See org.springframework.web.servlet.DispatcherServlet#initViewResolvers
+        Refer: org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter#defaultViewResolver</description>
+        <property name="prefix" value="\${spring.mvc.view.prefix}" />
+        <property name="suffix" value="\${spring.mvc.view.suffix}" />
+    </bean>
+#{end}
+    <bean id="flashMapManager" class="org.springframework.web.servlet.support.SessionFlashMapManager"#if(!$showComment) />#{else}>
+        <description>Optional. See org.springframework.web.servlet.DispatcherServlet#initFlashMapManager</description>
+    </bean>
+#{end}
+#end
+    <bean id="beanNameViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+    #if($showComment)
+        <description>Refer: org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter#beanNameViewResolver</description>
+    #end
+        <property name="order" value="2147483637" />
+    </bean>
+    <bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+#if($showComment)
+        <description>Optional, Servlet3.0 support StandardServletMultipartResolver.
+        Otherwise, use org.springframework.web.multipart.commons.CommonsMultipartResolver instead!
+        </description>
+#end
+#if($showComment and $showDefault)
+        <!-- properties for CommonsMultipartResolver
+        <property name="maxInMemorySize" value="10240" />
+        <property name="defaultEncoding" value="ISO-8859-1" />
+        <property name="resolveLazily" value="false" />
+        -->
+#end
+    </bean>
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+#if($showComment)
+        <description>Use java.text.MessageFormat format message. </description>
+#end
+#if($showDefault)
+        <property name="fallbackToSystemLocale" value="true" />
+        <property name="cacheMillis" value="-1" />
+        <property name="useCodeAsDefaultMessage" value="false" />
+        <property name="alwaysUseMessageFormat" value="false" />
+#end
+        <property name="defaultEncoding" value="UTF-8" />
+        <property name="basenames">
+            <list>
+                <value>views</value>
+                <value>ValidationMessages</value>
+                <value>messages</value>
+            </list>
+        </property>
+    </bean>
+#if($framework.contains('freemarker'))
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+#if($showComment)
+        <description>See org.springframework.web.servlet.view.freemarker.FreeMarkerView#autodetectConfiguration</description>
+#end
+        <property name="configLocation" value="classpath:freemarker.properties" />
+        <property name="defaultEncoding" value="UTF-8" />
+        <property name="templateLoaderPaths" value="/WEB-INF/freemarker/" />
+    </bean>
+#end
+#if($framework.contains('thymeleaf'))
+    <bean id="${thymeleafTemplateResolvers}" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+#if($showDefault)
+        <property name="prefix" value="\${spring.thymeleaf.prefix}" />
+        <property name="suffix" value="\${spring.thymeleaf.suffix}" />
+        <property name="templateMode" value="\${spring.thymeleaf.mode}" />
+        <property name="characterEncoding" value="UTF-8" />
+        <property name="cacheable" value="true" />
+#end
+    </bean>
+    <bean id="${thymeleafTemplateEngine}" class="org.thymeleaf.spring4.SpringTemplateEngine">
+        <property name="templateResolvers" ref="${thymeleafTemplateResolvers}" />
+        <property name="enableSpringELCompiler" value="false" />
+    </bean>
+#end
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+#if($showComment)
+        <description>Find best match ViewResolver to resolve viewName with mediaType.
+        ViewName can attach extension with the help of contentNegotiationManager.</description>
+#end
+#if($showDefault)
+        <property name="order" value="-2147483648" />
+#end
+        <property name="contentNegotiationManager" ref="mvcContentNegotiationManager" />
+        <property name="viewResolvers">
+            <list>
+                <ref bean="viewResolver" />
+#if($framework.contains('freemarker'))
+                <bean id="freeMarkerViewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver"#if(!$showComment and !$showDefault) />#{else}>
+#if($showComment)
+                    <description>Load/Build org.springframework.web.servlet.view.freemarker.FreeMarkerView</description>
+#end
+#if($showDefault)
+                    <property name="prefix" value="\${spring.freemarker.prefix}" />
+                    <property name="suffix" value="\${spring.freemarker.suffix}" />
+                    <property name="templateLoaderPath" value="\${spring.freemarker.templateLoaderPath}" />
+                    <property name="defaultEncoding" value="\${spring.freemarker.charset}" />
+                    <property name="freemarkerSettings" value="\${spring.freemarker.settings}" />
+                    <property name="cacheLimit" value="1024" />
+                    <property name="redirectContextRelative" value="true" />
+                    <property name="redirectHttp10Compatible" value="true" />
+                    <property name="exposeRequestAttributes" value="false" />
+                    <property name="allowRequestOverride" value="false" />
+                    <property name="exposeSessionAttributes" value="false" />
+                    <property name="allowSessionOverride" value="false" />
+                    <property name="exposeSpringMacroHelpers" value="true" />
+#end
+                </bean>
+#{end}
+#end
+#if($framework.contains('thymeleaf'))
+            <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+#if($showComment)
+                <description>Builds on the concept of Natural Templates to inject its logic into template files in a way
+                    that doesn’t affect the template from being used as a design prototype. </description>
+#end
+#if($showDefault)
+                <property name="redirectContextRelative" value="true" />
+                <property name="redirectHttp10Compatible" value="true" />
+                <property name="alwaysProcessRedirectAndForward" value="true" />
+                <property name="viewClass" value="" />
+                <property name="order" value="2147483642" />
+                <property name="forceContentType" value="false" />
+#end
+                <property name="characterEncoding" value="UTF-8" />
+                <property name="templateEngine" ref="${thymeleafTemplateEngine}" />
+                <property name="staticVariables">
+                    <map></map>
+                </property>
+            </bean>
+#end
+        </list>
+    </property>
+    </bean>
+#if($configType.contains('xml:'))
+#if($showComment)
+    <!-- Define org.springframework.web.servlet.handler.SimpleUrlHandlerMapping, property urlMap: key = '/**' ref = default-servlet-name,
+    default-servlet-name: org.springframework.web.servlet.resource.DefaultServletHttpRequestHandler.
+    -->
+    <mvc:default-servlet-handler #if($showDefault)default-servlet-name="default"#{end} />
+#{end}
+#if($configType.contains('xml') and $framework.contains('swagger'))
+#if(!$configType.contains('xml:'))
+    <bean id="mvcPathMatcher" class="org.springframework.util.AntPathMatcher">
+#if($showComment)
+        <description>Optional. See org.springframework.web.servlet.config.MvcNamespaceUtils#registerPathMatcher</description>
+#{end}
+        <property name="trimTokens" value="true" />
+    </bean>
+    <bean id="mvcUrlPathHelper" class="org.springframework.web.util.UrlPathHelper">
+#if($showComment)
+        <description>Optional. See org.springframework.web.servlet.config.MvcNamespaceUtils#registerUrlPathHelper</description>
+#{end}
+        <property name="alwaysUseFullPath" value="false" />
+        <property name="urlDecode" value="true" />
+        <property name="removeSemicolonContent" value="true" />
+    </bean>
+    <bean name="${resourceHandler}" class="org.springframework.web.servlet.resource.ResourceHttpRequestHandler">
+#if($showComment)
+        <description>Processes a resource request</description>
+#end
+        <property name="locations">
+            <list>
+                <value>classpath:/META-INF/resources/</value>
+                <value>classpath:/META-INF/resources/webjars/</value>
+            </list>
+        </property>
+        <property name="cache-period" value="-1" />
+    </bean>
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+#if($showComment)
+        <description>Map URL paths to handler bean names</description>
+#end
+        <property name="urlMap">
+            <map>
+                <entry key="/swagger-ui.html" ref="${resourceHandler}" />
+                <entry key="/webjars/**" ref="${resourceHandler}" />
+            </map>
+        </property>
+        <property name="pathMatcher" ref="mvcPathMatcher" />
+        <property name="urlPathHelper" ref="mvcUrlPathHelper" />
+        <property name="order" value="2147483646" />
+    </bean>
+#end
+#if($showComment)
+    <!--
+    Define bean named 'mvcPathMatcher' type 'org.springframework.util.AntPathMatcher'.
+    Define bean named 'mvcUrlPathHelper' type 'org.springframework.web.util.UrlPathHelper'.
+    Define bean type 'org.springframework.web.servlet.resource.ResourceHttpRequestHandler'.
+    Define bean type 'org.springframework.web.servlet.handler.SimpleUrlHandlerMapping'.
+    -->
+ #{end}
+    <mvc:resources location="classpath:/META-INF/resources/;classpath:/META-INF/resources/webjars/"
+                   mapping="/swagger-ui.html,/webjars/**" #if($showDefault)order="2147483646" cache-period="-1"#{end} />
+
+#end
+#if($showComment)
+    <!--
+#if($configType.contains('xml'))
+#if(!$configType.contains('xml:'))
+    <bean id="org.springframework.web.servlet.config.viewControllerHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <description>Optional. See org.springframework.web.servlet.config.ViewControllerBeanDefinitionParser#registerHandlerMapping</description>
+        <property name="order" value="1" />
+        <property name="pathMatcher" ref="mvcPathMatcher" />
+        <property name="urlPathHelper" ref="mvcUrlPathHelper" />
+        <property name="urlMap">
+            <map>
+                <entry key="">
+                        <bean class="org.springframework.web.servlet.mvc.ParameterizableViewController"
+                            <description>Return a ModelAndView object with the specified view name.</description>
+                            <property name="viewName" value="" />
+                        </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+#{else}
+    <mvc:view-controller view-name="/**/*.htm" path="/**/*">
+        <description>Register bean type 'org.springframework.web.servlet.handler.SimpleUrlHandlerMapping'.
+        Register bean type 'org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping', name same as type name.
+        Register bean type 'org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter', name same as type name.
+        Register bean type 'org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter', name same as type name.
+        Define bean type 'org.springframework.web.servlet.mvc.ParameterizableViewController'.
+        </description>
+    </mvc:view-controller>
+#{end}
+#end
+    -->
+    <!--
+    <mvc:interceptors>
+        <bean class="" />
+        <ref="" />
+        <mvc:interceptor>
+            <description>!exclude.match || include == null || include.match. See org.springframework.web.servlet.handler.MappedInterceptor#matches</description>
+            <bean class=""/>
+            <ref="" />
+            <mvc:mapping path="" />
+            <mvc:exclude-mapping path="" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+    -->
+#end
+#if($configType.contains('xml'))
+#if(!$configType.contains('xml:'))
+    <bean id="mvcContentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+#if($showComment)
+        <description>Factory bean produce bean type of 'org.springframework.web.accept.ContentNegotiationManager'</description>
+#end
+#if($showDefault)
+        <property name="favorPathExtension" value="true" />
+        <property name="favorParameter" value="false" />
+        <property name="ignoreAcceptHeader" value="false" />
+        <property name="parameterName" value="format" />
+#end
+        <property name="mediaTypes">
+            <properties>
+                <entry key="xml" value="application/xml" />
+                <entry key="json" value="application/json" />
+            </properties>
+        </property>
+    </bean>
+    <bean id="${conversionService}" class="org.springframework.format.support.FormattingConversionServiceFactoryBean"#if(!$showComment)/>#{else}>
+        <description>conversionService: org.springframework.format.support.DefaultFormattingConversionService</description>
+    </bean>
+#{end}
+    <bean id="${validator}" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"#if(!$showComment) />#{else}>
+        <description>Locate JSR303 implementor: Hibernate-validator or Apache-BVal.</description>
+    </bean>
+#{end}
+    <bean id="${webBindingInitializer}" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+#if($showComment)
+        <description>data binding</description>
+#end
+        <property name="conversionService" ref="${conversionService}" />
+        <property name="validator" ref="${validator}" />
+#if($showComment)
+        <!--<property name="messageCodesResolver" ref="" />-->
+#end
+    </bean>
+#if($configType.contains('xml') and !$configType.contains('xml:') and $configType.contains('@') and !$configType.contains('@java'))
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+#if($showComment)
+        <description>Find class with @Controller and class/method with @RequestMapping.
+            It loads default argumentResolvers and returnValueHandlers.
+            See org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter#afterPropertiesSet.
+        </description>
+#end
+        <property name="order" value="0" />
+        <property name="contentNegotiationManager" ref="mvcContentNegotiationManager" />
+        <property name="removeSemicolonContent" value="true" />
+    </bean>
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+#if($showComment)
+        <description>@ControllerAdvice, @ModelAttribute, @RequestMapping, @InitBinder</description>
+#end
+        <property name="contentNegotiationManager" ref="mvcContentNegotiationManager" />
+        <property name="webBindingInitializer" ref="${webBindingInitializer}" />
+        <property name="messageConverters">
+            <list>
+                <ref bean="${byteArrayHttpMessageConverter}" />
+                <ref bean="${stringHttpMessageConverter}" />
+                <ref bean="${resourceHttpMessageConverter}" />
+                <ref bean="${sourceHttpMessageConverter}"/>
+                <ref bean="${allEncompassingFormHttpMessageConverter}" />
+                <ref bean="${jaxb2xmlHtppMessageConverter}" />
+                <ref bean="${jackson2jsonHttpMessageConverter}" />
+            </list>
+        </property>
+    </bean>
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver" #if(!$showComment)/>#{else}>
+        <description>Resolves exceptions by invoking an @ExceptionHandler method in a @ControllerAdvice class.</description>
+        <property name="contentNegotiationManager" ref="mvcContentNegotiationManager" />
+        <property name="messageConverters">
+            <list>
+                <ref bean="${byteArrayHttpMessageConverter}" />
+                <ref bean="${stringHttpMessageConverter}" />
+                <ref bean="${resourceHttpMessageConverter}" />
+                <ref bean="${sourceHttpMessageConverter}"/>
+                <ref bean="${allEncompassingFormHttpMessageConverter}" />
+                <ref bean="${jaxb2xmlHtppMessageConverter}" />
+                <ref bean="${jackson2jsonHttpMessageConverter}" />
+            </list>
+        </property>
+        <property name="order" value="0" />
+    </bean>#{end}
+#end
+#if($configType.contains('xml') and !$configType.contains('xml:') and $configType.contains('@') and !$configType.contains('@java') or $showDefault)
+    <bean id="${byteArrayHttpMessageConverter}" class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+    <bean id="${stringHttpMessageConverter}" class="org.springframework.http.converter.StringHttpMessageConverter">
+        <construct-arg index="0" value="UTF-8" />
+        <property name="writeAcceptCharset" value="false" />
+    </bean>
+    <bean id="${resourceHttpMessageConverter}" class="org.springframework.http.converter.ResourceHttpMessageConverter" />
+    <bean id="${sourceHttpMessageConverter}" class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
+    <bean id="${allEncompassingFormHttpMessageConverter}" class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter" />
+    <bean id="${jaxb2xmlHtppMessageConverter}" class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />
+    <bean id"${jackson2jsonHttpMessageConverter}" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+#end
+    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+        <construct-arg index="0">
+            <list>
+                <ref id="${stringHttpMessageConverter}" />
+                <ref id="${jaxb2xmlHtppMessageConverter}" />
+                <ref id="${jackson2jsonHttpMessageConverter}" />
+            </list>
+        </construct-arg>
+    </bean>
+    <bean id="methodValidationPostProcessor" class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor">
+#if($showComment)
+        <description>org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration#methodValidationPostProcessor</description>
+#end
+        <property name="proxyTargetClass" value="\${spring.aop.proxy-target-class}" />
+        <property name="validator" ref="${validator}" />
+    </bean>
+#{else}
+#if($showComment)
+    <!--
+    Define org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping,
+    org.springframework.web.bind.support.ConfigurableWebBindingInitializer,
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter,
+    org.springframework.web.servlet.handler.ConversionServiceExposingInterceptor,
+    org.springframework.web.servlet.mvc.annotation.ResponseStatusExceptionResolver,
+    org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver,
+    org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.
+    -->
+#{end}
+    <mvc:annotation-driven #if($showDefault)content-negotiation-manager="mvcContentNegotiationManager" conversion-service="${conversionService}"
+        validator="${validator}"#{end}>
+#if($showDefault)
+        <mvc:message-converters register-defaults="false">
+            <ref bean="${byteArrayHttpMessageConverter}" />
+            <ref bean="${stringHttpMessageConverter}" />
+            <ref bean="${resourceHttpMessageConverter}" />
+            <ref bean="${sourceHttpMessageConverter}"/>
+            <ref bean="${allEncompassingFormHttpMessageConverter}" />
+            <ref bean="${jaxb2xmlHtppMessageConverter}" />
+            <ref bean="${jackson2jsonHttpMessageConverter}" />
+        </mvc:message-converters>
+#end
+#if($showComment)
+        <!--
+        <mvc:argument-resolvers>
+            <description>property name 'customArgumentResolvers' of 'org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter'</description>
+            <bean class="" />
+        </mvc:argument-resolvers>
+        <mvc:return-value-handlers>
+            <description>property name 'customReturnValueHandlers' of 'org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter'</description>
+            <bean class="" />
+        </mvc:return-value-handlers>
+        <mvc:async-support default-timeout="" task-executor="">
+            <mvc:callable-interceptors>
+                <bean class="" />
+            </mvc:callable-interceptors>
+            <mvc:deferred-result-interceptors>
+                <bean class="" />
+            </mvc:deferred-result-interceptors>
+        </mvc:async-support>
+        -->
+#end
+    </mvc:annotation-driven>
+#{end}
+#end
+
+#if($configType.contains('xml') and !$configType.contains('xml:') and $configType.contains('@') and !$configType.contains('@java'))
+    <bean id="org.springframework.context.annotation.internalConfigurationAnnotationProcessor"
+          class="org.springframework.context.annotation.ConfigurationClassPostProcessor"#if(!$showComment)/>#{else}>
+        <description>Parse each @Configuration class; Handle any @PropertySource annotations</description>
+    </bean>
+#{end}
+    <bean id="org.springframework.context.annotation.internalAutowiredAnnotationProcessor"
+          class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"#if(!$showComment)/>#{else}>
+        <description>Handle @Autowired, @Value, @Inject on field or method</description>
+#if($showDefault)
+        <property name="requiredParameterName" value="required" />
+        <property name="requiredParameterValue" value="true" />
+        <property name="order" value="2147483645" />
+#end
+    </bean>
+#{end}
+    <bean id="org.springframework.context.annotation.internalRequiredAnnotationProcessor"
+          class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"#if(!$showComment)/>#{else}>
+        <description>Check setter method with @Required annotation.</description>
+    </bean>
+#{end}
+    <bean id="org.springframework.context.annotation.internalCommonAnnotationProcessor"
+          class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"#if(!$showComment)/>#{else}>
+        <description>Look up field or method with @javax.xml.ws.WebServiceRef, @javax.ejb.EJB, @Resource annotation and inject to it.</description>
+    </bean>
+#{end}
+#end
+#if($configType.contains('xml') and !$configType.contains('xml:'))
+    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+#if($showComment)
+        <description>TODO</description>
+#end
+#if($showDefault)
+        <property name="placeholderPrefix" value="${" />
+        <property name="placeholderSuffix" value="}" />
+        <property name="valueSeparator" value=":" />
+        <property name="ignoreUnresolvablePlaceholders" value="false" />
+        <property name="order" value="2147483647" />
+        <property name="localOverride" value="false" />
+        <property name="ignoreResourceNotFound" value="false" />
+#end
+        <property name="fileEncoding" value="UTF-8" />
+        <property name="locations">
+            <list>
+                <value>classpath:application.properties</value>
+            </list>
+        </property>
+    </bean>
+#end
+#if($showComment)
+    <!-- Define org.springframework.context.support.PropertySourcesPlaceholderConfigurer -->
+#{end}
+    <context:property-placeholder location="classpath:application.properties" file-encoding="UTF-8"
+        #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
+
+#if($showComment)
+    <!--
+    Create org.springframework.context.annotation.ClassPathBeanDefinitionScanner to scan classses.
+    Likes &#60;context:annotation-config /&#62;, it also defines
+    org.springframework.context.annotation.ConfigurationClassPostProcessor,
+    org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor,
+    org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor,
+    org.springframework.context.annotation.CommonAnnotationBeanPostProcessor,
+    org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor.
+    If use default filters, spring will enable @ManagedBean, @Named, @Component
+    which means @Controller, @Service, @Repository enabled at same time!
+    If not  use default filters, default nothng will be consider as spring bean.
+    And exclude filter is precedence of include filter.
+    -->
+#end
+    <context:component-scan base-package="${groupId}.${artifactId}" #if($showDefault)use-default-filters="true" annotation-config="true"#{end}>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />
+    </context:component-scan>
+
+#end
+</beans>

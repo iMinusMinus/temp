@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+#if($showComment)
+    <!-- http://www.mybatis.org/mybatis-3/configuration.html -->
+    <!--
+    <properties resource="">
+        <property name="" value=""/>
+    </properties>
+    -->
+#end
+    <settings>
+#if($showDefault)
+        <setting name="cacheEnabled" value="true"/>
+        <setting name="lazyLoadingEnabled" value="false"/>
+        <setting name="aggressiveLazyLoading" value="false"/>
+        <setting name="multipleResultSetsEnabled" value="true"/>
+        <setting name="useColumnLabel" value="true"/>
+        <setting name="useGeneratedKeys" value="false"/>
+        <setting name="autoMappingBehavior" value="PARTIAL"/>
+        <setting name="autoMappingUnknownColumnBehavior" value="NONE"/>
+        <setting name="defaultExecutorType" value="SIMPLE"/>
+        <setting name="safeRowBoundsEnabled" value="false"/>
+        <setting name="safeResultHandlerEnabled" value="true"/>
+        <setting name="mapUnderscoreToCamelCase" value="false"/>
+        <setting name="localCacheScope" value="SESSION"/>
+        <setting name="jdbcTypeForNull" value="OTHER"/>
+        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>
+        <setting name="defaultScriptingLanguage" value="org.apache.ibatis.scripting.xmltags.XMLLanguageDriver"/>
+        <setting name="defaultEnumTypeHandler" value="org.apache.ibatis.type.EnumTypeHandler" />
+        <setting name="callSettersOnNulls" value="false"/>
+        <setting name="returnInstanceForEmptyRow" value="false"/>
+        <setting name="proxyFactory" value="JAVASSIST"/>
+        <setting name="useActualParamName" value="true"/>
+#end
+        <setting name="defaultStatementTimeout" value="1" />
+        <setting name="defaultFetchSize" value="100" />
+        <setting name="logPrefix" value="sql" />
+        <setting name="logImpl" value="SLF4J "/>
+    </settings>
+#if($showComment)
+    <!--
+    <typeAliases>
+        <typeAlias alias="simpleName" type="FQCN"/>
+        <package name="${groupId}.${artifactId}.domain"/>
+    </typeAliases>
+    <typeHandlers>
+        <typeHandler handler="" />
+    </typeHandlers>
+    <objectFactory type="">
+        <property name="" value=""/>
+    </objectFactory>
+    <plugins>
+        <plugin interceptor="">
+            <property name="" value=""/>
+        </plugin>
+    </plugins>
+    -->
+#end
+    <databaseIdProvider type="DB_VENDOR">
+        <property name="MySQL" value="mysql"/>
+        <property name="Oracle" value="oracle" />
+    </databaseIdProvider>
+#if($showComment)
+    <!-- As this is a list, you can choose set org.mybatis.spring.SqlSessionFactoryBean.mapperLocations instead!
+    <mappers>
+        <mapper resource="" />
+        <mapper url="" />
+        <mapper class="" />
+        <package name="${groupId}.${artifactId}.dao" />
+    </mappers>
+    -->
+#end
+</configuration>

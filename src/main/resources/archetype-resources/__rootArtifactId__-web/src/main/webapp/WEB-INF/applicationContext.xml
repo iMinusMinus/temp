@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#if($configType.contains('xml:'))
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+#end
+#if(!$configType.contains('xml:'))
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+#{else}
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+#end
+#if($showDefault)
+    <bean id="environment" scope="singleton" class="org.springframework.core.env.StandardEnvironment" #if(!$showComment)/>#{else}>
+        <description>If WebApplicationContext, bean type is 'org.springframework.web.context.support.StandardServletEnvironment'</description>
+    </bean>
+#{end}
+#end
+#if($showComment)
+    <!--
+    <bean id="loadTimeWeaver" class="org.springframework.context.weaving.DefaultContextLoadTimeWeaver">
+        <description>Use spring javaagent as a delegate to others, like aspectj, web/ejb containers.
+        See org.springframework.context.support.AbstractApplicationContext#prepareBeanFactory</description>
+    </bean>
+    <bean id="systemProperties" scope="singleton" class="java.lang.System" factory-method="getProperties">
+        <description>System.getProperties(). Can't invoke static method.</description>
+    </bean>
+    <bean id="systemEnvironment" scope="singleton" class="java.lang.System" factory-method="getEnv">
+        <description>System.getEnv() or empty if suppressGetenv. Can't invoke static mehtod</description>
+    </bean>
+    <bean id="messageSource" scope="singleton" class="org.springframework.context.support.DelegatingMessageSource">
+        <description>See org.springframework.context.support.AbstractApplicationContext#initMessageSource. Can't setParentMessageSource</description>
+    </bean>
+    <bean id="applicationEventMulticaster" class="org.springframework.context.event.SimpleApplicationEventMulticaster">
+        <description>See org.springframework.context.support.AbstractApplicationContext#initApplicationEventMulticaster.
+        No consurct-arg.</description>
+    </bean>
+    <bean id="themeSource" class="" />
+    <bean id="conversionService" class="" />
+    <bean id="lifecycleProcessor" scope="singleton" class="org.springframework.context.support.DefaultLifecycleProcessor">
+        <description>See org.springframework.context.support.AbstractApplicationContext#initLifecycleProcessor. Can't setBeanFactory!</description>
+    </bean>
+    -->
+#end
+#if(($configType.contains('xml:') and $showDefault) or ($configType.contains('@') and !$configType.contains('@java') and !$configType.contains('xml:')))
+    <bean id="org.springframework.context.annotation.internalConfigurationAnnotationProcessor"
+          class="org.springframework.context.annotation.ConfigurationClassPostProcessor"#if(!$showComment)/>#{else}>
+        <description>Parse each @Configuration class; Handle any @PropertySource annotations</description>
+    </bean>
+#{end}
+    <bean id="org.springframework.context.annotation.internalAutowiredAnnotationProcessor"
+          class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"#if(!$showComment)/>#{else}>
+        <description>Handle @Autowired, @Value, @Inject on field or method</description>
+#if($showDefault)
+        <property name="requiredParameterName" value="required" />
+        <property name="requiredParameterValue" value="true" />
+        <property name="order" value="2147483645" />
+#end
+    </bean>
+#{end}
+    <bean id="org.springframework.context.annotation.internalRequiredAnnotationProcessor"
+          class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"#if(!$showComment)/>#{else}>
+        <description>Check setter method with @Required annotation.</description>
+    </bean>
+#{end}
+    <bean id="org.springframework.context.annotation.internalCommonAnnotationProcessor"
+          class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"#if(!$showComment)/>#{else}>
+        <description>Look up field or method with @javax.xml.ws.WebServiceRef, @javax.ejb.EJB, @Resource annotation and inject to it.</description>
+    </bean>
+#{end}
+    <bean id="org.springframework.aop.config.internalAutoProxyCreator"
+          class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator">
+#if($showComment)
+        <description></description>
+#{end}
+        <property name="order" value="-2147483648" />
+        <property name="proxyTargetClass" value="false" />
+        <property name="exposeProxy" value="false" />
+    </bean>
+#end
+
+#if($configType.contains('xml:') or ($configType.contains('@') and !$configType.contains('@java')))
+#if(!$showComment)    <!-- Define org.springframework.context.support.PropertySourcesPlaceholderConfigurer -->#{end}
+    <context:property-placeholder location="classpath:application.properties" file-encoding="UTF-8"
+            #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
+
+#if($configType.contains('xml:') and $showComment)
+    <!--
+#if($showDefault)
+    <bean id="org.springframework.context.config.internalBeanConfigurerAspect"
+        class="org.springframework.beans.factory.aspectj.AnnotationBeanConfigurerAspect" factoy-method="aspectOf">
+        <description></description>
+    </bean>
+#end
+    <context:property-override location="application.properties"#if($showDefault) ignore-resource-not-found="false" local-override="false" #{end}>
+        <description>Define bean which class is 'org.springframework.beans.factory.config.PropertyOverrideConfigurer'.
+        Override bean property by load properties file.</description>
+    </context:property-override>
+
+    <context:load-time-weaver #if($showDefault)weaver-class="org.springframework.context.weaving.DefaultContextLoadTimeWeaver"#{end}
+        aspectj-weaving="off">
+        <description></description>
+    </context:load-time-weaver>
+    <context:spring-configured>
+        <description>Define bean named 'org.springframework.context.config.internalBeanConfigurerAspect'
+        with class named 'org.springframework.beans.factory.aspectj.AnnotationBeanConfigurerAspect'</description>
+    </context:spring-configured>
+    <context:mbean-export>
+        <description>Define a bean named 'mbeanExporter',it's class is 'org.springframework.jmx.export.annotation.AnnotationMBeanExporter'.
+        Default value of property 'registrationPolicy' is 'FAIL_ON_EXISTING'</description>
+    </context:mbean-export>
+    <context:mbean-server>
+        <description>Define a bean named 'mbeanServer', it's class is 'org.springframework.jmx.support.MBeanServerFactoryBean'.</description>
+    </context:mbean-server>
+    -->
+#end
+#if($showComment)
+    <!-- Create org.springframework.context.annotation.ClassPathBeanDefinitionScanner to scan classses.
+    As enhanced pattern of &#60;context:annotation-config /&#62;, it defines
+    org.springframework.context.annotation.ConfigurationClassPostProcessor,
+    org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor,
+    org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor,
+    org.springframework.context.annotation.CommonAnnotationBeanPostProcessor,
+    org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor,
+    org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor.
+    -->
+#end
+    <context:component-scan base-package="${groupId}.${artifactId}" #if($showDefault)use-default-filters="true" annotation-config="true"#{end}>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Service" />
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository" />
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component" />
+    </context:component-scan>
+#end
+#if($configType.contains('xml:') and $showComment)
+    <!--
+    <aop:config proxy-target-class="false" expose-proxy="false">
+        <description>Define a bean named 'org.springframework.aop.config.internalAutoProxyCreator' when not defined.
+         It's class name is 'org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator'.
+         If proxy-target-class is true, Spring use CGLIB.
+         If  expose-proxy is true, we can use 'org.springframework.aop.framework.AopContext#currentProxy'to get delegate object.
+         <description>
+         <aop:pointcut expression="">
+            <description>Define a prototype bean with class 'org.springframework.aop.aspectj.AspectJExpressionPointcut'</description>
+         </aop:pointcut>
+         <aop:advisor advice-ref="adviceBeanName" pointcut-ref="">
+            <description>Define a bena with class 'org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor'.
+            Attribute 'pointcut' and 'pointcut-ref' cannot occur same time!
+            </description>
+         </aop:advisor>
+         <aop:aspect>
+            <description>Define bean class is 'org.springframework.aop.config.MethodLocatingFactoryBean'.
+            Define bean class is 'org.springframework.aop.config.SimpleBeanFactoryAwareAspectInstanceFactory'.
+            Define bean which is sub class of 'org.springframework.aop.aspectj.AbstractAspectJAdvice'.
+            Define bean class name is 'org.springframework.aop.aspectj.AspectJPointcutAdvisor'.</description>
+            <aop:before method="" pointcut="" />
+            <aop:after method="" pointcut-ref="" />
+            <aop:after-returning method="" pointcut="" />
+            <aop:after-throwing method="" pointcut="" />
+            <aop:around method="" pointcut="" />
+            <aop:pointcut expression="" />
+         </aop:aspect>
+    </aop:config>
+    <aop:scoped-proxy #if($showDefault)proxy-target-class="true"#{end}>
+        <description>Decorate given bean, replace with a new bean which name start with 'scopedTarget.'
+         and class name is 'org.springframework.aop.scope.ScopedProxyFactoryBean'</description>
+    </aop:scoped-proxy>
+    -->
+#end
+#if($configType.contains('xml:') and $configType.contains('@java'))
+#if($showComment)
+    <!-- Define a bean named 'org.springframework.aop.config.internalAutoProxyCreator' when not defined.
+    It's class name is 'org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator'
+    -->
+#{end}
+    <aop:aspectj-autoproxy #if($showDefault)proxy-target-class="false" expose-proxy="false"#{end} />
+
+#end
+#if($showComment)
+    <!--
+    <tx:advice #if($showDefault)transaction-manager="transactionManager"#{end}>
+        <description>Define bean which type is 'org.springframework.transaction.interceptor.TransactionInterceptor'</description>
+#if($showDefault)
+        <tx:attributes>
+            <tx:method name="" propagation="" isolation="" timeout="" read-only="" rollback-for="" no-rollback-for="">
+                <description>Define bean with class 'org.springframework.transaction.interceptor.NameMatchTransactionAttributeSource' as 'transactionAttributeSource'.
+                If not defined 'transactionAttributeSource', replace bean which type is 'org.springframework.transaction.annotation.AnnotationTransactionAttributeSource'.</description>
+            </tx:method>
+        </tx:attributes>
+#end
+    </tx:advice>
+    <tx:jta-transaction-manager>
+        <description>Define 'transactionManager' bean.
+        Class may be 'org.springframework.transaction.jta.WebLogicJtaTransactionManager' if 'weblogic.transaction.UserTransaction' present.
+        Class may be 'org.springframework.transaction.jta.WebSphereUowTransactionManager' if 'com.ibm.wsspi.uow.UOWManager' present.
+        Class may be 'org.springframework.transaction.jta.OC4JJtaTransactionManager' if 'oracle.j2ee.transaction.OC4JTransactionManager' present.
+        Otherwise use 'org.springframework.transaction.jta.JtaTransactionManager'.</description>
+    </tx:jta-transaction-manager>
+    -->
+#end
+#if($framework.contains('jpa'))
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="packagesToScan" value="" />
+        <property name="#if($framework.contains('jta'))jtaDataSource#{else}dataSource#{end}" ref="${dataSource}" />
+        <property name="mappingResources" ref="" />
+    </bean>
+    <bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="showSql" value="\${spring.jpa.showSql}" />
+        <property name="database" value="\${spring.jpa.database}" />
+        <property name="databasePlatform" value="\${spring.jpa.databasePlatform}" />
+        <property name="generateDdl" value="\${spring.jpa.generateDdl}" />
+    </bean>
+#end
+#if($framework.contains('jta'))
+    <bean id="jtaTransactionManager" class="#if($container.contains('weblogic'))org.springframework.transaction.jta.WebLogicJtaTransactionManager#elseif($container.contains('websphere'))org.springframework.transaction.jta.WebSphereUowTransactionManager#{else}org.springframework.transaction.jta.JtaTransactionManager#end">
+#if($showComment)
+        <description>This transaction manager is appropriate for handling distributed transactions, i.e. transactions that span multiple resources.</description>
+#end
+        <property name="transactionManagerName" value="transactionManager" />
+#if($showDefault)
+        <property name="autodetectUserTransaction" value="true" />
+        <property name="cacheUserTransaction" value="true" />
+        <property name="autodetectTransactionManager" value="#if($container.contains('websphere'))false#{else}true#{end}" />
+        <property name="allowCustomIsolationLevels" value="false" />
+#end
+    </bean>
+#else
+    <bean id="transactionManager" class="#if($framework.contains('hibernate'))org.springframework.orm.hibernate4.HibernateTransactionManager#{else}org.springframework.jdbc.datasource.DataSourceTransactionManager#{end}">
+#if($showComment)
+        <description>As transaction manager for single resource, delegate connection to commit or rollback.</description>
+#end
+        <property name="dataSource" ref="${dataSource}" />
+#if($showDefault)
+#if($framework.contains('hibernate'))
+        <property name="sessionFactory" ref="${sessionFactory}" />
+        <property name="autodetectDataSource" value="true" />
+        <property name="prepareConnection" value="true" />
+        <property name="hibernateManagedSession" value="false" />
+#else
+        <property name="nestedTransactionAllowed" value="false" />
+        <property name="validateExistingTransaction" value="false" />
+        <property name="globalRollbackOnParticipationFailure" value="true" />
+        <property name="failEarlyOnGlobalRollbackOnly" value="false" />
+        <property name="rollbackOnCommitFailure" value="false" />
+#end
+#end
+    </bean>
+#end
+    <bean id="${dataSource}" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+#if($showComment)
+        <description>A pooled dataSource better than dbcp and c3p0.
+        ExceptionSorter can auto remove invalid connection.
+        WallFilter can avoid sql injection.</description>
+#end
+        <property name="driverClassName" value="\${spring.datasource.driverClassName}" />
+        <property name="url" value="\${spring.datasource.url}" />
+        <property name="username" value="\${spring.datasource.username}" />
+        <property name="password" value="\${spring.datasource.password}" />
+        <property name="filters" value="stat.slf4j,wall" />
+        <property name="maxActive" value="20" />
+        <property name="initialSize" value="1" />
+        <property name="maxWait" value="60000" />
+        <property name="minIdle" value="1" />
+        <property name="validationQuery" value="SELECT 1 FROM DUAL" />
+        <property name="connectionProperties" value="druid.stat.slowSqlMillis=200;druid.stat.mergeSql=true" />
+    </bean>
+#if($framework.contains('mybatis') and $framework.contains('spring'))
+    <bean id="${sqlSessionFactory}" class="org.mybatis.spring.SqlSessionFactoryBean">
+#if($showComment)
+        <description>Build SqlSessionFactory by parse configuration and mapper.
+        A SqlSessionFactory can open SqlSession. A SqlSession can execute sql command.</description>
+#end
+        <property name="configuration" value="/WEB-INF/mybatis-configuration.xml" />
+        <property name="mapperLocations" value="classpath:sqlmap/*-mapper.xml" />
+        <property name="dataSource" ref="${dataSource}}" />
+    </bean>
+#if($configType.contains('@'))
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfiguer">
+#if($showComment)
+        <description>Scan 'basePackage' and register bean definitions by using 'annotationClass' and 'markerInterface' as include filters</description>
+#end
+        <property name="annotationClass" value="org.springframework.stereotype.Repository" />
+        <property name="basePackage" value="${groupId}.${rootArtifactId}.dao" />
+        <property name="markerInterface" value="" />
+        <property name="sqlSessionFactoryBeanName" value="${sqlSessionFactory}" />
+    </bean>
+#end
+#elseif($framework.contains('hibernate'))
+    <bean id="${sessionFactory}" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="${dataSource}" />
+        <property name="configLocations" value="classpath:hibernate.cfg.xml" />
+    </bean>
+#end
+#if($configType.contains('xml:') and $configType.contains('@'))
+#if($showComment)
+    <!--
+    1.proxy:
+    Register bean which type is 'org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator' if necessary.
+    If not defined bean of type 'org.springframework.transaction.config.internalTransactionAdvisor', defines sunch beans:
+    bean of type 'org.springframework.transaction.annotation.AnnotationTransactionAttributeSource',
+    advice bean which type is 'org.springframework.transaction.interceptor.TransactionInterceptor',
+    advisor bean which named 'org.springframework.transaction.config.internalTransactionAdvisor' and type is 'org.springframework.transaction.interceptor.BeanFactoryTransactionAttributeSourceAdvisor',.
+    2.aspectj:
+    Define factory bean named 'org.springframework.transaction.config.internalTransactionAspect'
+    which type is 'org.springframework.transaction.aspectj.AnnotationTransactionAspect', factory method named 'aspectOf'.
+    It's property 'transactionManagerBeanName' refer to bean 'transactionManager'.
+    -->
+#{end}
+    <tx:annotation-driven #if($showDefault)mode="proxy" transaction-manager="transactionManager"#{end} />
+#end
+
+#if($showComment)
+    <!--
+    <cache:advice cache-manager="cacheManager">
+        <description>Define bean type is 'org.springframework.cache.interceptor.CacheInterceptor'.
+        It's property 'cacheOperationSources' refer to bean of type 'org.springframework.cache.interceptor.NameMatchCacheOperationSource' if '&#60;cache:caching&#62;',
+        otherwise replace with type 'org.springframework.cache.annotation.AnnotationCacheOperationSource'</description>
+        <cache:caching>
+            <cache:cacheable unless=""></cache:cacheable>
+            <cache:cache-evict all-entries="false"></cache:cache-evict>
+            <cache:cache-put unless=""></cache:cache-put>
+        </cache:caching>
+    </cache:advice>
+    -->
+#end
+#if($showComment)
+    <!--
+    1.proxy:
+    Register bean which type is 'org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator' if necessary.
+    If not defined bean 'org.springframework.cache.config.internalCacheAdvisor', define such beans:
+    bean type is 'org.springframework.cache.annotation.AnnotationCacheOperationSource',
+    interceptor type is 'org.springframework.cache.interceptor.CacheInterceptor',
+    advisor named 'org.springframework.cache.config.internalCacheAdvisor' and type is 'org.springframework.cache.interceptor.BeanFactoryCacheOperationSourceAdvisor'
+    2.aspectj:
+    Define bean named 'org.springframework.cache.config.internalCacheAspect',
+    which type is 'org.springframework.cache.aspectj.AnnotationCacheAspect', factory-method named 'aspectOf'.
+    It's property 'cacheManager' refers to bean 'cacheManager'.
+    -->
+#{end}
+#if($configType.contains('xml:') and $configType.contains('@'))
+    <cache:annotation-driven #if($showDefault)mode="proxy" cache-manager="cacheManager"#{end} />
+    <bean id="cacheManager" class="org.springframework.cache.support.CompositeCacheManager">
+        <property name="fallbackToNoOpCache" value="true" />
+        <!--
+        <property name="cacheManagers">
+            <list>
+                <ref bean="" />
+            </list>
+        </property>
+        -->
+    </bean>
+#end
+    <bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="jobFactory" ref="jobFactory" />
+        <property name="beanName" value="\${spring.quartz.schedulerName}" />
+        <property name="autoStartup" value="\${spring.quartz.autoStartup}" />
+        <property name="startupDelay" value="\${spring.quartz.startupDelay}" />
+        <property name="overwriteExistingJobs" value="\${spring.quartz.overwriteExistingJobs}" />
+    </bean>
+</beans>

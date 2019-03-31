@@ -1,0 +1,6 @@
+#if($showComment)
+#Re-maps schemalocation to a xsd inside the library
+#See org.springframework.beans.factory.xml.PluggableSchemaResolver#resolveEntity
+#Example:
+#http\://dubbo.apache.org/schema/dubbo/dubbo.xsd=META-INF/dubbo.xsd
+#end
