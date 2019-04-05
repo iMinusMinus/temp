@@ -257,10 +257,10 @@
         ExceptionSorter can auto remove invalid connection.
         WallFilter can avoid sql injection.</description>
 #end
-        <property name="driverClassName" value="\${spring.datasource.driverClassName}" />
-        <property name="url" value="\${spring.datasource.url}" />
-        <property name="username" value="\${spring.datasource.username}" />
-        <property name="password" value="\${spring.datasource.password}" />
+        <property name="driverClassName" value="${spring.datasource.driverClassName}" />
+        <property name="url" value="${spring.datasource.url}" />
+        <property name="username" value="${spring.datasource.username}" />
+        <property name="password" value="${spring.datasource.password}" />
         <property name="filters" value="stat.slf4j,wall" />
         <property name="maxActive" value="20" />
         <property name="initialSize" value="1" />
@@ -296,6 +296,9 @@
         <property name="configLocations" value="classpath:hibernate.cfg.xml" />
     </bean>
 #end
+    <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor">
+        <property name="proxyTargetClass" value="${spring.aop.proxy-target-class}" />
+    </bean>
 #if($configType.contains('xml:') and $configType.contains('@'))
 #if($showComment)
     <!--
