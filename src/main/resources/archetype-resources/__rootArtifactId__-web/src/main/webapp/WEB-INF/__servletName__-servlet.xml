@@ -220,7 +220,7 @@
 #end
     <mvc:default-servlet-handler #if($showDefault)default-servlet-name="default"#{end} />
 #end
-#if($configType.contains('xml') and $framework.contains('swagger'))
+#if($framework.contains('swagger'))
 #if(!$configType.contains('xml:'))
     <bean id="mvcPathMatcher" class="org.springframework.util.AntPathMatcher">
 #if($showComment)
@@ -254,15 +254,16 @@
 #end
         <property name="urlMap">
             <map>
-                <entry key="/swagger-ui.html" ref="${resourceHandler}" />
-                <entry key="/webjars/**" ref="${resourceHandler}" />
+                <entry key="/swagger-ui.html" value-ref="${resourceHandler}" />
+                <entry key="/webjars/**">
+                    <ref bean="${resourceHandler}" />
+                </entry>
             </map>
         </property>
         <property name="pathMatcher" ref="mvcPathMatcher" />
         <property name="urlPathHelper" ref="mvcUrlPathHelper" />
         <property name="order" value="2147483646" />
     </bean>
-#end
 #else
 #if($showComment)
     <!--
@@ -324,8 +325,20 @@
     -->
 #end
 #if($configType.contains('xml'))
+#if(($configType.contains('xml') and !$configType.contains('xml:'))  or $showDefault)
+    <bean id="${byteArrayHttpMessageConverter}" class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+    <bean id="${stringHttpMessageConverter}" class="org.springframework.http.converter.StringHttpMessageConverter">
+        <constructor-arg index="0" value="UTF-8" />
+        <property name="writeAcceptCharset" value="false" />
+    </bean>
+    <bean id="${resourceHttpMessageConverter}" class="org.springframework.http.converter.ResourceHttpMessageConverter" />
+    <bean id="${sourceHttpMessageConverter}" class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
+    <bean id="${allEncompassingFormHttpMessageConverter}" class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter" />
+    <bean id="${jaxb2xmlHtppMessageConverter}" class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />
+    <bean id="${jackson2jsonHttpMessageConverter}" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+#end
 #if(!$configType.contains('xml:'))
-    <bean id="mvcContentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+    <bean id="${contentNegotiationManager}" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
 #if($showComment)
         <description>Factory bean produce bean type of 'org.springframework.web.accept.ContentNegotiationManager'</description>
 #end
@@ -360,7 +373,6 @@
         <!--<property name="messageCodesResolver" ref="" />-->
 #end
     </bean>
-#if($configType.contains('xml') and !$configType.contains('xml:') and $configType.contains('@') and !$configType.contains('@java'))
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
 #if($showComment)
         <description>Find class with @Controller and class/method with @RequestMapping.
@@ -405,20 +417,8 @@
             </list>
         </property>
         <property name="order" value="0" />
-    </bean>#{end}
-#end
-#if(($configType.contains('xml') and !$configType.contains('xml:')) or ($configType.contains('@') and !$configType.contains('@java')) or $showDefault)
-    <bean id="${byteArrayHttpMessageConverter}" class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
-    <bean id="${stringHttpMessageConverter}" class="org.springframework.http.converter.StringHttpMessageConverter">
-        <construct-arg index="0" value="UTF-8" />
-        <property name="writeAcceptCharset" value="false" />
     </bean>
-    <bean id="${resourceHttpMessageConverter}" class="org.springframework.http.converter.ResourceHttpMessageConverter" />
-    <bean id="${sourceHttpMessageConverter}" class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
-    <bean id="${allEncompassingFormHttpMessageConverter}" class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter" />
-    <bean id="${jaxb2xmlHtppMessageConverter}" class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />
-    <bean id"${jackson2jsonHttpMessageConverter}" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
-#end
+#{end}
     <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
         <construct-arg index="0">
             <list>
@@ -432,10 +432,10 @@
 #if($showComment)
         <description>org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration#methodValidationPostProcessor</description>
 #end
-        <property name="proxyTargetClass" value="\${spring.aop.proxy-target-class}" />
+        <property name="proxyTargetClass" value="${spring.aop.proxy-target-class}" />
         <property name="validator" ref="${validator}" />
     </bean>
-#{else}
+#else
 #if($showComment)
     <!--
     Define
@@ -450,7 +450,7 @@
     org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver,
     org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.
     -->
-#{end}
+#end
     <mvc:annotation-driven>
 #if($showDefault)
         <mvc:message-converters register-defaults="false">
@@ -484,10 +484,42 @@
         -->
 #end
     </mvc:annotation-driven>
-#{end}
+#end
 #end
 
-#if($configType.contains('xml') and !$configType.contains('xml:') and $configType.contains('@') and !$configType.contains('@java'))
+#if($configType.contains('xml'))
+#if(!$configType.contains('xml:'))
+    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+#if($showComment)
+        <description>TODO</description>
+#end
+#if($showDefault)
+        <property name="placeholderPrefix" value="${" />
+        <property name="placeholderSuffix" value="}" />
+        <property name="valueSeparator" value=":" />
+        <property name="ignoreUnresolvablePlaceholders" value="false" />
+        <property name="order" value="2147483647" />
+        <property name="localOverride" value="false" />
+        <property name="ignoreResourceNotFound" value="false" />
+#end
+        <property name="fileEncoding" value="UTF-8" />
+        <property name="locations">
+             <list>
+                <value>classpath:application.properties</value>
+            </list>
+        </property>
+    </bean>
+#else
+#if($showComment)
+        <!-- Define org.springframework.context.support.PropertySourcesPlaceholderConfigurer -->
+#end
+    <context:property-placeholder location="classpath:application.properties" file-encoding="UTF-8"
+        #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
+#end
+#end
+
+#if($configType.contains('xml'))
+#if(!$configType.contains('xml:'))
     <bean id="org.springframework.context.annotation.internalConfigurationAnnotationProcessor"
           class="org.springframework.context.annotation.ConfigurationClassPostProcessor"#if(!$showComment)/>#{else}>
         <description>Parse each @Configuration class; Handle any @PropertySource annotations</description>
@@ -513,35 +545,7 @@
         <description>Look up field or method with @javax.xml.ws.WebServiceRef, @javax.ejb.EJB, @Resource annotation and inject to it.</description>
     </bean>
 #{end}
-#end
-#if($configType.contains('xml') and !$configType.contains('xml:'))
-    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
-#if($showComment)
-        <description>TODO</description>
-#end
-#if($showDefault)
-        <property name="placeholderPrefix" value="${" />
-        <property name="placeholderSuffix" value="}" />
-        <property name="valueSeparator" value=":" />
-        <property name="ignoreUnresolvablePlaceholders" value="false" />
-        <property name="order" value="2147483647" />
-        <property name="localOverride" value="false" />
-        <property name="ignoreResourceNotFound" value="false" />
-#end
-        <property name="fileEncoding" value="UTF-8" />
-        <property name="locations">
-            <list>
-                <value>classpath:application.properties</value>
-            </list>
-        </property>
-    </bean>
-#end
-#if($showComment)
-    <!-- Define org.springframework.context.support.PropertySourcesPlaceholderConfigurer -->
-#{end}
-    <context:property-placeholder location="classpath:application.properties" file-encoding="UTF-8"
-        #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
-
+#else
 #if($showComment)
     <!--
     Create org.springframework.context.annotation.ClassPathBeanDefinitionScanner to scan classses.
@@ -562,6 +566,6 @@
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />
     </context:component-scan>
-
+#end
 #end
 </beans>
