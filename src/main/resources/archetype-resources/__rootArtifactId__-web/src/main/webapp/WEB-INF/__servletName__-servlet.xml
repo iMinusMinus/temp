@@ -7,7 +7,7 @@
 #if(!$configType.contains('xml:'))
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-#{else}
+#else
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
@@ -32,7 +32,7 @@
     </bean>
     -->
     <!-- handlerMapping, org.springframework.web.servlet.DispatcherServlet#initHandlerMappings -->
-#{end}
+#end
     <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"#if(!$showComment) />#{else}>
         <description>Optional. Name a bean '/foo' or '/foo*', when SimpleControllerHandlerAdapter registed,
         then use bean which type is org.springframework.web.servlet.mvc.Controller to handleRequest</description>
@@ -80,8 +80,8 @@
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"#if(!$showComment) />#{else}>
         <description>Optional. See org.springframework.web.servlet.DispatcherServlet#initViewResolvers
         Refer: org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter#defaultViewResolver</description>
-        <property name="prefix" value="\${spring.mvc.view.prefix}" />
-        <property name="suffix" value="\${spring.mvc.view.suffix}" />
+        <property name="prefix" value="${spring.mvc.view.prefix}" />
+        <property name="suffix" value="${spring.mvc.view.suffix}" />
     </bean>
 #{end}
     <bean id="flashMapManager" class="org.springframework.web.servlet.support.SessionFlashMapManager"#if(!$showComment) />#{else}>
@@ -90,9 +90,9 @@
 #{end}
 #end
     <bean id="beanNameViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
-    #if($showComment)
+#if($showComment)
         <description>Refer: org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter#beanNameViewResolver</description>
-    #end
+#end
         <property name="order" value="2147483637" />
     </bean>
     <bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
@@ -141,9 +141,9 @@
 #if($framework.contains('thymeleaf'))
     <bean id="${thymeleafTemplateResolvers}" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
 #if($showDefault)
-        <property name="prefix" value="\${spring.thymeleaf.prefix}" />
-        <property name="suffix" value="\${spring.thymeleaf.suffix}" />
-        <property name="templateMode" value="\${spring.thymeleaf.mode}" />
+        <property name="prefix" value="${spring.thymeleaf.prefix}" />
+        <property name="suffix" value="${spring.thymeleaf.suffix}" />
+        <property name="templateMode" value="${spring.thymeleaf.mode}" />
         <property name="characterEncoding" value="UTF-8" />
         <property name="cacheable" value="true" />
 #end
@@ -171,11 +171,11 @@
                     <description>Load/Build org.springframework.web.servlet.view.freemarker.FreeMarkerView</description>
 #end
 #if($showDefault)
-                    <property name="prefix" value="\${spring.freemarker.prefix}" />
-                    <property name="suffix" value="\${spring.freemarker.suffix}" />
-                    <property name="templateLoaderPath" value="\${spring.freemarker.templateLoaderPath}" />
-                    <property name="defaultEncoding" value="\${spring.freemarker.charset}" />
-                    <property name="freemarkerSettings" value="\${spring.freemarker.settings}" />
+                    <property name="prefix" value="${spring.freemarker.prefix}" />
+                    <property name="suffix" value="${spring.freemarker.suffix}" />
+                    <property name="templateLoaderPath" value="${spring.freemarker.templateLoaderPath}" />
+                    <property name="defaultEncoding" value="${spring.freemarker.charset}" />
+                    <property name="freemarkerSettings" value="${spring.freemarker.settings}" />
                     <property name="cacheLimit" value="1024" />
                     <property name="redirectContextRelative" value="true" />
                     <property name="redirectHttp10Compatible" value="true" />
@@ -189,48 +189,49 @@
 #{end}
 #end
 #if($framework.contains('thymeleaf'))
-            <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+                <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
 #if($showComment)
-                <description>Builds on the concept of Natural Templates to inject its logic into template files in a way
+                    <description>Builds on the concept of Natural Templates to inject its logic into template files in a way
                     that doesn’t affect the template from being used as a design prototype. </description>
 #end
 #if($showDefault)
-                <property name="redirectContextRelative" value="true" />
-                <property name="redirectHttp10Compatible" value="true" />
-                <property name="alwaysProcessRedirectAndForward" value="true" />
-                <property name="viewClass" value="" />
-                <property name="order" value="2147483642" />
-                <property name="forceContentType" value="false" />
+                    <property name="redirectContextRelative" value="true" />
+                    <property name="redirectHttp10Compatible" value="true" />
+                    <property name="alwaysProcessRedirectAndForward" value="true" />
+                    <property name="viewClass" value="" />
+                    <property name="order" value="2147483642" />
+                    <property name="forceContentType" value="false" />
 #end
-                <property name="characterEncoding" value="UTF-8" />
-                <property name="templateEngine" ref="${thymeleafTemplateEngine}" />
-                <property name="staticVariables">
-                    <map></map>
-                </property>
-            </bean>
+                    <property name="characterEncoding" value="UTF-8" />
+                    <property name="templateEngine" ref="${thymeleafTemplateEngine}" />
+                    <property name="staticVariables">
+                        <map></map>
+                    </property>
+                </bean>
 #end
-        </list>
-    </property>
+            </list>
+        </property>
     </bean>
 #if($configType.contains('xml:'))
 #if($showComment)
     <!-- Define org.springframework.web.servlet.handler.SimpleUrlHandlerMapping, property urlMap: key = '/**' ref = default-servlet-name,
     default-servlet-name: org.springframework.web.servlet.resource.DefaultServletHttpRequestHandler.
     -->
+#end
     <mvc:default-servlet-handler #if($showDefault)default-servlet-name="default"#{end} />
-#{end}
+#end
 #if($configType.contains('xml') and $framework.contains('swagger'))
 #if(!$configType.contains('xml:'))
     <bean id="mvcPathMatcher" class="org.springframework.util.AntPathMatcher">
 #if($showComment)
         <description>Optional. See org.springframework.web.servlet.config.MvcNamespaceUtils#registerPathMatcher</description>
-#{end}
+#end
         <property name="trimTokens" value="true" />
     </bean>
     <bean id="mvcUrlPathHelper" class="org.springframework.web.util.UrlPathHelper">
 #if($showComment)
         <description>Optional. See org.springframework.web.servlet.config.MvcNamespaceUtils#registerUrlPathHelper</description>
-#{end}
+#end
         <property name="alwaysUseFullPath" value="false" />
         <property name="urlDecode" value="true" />
         <property name="removeSemicolonContent" value="true" />
@@ -262,6 +263,7 @@
         <property name="order" value="2147483646" />
     </bean>
 #end
+#else
 #if($showComment)
     <!--
     Define bean named 'mvcPathMatcher' type 'org.springframework.util.AntPathMatcher'.
@@ -269,10 +271,11 @@
     Define bean type 'org.springframework.web.servlet.resource.ResourceHttpRequestHandler'.
     Define bean type 'org.springframework.web.servlet.handler.SimpleUrlHandlerMapping'.
     -->
- #{end}
+ #end
     <mvc:resources location="classpath:/META-INF/resources/;classpath:/META-INF/resources/webjars/"
                    mapping="/swagger-ui.html,/webjars/**" #if($showDefault)order="2147483646" cache-period="-1"#{end} />
 
+#end
 #end
 #if($showComment)
     <!--
@@ -404,7 +407,7 @@
         <property name="order" value="0" />
     </bean>#{end}
 #end
-#if($configType.contains('xml') and !$configType.contains('xml:') and $configType.contains('@') and !$configType.contains('@java') or $showDefault)
+#if(($configType.contains('xml') and !$configType.contains('xml:')) or ($configType.contains('@') and !$configType.contains('@java')) or $showDefault)
     <bean id="${byteArrayHttpMessageConverter}" class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
     <bean id="${stringHttpMessageConverter}" class="org.springframework.http.converter.StringHttpMessageConverter">
         <construct-arg index="0" value="UTF-8" />
@@ -435,7 +438,11 @@
 #{else}
 #if($showComment)
     <!--
-    Define org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping,
+    Define
+    org.springframework.web.accept.ContentNegotiationManagerFactoryBean named 'mvcContentNegotiationManager' if attribute 'content-negotiation-manager' not present,
+    org.springframework.format.support.FormattingConversionServiceFactoryBean if attribute 'conversion-service' not present,
+    org.springframework.validation.beanvalidation.LocalValidatorFactoryBean if attribute 'validator' not present,
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping,
     org.springframework.web.bind.support.ConfigurableWebBindingInitializer,
     org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter,
     org.springframework.web.servlet.handler.ConversionServiceExposingInterceptor,
@@ -444,8 +451,7 @@
     org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.
     -->
 #{end}
-    <mvc:annotation-driven #if($showDefault)content-negotiation-manager="mvcContentNegotiationManager" conversion-service="${conversionService}"
-        validator="${validator}"#{end}>
+    <mvc:annotation-driven>
 #if($showDefault)
         <mvc:message-converters register-defaults="false">
             <ref bean="${byteArrayHttpMessageConverter}" />

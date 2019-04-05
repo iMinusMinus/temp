@@ -6,6 +6,12 @@
 
 # Run Instructions:
 
+```sh
+java -version
+#Make sure this command output start with '1.8' !
+#Or you will see 'Fatal error compiling: invalid target release: 1.8'
+```
+
 ## spring-boot style
 generate a jar and deploy it in embed web container, at most case, it is run in docker container
 

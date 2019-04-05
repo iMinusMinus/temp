@@ -36,7 +36,7 @@
         <setting name="defaultStatementTimeout" value="1" />
         <setting name="defaultFetchSize" value="100" />
         <setting name="logPrefix" value="sql" />
-        <setting name="logImpl" value="SLF4J "/>
+        <setting name="logImpl" value="SLF4J"/>
     </settings>
 #if($showComment)
     <!--

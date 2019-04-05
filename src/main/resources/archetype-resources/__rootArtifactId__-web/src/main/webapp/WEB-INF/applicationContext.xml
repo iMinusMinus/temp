@@ -275,18 +275,18 @@
         <description>Build SqlSessionFactory by parse configuration and mapper.
         A SqlSessionFactory can open SqlSession. A SqlSession can execute sql command.</description>
 #end
-        <property name="configuration" value="/WEB-INF/mybatis-configuration.xml" />
-        <property name="mapperLocations" value="classpath:sqlmap/*-mapper.xml" />
-        <property name="dataSource" ref="${dataSource}}" />
+        <property name="configLocation" value="${mybatis.configLocation}" />
+        <property name="mapperLocations" value="${mybatis.mapperLocations}" />
+        <property name="dataSource" ref="${dataSource}" />
     </bean>
 #if($configType.contains('@'))
-    <bean class="org.mybatis.spring.mapper.MapperScannerConfiguer">
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 #if($showComment)
         <description>Scan 'basePackage' and register bean definitions by using 'annotationClass' and 'markerInterface' as include filters</description>
 #end
         <property name="annotationClass" value="org.springframework.stereotype.Repository" />
         <property name="basePackage" value="${groupId}.${rootArtifactId}.dao" />
-        <property name="markerInterface" value="" />
+        <property name="markerInterface" value="org.apache.ibatis.annotations.Mapper" />
         <property name="sqlSessionFactoryBeanName" value="${sqlSessionFactory}" />
     </bean>
 #end
@@ -358,11 +358,13 @@
         -->
     </bean>
 #end
+#if($framework.contains('quartz'))
     <bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="jobFactory" ref="jobFactory" />
-        <property name="beanName" value="\${spring.quartz.schedulerName}" />
-        <property name="autoStartup" value="\${spring.quartz.autoStartup}" />
-        <property name="startupDelay" value="\${spring.quartz.startupDelay}" />
-        <property name="overwriteExistingJobs" value="\${spring.quartz.overwriteExistingJobs}" />
+        <property name="beanName" value="${spring.quartz.schedulerName}" />
+        <property name="autoStartup" value="${spring.quartz.autoStartup}" />
+        <property name="startupDelay" value="${spring.quartz.startupDelay}" />
+        <property name="overwriteExistingJobs" value="${spring.quartz.overwriteExistingJobs}" />
     </bean>
+#end
 </beans>
