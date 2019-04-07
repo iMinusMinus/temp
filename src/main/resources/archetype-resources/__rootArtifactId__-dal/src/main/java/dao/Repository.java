@@ -1,7 +1,16 @@
-package ${package};
+package ${package}.dao;
 
 import java.util.List;
 
+import ${package}.domain.MetaSchemaDomain;
+
+#if($framework.contains('mybatis'))
+import org.apache.ibatis.annotations.Mapper;
+#end
+
+#if($framework.contains('mybatis'))
+@Mapper
+#end
 public interface Repository {
 
     /**

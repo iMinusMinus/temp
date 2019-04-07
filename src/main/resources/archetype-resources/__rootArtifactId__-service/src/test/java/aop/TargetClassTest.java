@@ -1,4 +1,4 @@
-package ${package};
+package ${package}.aop;
 
 public class TargetClassTest implements TargetInterfaceTest {
 

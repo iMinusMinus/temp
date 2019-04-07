@@ -2,6 +2,7 @@ package ${package};
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,6 +42,30 @@ import com.alibaba.druid.pool.DruidDataSource;
 #end
 public class DalConfig {
 
+    @Value("${spring.datasource.driverClassName}")
+    private String driverClassName;
+
+    @Value("${spring.datasource.url}")
+    private String url;
+
+    @Value("${spring.datasource.username}")
+    private String username;
+
+    @Value("${spring.datasource.password}")
+    private String password;
+
+    @Value("${spring.datasource.validationQuery}")
+    private String validationQuery;
+
+    @Value("${spring.datasource.minIdle}")
+    private int minIdle;
+
+    @Value("${spring.datasource.initialSize}")
+    private int initialSize;
+
+    @Value("${spring.datasource.connectionProperties}")
+    private String connectionProperties;
+
 #if($framework.contains('jta'))
     @Bean
     public PlatformTransactionManager transactionManager() throws Exception {
@@ -71,10 +96,14 @@ public class DalConfig {
     @Bean(initMethod = "init", destroyMethod = "close")
     public DataSource dataSource() throws Exception {
         DruidDataSource dataSource = new DruidDataSource();
-//        dataSource.setDriverClassName();
-//        dataSource.setUrl();
-//        dataSource.setUsername();
-//        dataSource.setPassword();
+        dataSource.setDriverClassName(driverClassName);
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+        dataSource.setMinIdle(minIdle);
+        dataSource.setInitialSize(initialSize);
+        dataSource.setConnectionProperties(connectionProperties);
+        dataSource.setValidationQuery(validationQuery);
         return dataSource;
     }
 
