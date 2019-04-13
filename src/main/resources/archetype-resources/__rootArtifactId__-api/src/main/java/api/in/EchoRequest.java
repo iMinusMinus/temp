@@ -1,4 +1,4 @@
-package ${package}.in;
+package ${package}.api.in;
 
 import java.io.Serializable;
 import java.util.Date;

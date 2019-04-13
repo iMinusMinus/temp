@@ -13,10 +13,19 @@
     <packaging>jar</packaging>
 
     <dependencies>
+#if($framework.contains('druid'))
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
         </dependency>
+#end
+#if($framework.contains('hikrari'))
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+        </dependency>
+#end
+#if($framework.contains('mybatis'))
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
@@ -25,18 +34,37 @@
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis-spring</artifactId>
         </dependency>
+#end
+#if($framework.contains('hibernate'))
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
         </dependency>
+#end
+#if($framework.contains('jta'))
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>
         </dependency>
+#end
+#if($framework.contains('mysql'))
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
+#end
+#if($framework.contains('oracle'))
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc</artifactId>
+        </dependency>
+#end
+#if($framework.contains('postgresql'))
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+#end
         <dependency>
             <groupId>javax.cache</groupId>
             <artifactId>cache-api</artifactId>

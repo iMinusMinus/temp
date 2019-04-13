@@ -9,20 +9,25 @@ import org.springframework.aop.support.RegexpMethodPointcutAdvisor;
 @Configuration
 public class AopConfigTest {
 
+    @Bean
+    public TargetInterfaceTest targetBean() {
+        return new TargetClassTest();
+    }
+
     @Bean(name = "cglibProxiedTarget")
-    public TargetInterfaceTest getProxyFromCGLIB(TargetInterfaceTest targetObj) {
+    public TargetInterfaceTest getProxyFromCGLIB() {
         ProxyFactoryBean factoryBean = new ProxyFactoryBean();
         factoryBean.setProxyTargetClass(true);
-        factoryBean.setTarget(targetObj);
+        factoryBean.setTarget(targetBean());
 //        factoryBean.addInterceptor(regexpAdvisor);
         return (TargetInterfaceTest) factoryBean.getObject();
     }
 
     @Bean(name = "jdkProxiedTarget")
-    public TargetInterfaceTest getProxyFromJDK(TargetInterfaceTest targetObj) {
+    public TargetInterfaceTest getProxyFromJDK() {
         ProxyFactoryBean factoryBean = new ProxyFactoryBean();
         factoryBean.setProxyTargetClass(false);
-        factoryBean.setTarget(targetObj);
+        factoryBean.setTarget(targetBean());
         factoryBean.addInterface(TargetInterfaceTest.class);
 //        factoryBean.addInterceptor();
         return (TargetInterfaceTest) factoryBean.getObject();
@@ -31,7 +36,7 @@ public class AopConfigTest {
     @Bean(name = "regexpAdvisor")
     public PointcutAdvisor regexpAdvisor() {
         RegexpMethodPointcutAdvisor advisor = new RegexpMethodPointcutAdvisor();
-        advisor.setPattern("*");
+        advisor.setPattern("echo");
 //        advisor.setAdvice();
         return advisor;
     }

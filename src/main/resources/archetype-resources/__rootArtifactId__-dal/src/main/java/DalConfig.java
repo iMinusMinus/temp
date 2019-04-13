@@ -34,7 +34,12 @@ import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import org.hibernate.SessionFactory;
 #end
 
+#if($framework.contains('druid'))
 import com.alibaba.druid.pool.DruidDataSource;
+#end
+#if($framework.contains('hibernate'))
+import com.zaxxer.hikari.HikariDataSource;
+#end
 
 @Configuration
 #if($framework.contains('mybatis'))
@@ -93,6 +98,7 @@ public class DalConfig {
     }
 #end
 
+#if($framework.contains('druid'))
     @Bean(initMethod = "init", destroyMethod = "close")
     public DataSource dataSource() throws Exception {
         DruidDataSource dataSource = new DruidDataSource();
@@ -106,6 +112,18 @@ public class DalConfig {
         dataSource.setValidationQuery(validationQuery);
         return dataSource;
     }
+#end
+#if($framework.contains('hikrari'))
+    @Bean
+    public DataSource dataSource() {
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setDriverClassName(driverClassName);
+        dataSource.setJdbcUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+        return dataSource;
+    }
+#end
 
 #if($framework.contains('hibernate'))
     @Bean

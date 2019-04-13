@@ -1,7 +1,7 @@
 package ${package}.api;
 
-import ${package}.in.EchoRequest;
-import ${package}.out.EchoResponse;
+import ${package}.api.in.EchoRequest;
+import ${package}.api.out.EchoResponse;
 /**
  * echo service
  *

@@ -8,7 +8,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 public class ControllerTest extends BaseMvcTest {
 
     @Test
-    public void testRest() {
+    public void testRest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/dubbo/com.alibaba.dubbo.EchoService?version=1.0.0", "[{\"java.lang.String\":\"ok\"}]")).andReturn().getResponse().getContentAsString();
     }
 }

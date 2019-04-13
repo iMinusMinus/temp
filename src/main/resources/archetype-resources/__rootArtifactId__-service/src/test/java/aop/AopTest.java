@@ -1,9 +1,13 @@
 package ${package}.aop;
 
-import org.junit.Test;
-
 import ${package}.BaseAppTest;
 import ${package}.AppConfig;
+
+import org.springframework.test.context.ContextConfiguration;
+
+import org.junit.Test;
+
+import javax.annotation.Resource;
 
 @ContextConfiguration(classes = {AppConfig.class, AopConfigTest.class})
 public class AopTest extends BaseAppTest {
