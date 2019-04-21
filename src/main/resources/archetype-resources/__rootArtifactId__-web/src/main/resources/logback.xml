@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+#if($showComment)
+<!--
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="classpath:logback.xsd">
+-->
+#end
+<configuration#if($showDefault) packagingData="false"#end>
+    <property resource="application.properties" />
+    <include url="http://iamwhatiam.ml/pub/logback.xml"/>
+
+    <contextName>${spring.application.name}</contextName>
+#if($showComment)
+    <!--
+    Reconfigure logback from the default configuration file, from a designated file or URL,
+    list loggers and modify logger levels via JMX
+    -->
+#end
+    <jmxConfigurator/>
+
+#if($showComment)
+    <!-- Automatic printing of status messages in case of warning or errors during the parsing of the configuration file  -->
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+    <!-- Or just set the attribute debug to true on configuration -->
+#end
+
+#if($showComment)
+    <!--
+    appender: ch.qos.logback.core.AppenderBase
+    encoder: ch.qos.logback.core.encoder
+     -->
+#end
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${logging.pattern.console}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logging.path}/${logging.file}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logging.path}/${logging.file}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <maxFileSize>${logging.file.max-size}</maxFileSize>
+            <maxHistory>${logging.file.max-history}</maxHistory>
+            <totalSizeCap>100GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${logging.pattern.file}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE" />
+        <maxFlushTime>100</maxFlushTime>
+#if($showDefault)
+        <queueSize>256</queueSize>
+        <discardingThreshold>20</discardingThreshold>
+        <includeCallerData>false</includeCallerData>
+        <neverBlock>false</neverBlock>
+#end
+    </appender>
+
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.apache" level="WARN" />
+    <root level="${logging.level}">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+
+#if($showComment)
+    <!-- Install a shutdown hook namely DefaultShutdownHook or WebShutdownHook in webapp -->
+#end
+    <shutdownHook/>
+</configuration>

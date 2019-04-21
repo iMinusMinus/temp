@@ -297,7 +297,14 @@
     </bean>
 #end
     <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor">
+#if($showComment)
+        <description>Translates native resource exceptions to Spring's DataAccessException</description>
+#end
         <property name="proxyTargetClass" value="${spring.aop.proxy-target-class}" />
+#if($showDefault)
+        <property name="repositoryAnnotationType" value="org.springframework.stereotype.Repository" />
+        <property name="beforeExistingAdvisors" value="false" />
+#end
     </bean>
 #if($configType.contains('xml:') and $configType.contains('@'))
 #if($showComment)
