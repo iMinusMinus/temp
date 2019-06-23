@@ -8,7 +8,11 @@
 #end
 <hibernate-configuration>
     <session-factory name="java:hibernate/SessionFactory">
+        <!-- properties: override hibernate.properties -->
         <property name="connection.datasource"></property>
+        <!-- mapping files -->
         <mapping resource="*.hbm.xml" />
+        <!-- cache settings -->
     </session-factory>
+
 </hibernate-configuration>

@@ -13,7 +13,7 @@ java -version
 ```
 
 ## spring-boot style
-generate a jar and deploy it in embed web container, at most case, it is run in docker container
+generate a fat jar and deploy it in embed web container, at most case, it is run in docker container
 
 ## legacy spring style
 generate a war and deploy it in a web container.

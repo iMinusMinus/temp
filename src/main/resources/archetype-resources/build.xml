@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="temp" basedir="." default="help" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+    <property environment="env"/>
+
+#if($showComment)
+    <!-- clean lifecycyle -->
+#end
+    <target name="init" description="pre-clean: initiate environment">
+        <tstamp />
+        <property file="${basedir}/build.properties" />
+    </target>
+    <target name="clean" depends="init" description="remove previous generated files">
+		<delete dir="${project.build.outputDirectory}" />
+		<delete dir="${project.build.testOutputDirectory}" />
+        <delete dir="${project.build.directory}" />
+    </target>
+    <target name="post-clean" depends="clean" description="post-clean">
+        <tstamp />
+        <echo message="clean success" />
+    </target>
+
+
+#if($showComment)
+    <!-- default lifecycle -->
+#end
+    <target name="validate" description="检查配置">
+
+    </target>
+    <target name="initialize" depends="validate" description="初始化构建状态">
+
+    </target>
+    <target name="generate-sources" description="生成编译阶段需要包含的任何源码文件">
+
+    </target>
+    <target name="process-sources" depends="generate-sources" description="处理源代码">
+
+    </target>
+    <target name="generate-resources" description="生成需要包含的资源文件">
+        <copy file="${project.resources}/**" todir="${project.build.outputDirectory}" />
+    </target>
+    <target name="process-resources" depends="generate-resources" description="处理资源文件">
+        <native2ascii src="${project.resources}" dest="${project.build.outputDirectory}" includes="**/*" ext="properties" />
+    </target>
+    <target name="compile" depends="process-sources,process-resources" description="编译">
+        <javac srcdir="${project.build.sourceDirectory)" destdir="${project.build.outputDirectory}"
+               source="${maven.compiler.source}" target="${maven.compiler.target}" encoding="${project.build.sourceEncoding}"
+               debug="${maven.compiler.debug}" optimize="maven.compiler.optimize" failonerror="${maven.compiler.failOnError}"
+               memoryinitialsize="${maven.compiler.meminitial}" memorymaximumsize="${maven.compiler.maxmem}"
+               fork="${maven.compiler.fork}" deprecation="${maven.compiler.showDeprecation}" verbose="${maven.compiler.verbose}" />
+    </target>
+    <target name="process-classes" depends="compile" description="处理编译生成的文件">
+
+    </target>
+    <target name="generate-test-sources" description="">
+
+    </target>
+    <target name="process-test-sources" description="">
+
+    </target>
+    <target name="generate-test-resources" description="">
+        <copy file="${project.testResources}/**" todir="${project.build.testOutputDirectory}" />
+    </target>
+    <target name="process-test-resources" description="">
+        <native2ascii src="${project.testResources}" dest="${project.build.testOutputDirectory}" includes="**/*" ext="properties" />
+    </target>
+    <target name="test-compile" description="">
+
+    </target>
+    <target name="process-test-classes" depends="test-compile" description="">
+
+    </target>
+    <target name="test" description="run unit test">
+        <junit />
+    </target>
+    <target name="prepare-package" description="">
+
+    </target>
+    <target name="package" depends="prepare-package" description="">
+        <jar destfile="${project.build.finalName}.jar" includes="**/**" excludes="**/package.html">
+            <manifest file="MANIFEST.MF">
+                <attribute name="Manifest-Version" value="" />
+                <attribute name="Signature-Version" value="" />
+                <attribute name="Content-Type" value="" />
+                <attribute name="Class-Path" value="" />
+                <attribute name="Main-Class" value="" />
+                <attribute name="Sealed" value="false" />
+                <attribute name="Extension-List" value="" />
+                <attribute name="Extension-Name" value="" />
+                <attribute name="Extension-Installation" value="" />
+                <attribute name="Implementation-Title" value="" />
+                <attribute name="Implementation-Version" value="" />
+                <attribute name="Implementation-Vendor" value="" />
+                <attribute name="Implementation-Vendor-Id" value="" />
+                <attribute name="Implementation-URL" value="" />
+                <attribute name="Specification-Title" value="" />
+                <attribute name="Specification-Version" value="" />
+                <attribute name="Specification-Vendor" value="" />
+
+                <attribute name="Premain-Class" value="" />
+                <attribute name="Agent-Class" value="" />
+                <attribute name="Boot-Class-Path" value="" />
+                <attribute name="Can-Redefine-Classes" value="FALSE" />
+                <attribute name="Can-Retransform-Classes" value="False" />
+                <attribute name="Can-Set-Native-Method-Prefix" value="false" />
+
+                <attribute name="Build-Jdk" value="" />
+                <attribute name="Bundle-Version" value="" />
+                <attribute name="Bundle-License" value="" />
+                <attribute name="Import-Package" value="" />
+                <attribute name="Export-Package" value="" />
+            </manifest>
+        </jar>
+    </target>
+    <target name="robot-test" description="pre-integration-test">
+
+    </target>
+    <target name="integration-test" depends="robot-test" description="集成测试">
+
+    </target>
+    <target name="fortify" description="post-integration-test">
+
+    </target>
+    <target name="verify" description="验证：代码质量">
+
+    </target>
+    <target name="install" description="安装到本地仓库">
+
+    </target>
+    <target name="deploy" depends="verify" description="发布到远程仓库或部署到应用服务器">
+
+    </target>
+
+
+#if($showComment)
+    <!-- site lifecycle -->
+#end
+    <target name="pre-site" description="">
+
+    </target>
+    <target name="site" description="">
+
+    </target>
+    <target name="post-site" description="">
+
+    </target>
+    <target name="site-deploy" description="">
+
+    </target>
+</project>

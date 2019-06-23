@@ -2,7 +2,7 @@ package ${package}.dao;
 
 import java.util.List;
 
-import ${package}.domain.MetaSchemaDomain;
+import ${package}.domain.MetaClass;
 
 #if($framework.contains('mybatis'))
 import org.apache.ibatis.annotations.Mapper;
@@ -11,21 +11,21 @@ import org.apache.ibatis.annotations.Mapper;
 #if($framework.contains('mybatis'))
 @Mapper
 #end
-public interface Repository {
+public interface MetaClassRepository {
 
     /**
      * persist domain
      * @param domain
      * @return id
      */
-    Long save(MetaSchemaDomain domain);
+    long save(MetaClass domain);
 
     /**
      * delete one row with id
      * @param id
      * @return
      */
-    int delete(Long id);
+    int delete(long id);
 
     /**
      * update to new value when match old value
@@ -33,21 +33,21 @@ public interface Repository {
      * @param oldValue
      * @return
      */
-    int update(MetaSchemaDomain newValue, MetaSchemaDomain oldValue);
+    int update(MetaClass newValue, MetaClass oldValue);
 
     /**
      * find data by primary key or unique key
      * @param condition
      * @return at most one criteria
      */
-    MetaSchemaDomain findOne(MetaSchemaDomain condition);
+    MetaClass findOne(MetaClass condition);
 
     /**
      * count qualified rows
      * @param condition
      * @return
      */
-    int count(MetaSchemaDomain condition);
+    int count(MetaClass condition);
 
     /**
      * fetch qualified rows in range
@@ -56,5 +56,5 @@ public interface Repository {
      * @param limit
      * @return
      */
-    List<MetaSchemaDomain> query(MetaSchemaDomain condition, int offset, int limit);
+    List<MetaClass> query(MetaClass condition, int offset, int limit);
 }

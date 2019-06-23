@@ -1,8 +1,0 @@
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="${package}.Repository">
-    <typeAlias alias="metaSchema" type="${package}.MetaSchemaDomain" />
-
-    <insert id="save" parameterType="metaSchema">
-        INSERT INTO META_SCHEMA () VALUES ()
-    </insert>
-</mapper>

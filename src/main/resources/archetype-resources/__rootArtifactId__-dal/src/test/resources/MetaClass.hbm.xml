@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="${package}.domain">
+    <class entity-name="MetaClass" table="meta_class">
+        <id name="id" column="id" type="long" />
+        <property name="name" column="class_name" length="255" not-null="true" update="false" access="field"/>
+        <property name="superName" column="super_class_name" length="255" not-null="false" access="field"/>
+    </class>
+    <database-object>
+        <create>
+
+        </create>
+    </database-object>
+</hibernate-mapping>
