@@ -2,10 +2,13 @@ package ${package}.api;
 
 import ${package}.api.except.GenericException;
 
+import javax.jws.WebService;
+
 /**
  * @author iMinusMinus
  * @date 2019-05-03
  */
+@WebService
 public interface GenericService {
 
     /**

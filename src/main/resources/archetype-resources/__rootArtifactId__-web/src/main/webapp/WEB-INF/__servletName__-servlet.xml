@@ -568,4 +568,7 @@
     </context:component-scan>
 #end
 #end
+#if($frameworks.contains("cxf"))
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+#end
 </beans>

@@ -148,6 +148,34 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 #end
+
+#if($frameworks.contains("cxf"))
+    <servlet>
+        <description>Apache CXF Endpoint</description>
+        <servlet-name>cxf</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+#if($showDefault)
+        <init-param>
+#if($showComment)
+            <description>Optional. See org.apache.cxf.transport.servlet.CXFServlet#loadBus</description>
+#end
+            <param-name>config-location</param-name>
+            <param-value>/WEB-INF/cxf-servlet.xml</param-value>
+        </init-param>
+        <init-param>
+#if($showComment)
+            <description>Optional. See org.apache.cxf.transport.servlet.CXFServlet#loadBus</description>
+#end
+            <param-name>bus</param-name>
+            <param-value>cxf</param-value>
+        </init-param>
+#end        
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>cxf</servlet-name>
+        <url-pattern>${cxf.path}/*</url-pattern>
+    </servlet-mapping>
+#end
 #if($framework.contains('springMVC'))
     <servlet>
 #if($showComment)
