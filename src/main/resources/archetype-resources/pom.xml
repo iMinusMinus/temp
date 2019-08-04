@@ -56,6 +56,12 @@
         <version>3.1.0</version>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>javax.servlet.jsp</groupId>
+        <artifactId>javax.servlet.jsp-api</artifactId>
+        <version>2.3.3</version>
+        <scope>provided</scope>
+      </dependency>
         <dependency>
           <groupId>javax.validation</groupId>
           <artifactId>validation-api</artifactId>
@@ -167,6 +173,42 @@
             <artifactId>cxf-rt-transports-http</artifactId>
             <version>3.3.2</version>
         </dependency>
+      <dependency>
+        <groupId>com.caucho</groupId>
+        <artifactId>hessian</artifactId>
+        <version>4.0.62</version>
+      </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-core</artifactId>
+            <version>2.5.20</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-convention-plugin</artifactId>
+            <version>2.5.20</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-spring-plugin</artifactId>
+            <version>2.5.20</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-json-plugin</artifactId>
+            <version>2.5.20</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-rest-plugin</artifactId>
+            <version>2.5.20</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-config-browser-plugin</artifactId>
+            <version>2.5.20</version>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
@@ -202,6 +244,12 @@
         <artifactId>spring-test</artifactId>
         <version>4.3.20.RELEASE</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.struts</groupId>
+          <artifactId>struts2-junit-plugin</artifactId>
+          <version>2.5.20</version>
+          <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>junit</groupId>

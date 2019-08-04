@@ -135,8 +135,29 @@
 #end
         <property name="configLocation" value="classpath:freemarker.properties" />
         <property name="defaultEncoding" value="UTF-8" />
-        <property name="templateLoaderPaths" value="/WEB-INF/freemarker/" />
+        <property name="templateLoaderPaths" value="${spring.freemarker.templateLoaderPath}" />
     </bean>
+    <bean id="freeMarkerViewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver"#if(!$showComment and !$showDefault) />#{else}>
+#if($showComment)
+        <description>Load/Build org.springframework.web.servlet.view.freemarker.FreeMarkerView</description>
+#end
+#if($showDefault)
+        <property name="prefix" value="${spring.freemarker.prefix}" />
+        <property name="suffix" value="${spring.freemarker.suffix}" />
+        <property name="templateLoaderPath" value="${spring.freemarker.templateLoaderPath}" />
+        <property name="defaultEncoding" value="${spring.freemarker.charset}" />
+        <property name="freemarkerSettings" value="${spring.freemarker.settings}" />
+        <property name="cacheLimit" value="1024" />
+        <property name="redirectContextRelative" value="true" />
+        <property name="redirectHttp10Compatible" value="true" />
+        <property name="exposeRequestAttributes" value="false" />
+        <property name="allowRequestOverride" value="false" />
+        <property name="exposeSessionAttributes" value="false" />
+        <property name="allowSessionOverride" value="false" />
+        <property name="exposeSpringMacroHelpers" value="true" />
+#end
+        </bean>
+#{end}
 #end
 #if($framework.contains('thymeleaf'))
     <bean id="${thymeleafTemplateResolvers}" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
@@ -152,6 +173,25 @@
         <property name="templateResolvers" ref="${thymeleafTemplateResolvers}" />
         <property name="enableSpringELCompiler" value="false" />
     </bean>
+    <bean id="thymeleafViewResolver" class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+#if($showComment)
+        <description>Builds on the concept of Natural Templates to inject its logic into template files in a way
+            that doesn’t affect the template from being used as a design prototype. </description>
+#end
+#if($showDefault)
+        <property name="redirectContextRelative" value="true" />
+        <property name="redirectHttp10Compatible" value="true" />
+        <property name="alwaysProcessRedirectAndForward" value="true" />
+        <property name="viewClass" value="" />
+        <property name="order" value="2147483642" />
+        <property name="forceContentType" value="false" />
+#end
+        <property name="characterEncoding" value="UTF-8" />
+        <property name="templateEngine" ref="${thymeleafTemplateEngine}" />
+        <property name="staticVariables">
+            <map></map>
+        </property>
+    </bean>
 #end
     <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
 #if($showComment)
@@ -166,48 +206,10 @@
             <list>
                 <ref bean="viewResolver" />
 #if($framework.contains('freemarker'))
-                <bean id="freeMarkerViewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver"#if(!$showComment and !$showDefault) />#{else}>
-#if($showComment)
-                    <description>Load/Build org.springframework.web.servlet.view.freemarker.FreeMarkerView</description>
-#end
-#if($showDefault)
-                    <property name="prefix" value="${spring.freemarker.prefix}" />
-                    <property name="suffix" value="${spring.freemarker.suffix}" />
-                    <property name="templateLoaderPath" value="${spring.freemarker.templateLoaderPath}" />
-                    <property name="defaultEncoding" value="${spring.freemarker.charset}" />
-                    <property name="freemarkerSettings" value="${spring.freemarker.settings}" />
-                    <property name="cacheLimit" value="1024" />
-                    <property name="redirectContextRelative" value="true" />
-                    <property name="redirectHttp10Compatible" value="true" />
-                    <property name="exposeRequestAttributes" value="false" />
-                    <property name="allowRequestOverride" value="false" />
-                    <property name="exposeSessionAttributes" value="false" />
-                    <property name="allowSessionOverride" value="false" />
-                    <property name="exposeSpringMacroHelpers" value="true" />
-#end
-                </bean>
-#{end}
+                <ref bean="freeMarkerViewResolver" />
 #end
 #if($framework.contains('thymeleaf'))
-                <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
-#if($showComment)
-                    <description>Builds on the concept of Natural Templates to inject its logic into template files in a way
-                    that doesn’t affect the template from being used as a design prototype. </description>
-#end
-#if($showDefault)
-                    <property name="redirectContextRelative" value="true" />
-                    <property name="redirectHttp10Compatible" value="true" />
-                    <property name="alwaysProcessRedirectAndForward" value="true" />
-                    <property name="viewClass" value="" />
-                    <property name="order" value="2147483642" />
-                    <property name="forceContentType" value="false" />
-#end
-                    <property name="characterEncoding" value="UTF-8" />
-                    <property name="templateEngine" ref="${thymeleafTemplateEngine}" />
-                    <property name="staticVariables">
-                        <map></map>
-                    </property>
-                </bean>
+                <ref bean="thymeleafViewResolver" />
 #end
             </list>
         </property>
@@ -567,8 +569,5 @@
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />
     </context:component-scan>
 #end
-#end
-#if($frameworks.contains("cxf"))
-    <import resource="classpath:META-INF/cxf/cxf.xml" />
 #end
 </beans>

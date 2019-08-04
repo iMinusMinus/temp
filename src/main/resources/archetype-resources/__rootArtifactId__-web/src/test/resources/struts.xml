@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+#if($showComment)
+    <!-- Please refer https://struts.apache.org/core-developers/ -->
+
+    <!-- @see struts2-core-*.jar/struts-default.xml -->
+    <!-- @see struts2-core-*.jar/default.properties -->
+    <!-- @see struts2-convention-plugin-*.jar/struts-plugin.xml -->
+    <!-- @see struts2-spring-plugin-*.jar/struts-plugin.xml -->
+    <!-- @see struts2-json-plugin-*.jar/struts-plugin.xml -->
+    <!-- @see struts2-rest-plugin-*.jar/struts-plugin.xml -->
+#end
+    <!-- global.properties, package.properties, ${Action}.properties -->
+    <constant name="struts.custom.i18n.resources" value="global" />
+    <constant name="struts.convention.result.path" value="/WEB-INF/jsp/" />
+#if($configType.contains('xml'))
+
+    <package name="default" extends="struts-default, json-default" namespace="/struts2">
+        <action name="alias" class="${package}.actions.Struts2Action" method="doInvoke">
+            <result name="success" type="json">
+                <param name="root">form</param>
+                <param name="enableGZIP">true</param>
+                <param name="noCache">true</param>
+                <param name="excludeNullProperties">true</param>
+                <param name="statusCode">200</param>
+                <param name="includeProperties">
+                    ^form.elements\[\d+\].type,
+                    ^form.elements\[\d+\].name,
+                    ^form.elements\[\d+\].value
+                </param>
+            </result>
+            <result name="errorResult" type="redirect">
+                <param name="location">503.html</param>
+                <param name="parse">true</param>
+                <param name="anchor">FRAGMENT</param>
+            </result>
+            <result name="404" type="httpheader">
+                <param name="status">404</param>
+                <param name="headers.recommand">header values</param>
+            </result>
+            <result name="403" type="httpheader">
+                <param name="error">403</param>
+                <param name="errorMessage">forbidden</param>
+            </result>
+        </action>
+    </package>
+    <package name="another" namespace="/test"  extends="struts-default, json-default">
+        <interceptors>
+            <interceptor-stack name="is">
+                <interceptor-ref name="autowiring" />
+                <interceptor-ref name="i18n" />
+                <interceptor-ref name="logger" />
+                <interceptor-ref name="timer" />
+                <interceptor-ref name="validation" />
+            </interceptor-stack>
+        </interceptors>
+        <default-interceptor-ref name="is" />
+        <action name="execute" class="${package}.actions.Struts2Action" method="doExecute">
+            <interceptor-ref name="is" />
+            ## 视图会默认拼接上namespace的路径，即\${struts.convention.result.path}+\${package.namespace}/+\${action.result.location}
+            <result name="success" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
+        </action>
+    </package>
+
+    <!--
+    <include file="/ml/iamwhatiam/temp-struts.xml"/>
+    -->
+
+#end
+</struts>

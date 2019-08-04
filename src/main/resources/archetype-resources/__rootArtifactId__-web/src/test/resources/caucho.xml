@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="genericService" class="${package}.service.GenericServiceImpl" />
+    <bean id="hessianEcho" class="${package}.service.EchoServiceImpl" />
+    <bean name="hessian" class="org.springframework.remoting.caucho.BurlapServiceExporter">
+        <property name="serviceInterface" value="${package}.api.EchoService" />
+        <property name="service" ref="hessianEcho" />
+    </bean>
+    <bean name="hessianClient" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+        <description>Hessian is a slim binary HTTP remoting protocol. HTTP POST ONLY!</description>
+        <property name="serviceUrl" value="http://hessian.caucho.com/test/test" />
+        <property name="serviceInterface" value="com.caucho.hessian.test.Test" />
+    </bean>
+
+    <bean name="burlap" class="org.springframework.remoting.caucho.BurlapServiceExporter">
+        <property name="serviceInterface" value="${package}.api.GenericService" />
+        <property name="service" ref="genericService" />
+    </bean>
+    <bean name="burlapClient" class="org.springframework.remoting.caucho.BurlapProxyFactoryBean">
+        <description>Burlap is a slim XML-based HTTP remoting protocol. HTTP POST ONLY!</description>
+        <property name="serviceUrl" value="http://127.0.0.1:8080/api/genericService" />
+        <property name="serviceInterface" value="${package}.api.GenericService" />
+    </bean>
+</beans>

@@ -275,7 +275,7 @@
         <description>Build SqlSessionFactory by parse configuration and mapper.
         A SqlSessionFactory can open SqlSession. A SqlSession can execute sql command.</description>
 #end
-        <property name="configLocation" value="${mybatis.configLocation}" />
+        <property name="configLocation" value="${mybatis.config-location}" />
         <property name="mapperLocations" value="${mybatis.mapperLocations}" />
         <property name="dataSource" ref="${dataSource}" />
     </bean>

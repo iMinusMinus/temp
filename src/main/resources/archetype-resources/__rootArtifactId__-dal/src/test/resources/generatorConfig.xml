@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <properties url="file:///${mybatis.generator.configurationFile}/../application-junit.properties" />
+    <context id="mygen" targetRuntime="ml.iamwhatiam.extension.mygen.IntrospectedTableTemplateImpl">
+        <jdbcConnection driverClass="${spring.datasource.driverClassName}" connectionURL="${spring.datasource.url}" userId="${spring.datasource.username}" password="${spring.datasource.password}" />
+        <javaModelGenerator targetPackage="ml.iamwhatiam.autogen.domain" targetProject="src/main/java">
+            <property name="rootClass" value="ml.iamwhatiam.domain.AbstractDomain" />
+            <property name="jpaAnnotation" value="IMPLIED" />
+            <property name="beanValidationAnnotation" value="true" />
+        </javaModelGenerator>
+        <sqlMapGenerator targetPackage="ml.iamwhatiam.autogen.dao"  targetProject="src/main/resources/">
+        </sqlMapGenerator>
+        <javaClientGenerator type="XMLMAPPER" targetPackage="ml.iamwhatiam.autogen.dao"  targetProject="src/main/java">
+#if($frameowrks.contains("ibatis") or $frameowrks.contains("mybatis"))
+            <property name="annotationClass" value="org.apache.ibatis.annotation.Mapper" />
+#end
+        </javaClientGenerator>
+        <table tableName="meta_class" domainObjectName="MetaClass" >
+            <columnOverride column="class_name" property="name" />
+            <columnOverride column="super_class_name" property="superName" />
+        </table>
+    </context>
+</generatorConfiguration>
