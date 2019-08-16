@@ -16,6 +16,7 @@
     <!-- global.properties, package.properties, ${Action}.properties -->
     <constant name="struts.custom.i18n.resources" value="global" />
     <constant name="struts.convention.result.path" value="/WEB-INF/jsp/" />
+    <constant name="struts.beanValidation.providerClass" value="org.hibernate.validator.HibernateValidator"/>
 #if($configType.contains('xml'))
 
     <package name="default" extends="struts-default, json-default" namespace="/struts2">
@@ -47,20 +48,20 @@
             </result>
         </action>
     </package>
-    <package name="another" namespace="/test"  extends="struts-default, json-default">
+    <package name="another" namespace="/test"  extends="struts-default, json-default,struts-bean-validation">
         <interceptors>
             <interceptor-stack name="is">
                 <interceptor-ref name="autowiring" />
                 <interceptor-ref name="i18n" />
                 <interceptor-ref name="logger" />
                 <interceptor-ref name="timer" />
-                <interceptor-ref name="validation" />
+                <interceptor-ref name="beanValidation" />
             </interceptor-stack>
         </interceptors>
         <default-interceptor-ref name="is" />
         <action name="execute" class="${package}.actions.Struts2Action" method="doExecute">
             <interceptor-ref name="is" />
-            ## 视图会默认拼接上namespace的路径，即\${struts.convention.result.path}+\${package.namespace}/+\${action.result.location}
+            ## 使用struts-convension-plugins，视图会默认拼接上namespace和ctionName的路径，即\${struts.convention.result.path}+\${package.namespace}/ + \${actionName}/+\${action.result.location}
             <result name="success" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
         </action>
     </package>

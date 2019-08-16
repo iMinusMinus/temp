@@ -5,8 +5,10 @@ import ${package}.vo.Form;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
+
 import com.opensymphony.xwork2.Action;
-#if(!$configType.contains('@java'))
+#if($configType.contains('xml'))
 import com.opensymphony.xwork2.ActionSupport;
 #else
 import org.apache.struts2.convention.annotation.Action;
@@ -18,7 +20,7 @@ import org.apache.struts2.convention.annotation.Results;
 
 #if(!$configType.contains('xml'))
 @Namespace("/struts2")
-@Results({@Result(name = "success", type="json")})
+@Results({@Result(name = "success", type="json"), @Result(name = "invalid", type = "dispatcher", location = "invalid.jsp")})
 #end
 @Getter
 @Setter
@@ -26,6 +28,7 @@ public class Struts2Action #if($configType.contains('xml'))extends ActionSupport
 
     private String threadUnsafeVar;
 
+    @NotNull
     private Form form;
 
 #**
@@ -76,9 +79,12 @@ public class Struts2Action #if($configType.contains('xml'))extends ActionSupport
     }
 
 #if(!$configType.contains('xml'))
-    @Actions({@Action("invoke"),@Action("alias")})
+    @Actions({@Action("invoke"),@Action(value = "alias", interceptorRefs = {@InterceptorRef(value = "is")})})
 #end
     public String doInvoke() {
+        if(getFieldErrors().size() > 0) {
+            return "invalid";
+        }
         System.out.println(form);
         return Action.SUCCESS;
     }

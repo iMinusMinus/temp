@@ -261,7 +261,7 @@
         <property name="url" value="${spring.datasource.url}" />
         <property name="username" value="${spring.datasource.username}" />
         <property name="password" value="${spring.datasource.password}" />
-        <property name="filters" value="stat.slf4j,wall" />
+        <property name="filters" value="stat,slf4j,wall" />
         <property name="maxActive" value="20" />
         <property name="initialSize" value="1" />
         <property name="maxWait" value="60000" />
