@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+//import org.springframework.core.io.Resource;
+//import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+//import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.transaction.PlatformTransactionManager;
 #if($framework.contains('jta'))
 #if($container.contains('weblogic'))
@@ -43,7 +46,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 #if($framework.contains('mybatis'))
-@MapperScan(basePackages = {"${groupId}.${rootArtifactId}.dao"})
+@MapperScan(basePackages = {"${package}.dao"})
 #end
 public class DalConfig {
 
@@ -70,6 +73,9 @@ public class DalConfig {
 
     @Value("${spring.datasource.connectionProperties}")
     private String connectionProperties;
+
+//    @Value("${mybatis.mapperLocations}")
+//    private Resource[] mapperLocations;
 
 #if($framework.contains('jta'))
     @Bean
@@ -138,6 +144,16 @@ public class DalConfig {
     public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
         SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
         factory.setDataSource(dataSource);
+//        ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+//        Resource[] mappers = new Resource[mapperLocations == null ? 0 : mapperLocations.length];
+//        for(int i = 0; i < mappers.length; i++) {
+//            try {
+//                mappers[i] = resourceResolver.getResources(mapperLocations[i]);
+//            } catch (IOException e) {
+//                //ignore
+//            }
+//        }
+//        factory.setMapperLocations(mapperLocations);
         return factory.getObject();
     }
 

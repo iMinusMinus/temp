@@ -27,6 +27,11 @@ public class MetaField extends AbstractDomain {
     private String type;
 
     /**
+     * field order
+     */
+    private int order;
+
+    /**
      * field value format, convert between string and {@code type}
      */
     private String format;

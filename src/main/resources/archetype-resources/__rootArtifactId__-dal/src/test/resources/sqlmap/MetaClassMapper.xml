@@ -1,0 +1,59 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${package}.dao.MetaClassMapper">
+    <typeAlias alias="metaClass" type="${package}.domain.MetaClass" />
+
+    <sql id="baseColumnList">
+        id,class_name,super_class_name
+    </sql>
+
+    <resultMap  id="lazyBaseResultMap" type="metaClass">
+        <result column="id" property="id" jdbcType="INT" javaType="long" />
+        <result  column="class_name" property="name" jdbcType="VARCHAR" javaType="string" />
+        <result  column="super_class_name" property="superName" jdbcType="VARCHAR" javaType="string" />
+    </resultMap>
+    <resultMap  id="baseResultMap" extends="lazyBaseResultMap">
+        <collection property="fields" ofType="${package}.domain.MetaField" javaType="arraylist"
+                    column="class_name" select="query"/>
+    </resultMap >
+
+    <select id="lazyQuery" parameterType="metaClass" resultType="baseResultMap">
+        SELECT <include refid="baseColumnList" />
+          FROM meta_class
+        <where>
+            <if test="id != null">
+            AND id = #{id}
+            </if>
+            <if test="name != null">
+            AND class_name = #{name}
+            </if>
+            <if test="superName != null">
+            AND super_class_name = #{superName}
+            </if>
+        </where>
+    </select>
+
+    <select id="query"  parameterType="metaClass" resultType="baseResultMap">
+        SELECT <include refid="baseColumnList" />,<include refid="${package}.dao.MetaFieldMapper.columnsWithoutId" />
+          FROM meta_class c, meta_field f
+         WHERE c.class_name = f.class_name
+        <if test="id != null">
+           AND c.id = #{id}
+        </if>
+        <if test="name != null">
+           AND c.class_name = #{name}
+        </if>
+        <if test="superName != null">
+           AND c.super_class_name = #{superName}
+        </if>
+    </select>
+
+    <insert id="save" parameterType="metaClass">
+        <selectKey databaseId="pg" order="AFTER">
+            SELECT currval('meta_class_id_seq')
+        </selectKey>
+        INSERT INTO meta_class (class_name, super_class_name) VALUES (#{name}, #{superName})
+        ##
+        pg can use RETURNING id append insert clause, but mybatis get -1
+        ##
+    </insert>
+</mapper>

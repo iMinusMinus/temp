@@ -19,7 +19,7 @@ public class Struts2Test extends StrutsSpringTestCase {
 
     @Test
     public void testAction() throws Exception {
-        String now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
         request.setParameter("threadUnsafeVar", String.valueOf(now));
         executeAction("/test/execute");
         System.out.println("IF YOU SEE " + now + "IN CONSOLE, THIS TEST PASSED");

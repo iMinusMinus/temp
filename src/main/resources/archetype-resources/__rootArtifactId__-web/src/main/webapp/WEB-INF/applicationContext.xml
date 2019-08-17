@@ -266,7 +266,7 @@
         <property name="initialSize" value="1" />
         <property name="maxWait" value="60000" />
         <property name="minIdle" value="1" />
-        <property name="validationQuery" value="SELECT 1 FROM DUAL" />
+        <property name="validationQuery" value="${spring.datasource.validationQuery}" />
         <property name="connectionProperties" value="druid.stat.slowSqlMillis=200;druid.stat.mergeSql=true" />
     </bean>
 #if($framework.contains('mybatis') and $framework.contains('spring'))
