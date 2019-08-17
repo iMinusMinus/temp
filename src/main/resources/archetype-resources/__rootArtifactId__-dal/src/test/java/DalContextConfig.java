@@ -9,7 +9,7 @@ import org.springframework.core.io.ClassPathResource;
 public class DalContextConfig {
 
     @Bean
-    public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         PropertySourcesPlaceholderConfigurer placeholder = new PropertySourcesPlaceholderConfigurer();
         placeholder.setLocation(new ClassPathResource("application-junit.properties"));
         return placeholder;
