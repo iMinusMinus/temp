@@ -25,7 +25,29 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.compilerVersion>1.6</maven.compiler.compilerVersion>
+#if($showDefault)
+      <maven.clean.followSymLinks>false</maven.clean.followSymLinks>
+      <maven.clean.failOnError>true</maven.clean.failOnError>
+      <maven.clean.retryOnError>true</maven.clean.retryOnError>
+      <maven.clean.excludeDefaultDirectories>false</maven.clean.excludeDefaultDirectories>
+      <maven.compiler.failOnError>true</maven.compiler.failOnError>
+      <maven.compiler.failOnWarning>false</maven.compiler.failOnWarning>
+      <maven.compiler.debug>true</maven.compiler.debug>
+      <maven.compiler.parameters>false</maven.compiler.parameters>
+      <maven.compiler.verbose>false</maven.compiler.verbose>
+      <maven.compiler.showDeprecation>false</maven.compiler.showDeprecation>
+      <maven.compiler.optimize>false</maven.compiler.optimize>
+      <maven.compiler.showWarnings>false</maven.compiler.showWarnings>
+      <maven.compiler.compilerId>javac</maven.compiler.compilerId>
+      <maven.compiler.fork>false</maven.compiler.fork>
+      <maven.compiler.skipMultiThreadWarning>false</maven.compiler.skipMultiThreadWarning>
+      <maven.compiler.forceJavacCompilerUse>false</maven.compiler.forceJavacCompilerUse>
+      <maven.compiler.useIncrementalCompilation>true</maven.compiler.useIncrementalCompilation>
+      <jar.useDefaultManifestFile>false</jar.useDefaultManifestFile>
+      <surefire.reportNameSuffix></surefire.reportNameSuffix>
+      <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
+      <session.parallel>true</session.parallel>
+#end
   </properties>
 
   <dependencyManagement>
@@ -301,33 +323,213 @@
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.0.0</version>
+#if($showDefault)
+            <configuration>
+                <directory>${project.build.directory}</directory>
+                <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                <testOutputDirectory>${project.build.testOutputDirectory}</testOutputDirectory>
+                <reportDirectory>${project.build.outputDirectory}</reportDirectory>
+                <followSymLinks>false</followSymLinks>
+                <failOnError>${maven.clean.failOnError}</failOnError>
+                <retryOnError>${maven.clean.retryOnError}</retryOnError>
+                <excludeDefaultDirectories>${maven.clean.excludeDefaultDirectories}</excludeDefaultDirectories>
+            </configuration>
+#end
         </plugin>
         <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.0.2</version>
+#if($showDefault)
+            <configuration>
+                <encoding>${project.build.sourceEncoding}</encoding>
+                <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                <!--<resources>${project.resources}</resources>-->
+                <!--<buildFilters>${project.build.filters}</buildFilters>-->
+                <useBuildFilters>true</useBuildFilters>
+                <overwrite>false</overwrite>
+                <includeEmptyDirs>false</includeEmptyDirs>
+                <escapeWindowsPaths>true</escapeWindowsPaths>
+                <delimiters>${*}</delimiters>
+                <useDefaultDelimiters>true</useDefaultDelimiters>
+                <addDefaultExcludes>true</addDefaultExcludes>
+                <supportMultiLineFiltering>false</supportMultiLineFiltering>
+                <fileNameFiltering>false</fileNameFiltering>
+            </configuration>
+#end
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.7.0</version>
+#if($showDefault)
+            <configuration>
+                <failOnError>${maven.compiler.failOnError}</failOnError>
+                <failOnWarning>${maven.compiler.failOnWarning}</failOnWarning>
+                <debug>${maven.compiler.debug}</debug>
+                <parameters>${maven.compiler.parameters}</parameters>
+                <verbose>${maven.compiler.verbose}</verbose>
+                <showDeprecation>${maven.compiler.showDeprecation}</showDeprecation>
+                <optimize>${maven.compiler.optimize}</optimize>
+                <showWarnings>${maven.compiler.showWarnings}</showWarnings>
+                <source>${maven.compiler.source}</source>
+                <target>${maven.compiler.target}</target>
+                <encoding>${project.build.sourceEncoding}</encoding>
+                <staleMillis>0</staleMillis>
+                <compilerId>${maven.compiler.compilerId}</compilerId>
+                <fork>${maven.compiler.fork}</fork>
+                <compilerReuseStrategy>reuseCreated</compilerReuseStrategy>
+                <skipMultiThreadWarning>${maven.compiler.skipMultiThreadWarning}</skipMultiThreadWarning>
+                <forceJavacCompilerUse>${maven.compiler.forceJavacCompilerUse}</forceJavacCompilerUse>
+                <useIncrementalCompilation>${maven.compiler.useIncrementalCompilation}</useIncrementalCompilation>
+            </configuration>
+#end
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.20.1</version>
+            <configuration>
+#if($showDefault)
+                <skipTests>false</skipTests>
+                <reportNameSuffix>${surefire.reportNameSuffix}</reportNameSuffix>
+                <redirectTestOutputToFile>${maven.test.redirectTestOutputToFile}</redirectTestOutputToFile>
+                <failIfNoSpecifiedTests>true</failIfNoSpecifiedTests>
+                <forkMode>once</forkMode>
+                <tempDir>surefire</tempDir>
+                <childDelegation>false</childDelegation>
+                <junitArtifactName>junit:junit</junitArtifactName>
+                <testNGArtifactName>org.testng:testng</testNGArtifactName>
+                <forkCount>1</forkCount>
+                <reuseForks>true</reuseForks>
+                <perCoreThreadCount>true</perCoreThreadCount>
+                <useUnlimitedThreads>false</useUnlimitedThreads>
+                <parallelOptimized>true</parallelOptimized>
+                <threadCountSuites>0</threadCountSuites>
+                <threadCountClasses>0</threadCountClasses>
+                <threadCountMethods>0</threadCountMethods>
+                <trimStackTrace>true</trimStackTrace>
+                <disableXmlReport>false</disableXmlReport>
+                <enableAssertions>true</enableAssertions>
+                <parallelMavenExecution>${session.parallel}</parallelMavenExecution>
+#end
+                <includes>
+                    <include>**/*Test.java</include>
+                </includes>
+                <excludes>
+                    <exclude>**/Abstract*.java</exclude>
+                    <exclude>**/*Base.java</exclude>
+                </excludes>
+                <systemPropertyVariables>
+                    <java.awt.headless>true</java.awt.headless>
+                    <java.security.egd>file:/dev/./urandom</java.security.egd>
+                </systemPropertyVariables>
+            </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
+          <version>3.1.0</version>
+            <configuration>
+#if($showDefault)
+                <useDefaultManifestFile>${jar.useDefaultManifestFile}</useDefaultManifestFile>
+                <includes>**/**</includes>
+                <excludes>**/package.html</excludes>
+#end
+                <archive>
+                    <addMavenDescriptor>false</addMavenDescriptor>
+                    <manifest>
+                        <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+                        <addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
+                    </manifest>
+                    <manifestEntries>
+                        <Implementation-Title>${project.name}</Implementation-Title>
+                        <Implementation-Version>${project.version}</Implementation-Version>
+                        <Built-By>IAMWAHATIAM.ML</Built-By>
+                    </manifestEntries>
+                </archive>
+            </configuration>
         </plugin>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-war-plugin</artifactId>
+              <version>2.2</version>
+              <configuration>
+#if($showDefault)
+                    <classesDirectory>${project.build.outputDirectory}</classesDirectory>
+                    <archiveClasses>false</archiveClasses>
+                    <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
+                    <warSourceDirectory>${basedir}/src/main/webapp</warSourceDirectory>
+                    <workDirectory>${project.build.directory}/war/work</workDirectory>
+                    <cacheFile>${project.build.directory}/war/work/webapp-cache.xml</cacheFile>
+                    <useCache>false</useCache>
+                    <warSourceIncludes>**</warSourceIncludes>
+                    <filteringDeploymentDescriptors>false</filteringDeploymentDescriptors>
+                    <escapedBackslashesInFilePath>false</escapedBackslashesInFilePath>
+
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <warName>${project.build.finalName}</warName>
+                    <attachClasses>false</attachClasses>
+                    <classifier>classes</classifier>
+
+#end
+                  <primaryArtifact>false</primaryArtifact>
+              </configuration>
+          </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
           <version>2.5.2</version>
+#if($showDefault)
+            <configuration>
+                <installAtEnd>false</installAtEnd>
+            </configuration>
+#end
         </plugin>
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
           <version>2.8.2</version>
+#if($showDefault)
+            <configuration>
+                <offline>${settings.offline}</offline>
+                <retryFailedDeploymentCount>1</retryFailedDeploymentCount>
+
+                <deployAtEnd>false</deployAtEnd>
+            </configuration>
+#end
         </plugin>
       </plugins>
     </pluginManagement>
   </build>
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <spring.profiles.active>dev</spring.profiles.active>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <spring.profiles.active>test</spring.profiles.active>
+            </properties>
+            <activation>
+                <property>
+                    <name>SPRING_PROFILES_ACTIVE</name>
+                    <value>test</value>
+                </property>
+            </activation>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <spring.profiles.active>prod</spring.profiles.active>
+            </properties>
+            <activation>
+                <property>
+                    <name>SPRING_PROFILES_ACTIVE</name>
+                    <value>prod</value>
+                </property>
+            </activation>
+        </profile>
+    </profiles>
 </project>

@@ -3,6 +3,31 @@
 
     <property environment="env"/>
 
+    <patternset id="file.spring">
+
+    </patternset>
+    <patternset id="file.springMVC">
+
+    </patternset>
+    <patternset id="file.struts2">
+
+    </patternset>
+    <patternset id="file.dubbo">
+        <include name="${rootArtifactId}-service/src/main/resources/dubbo*" />
+    </patternset>
+    <patternset id="file.cxf">
+
+    </patternset>
+    <patternset id="file.mybatis">
+
+    </patternset>
+    <patternset id="file.hibernate">
+
+    </patternset>
+    <patternset id="file.swagger">
+
+    </patternset>
+
 #if($showComment)
     <!-- clean lifecycyle -->
 #end
@@ -128,7 +153,23 @@
 
     </target>
     <target name="deploy" depends="verify" description="发布到远程仓库或部署到应用服务器">
-
+        <jar includes="**/**" excludes="**/package.html"
+             jarfile="${rootArtifactId}-api/${project.build.directory}/${rootArtifactId}-api.jar"
+             filesDir="${rootArtifactId}-api/${project.build.sourceDirectory}">
+            <manifest>
+                <attribute name="" value="" />
+            </manifest>
+            <!--<service type="">
+                <provider classname="" />
+            </service>-->
+        </jar>
+        <war encoding="${project.build.sourceEncoding}" includes="**" whenmanifestonly="create"
+             webxml="${project.basedir}/src/main/webapp/WEB-INF/web.xml"
+             destfile="${project.build.director}/${project.build.finalName}.war">
+            <lib></lib>
+            <classes>${project.build.outputDirectory}</classes>
+            <CopyUserManifestTask,WarProjectPackagingTask/OverlayPackagingTask,SaveWebappStructurePostPackagingTask
+        </war>
     </target>
 
 

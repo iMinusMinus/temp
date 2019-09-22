@@ -434,7 +434,9 @@
 #if($showComment)
         <description>org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration#methodValidationPostProcessor</description>
 #end
-        <property name="proxyTargetClass" value="${spring.aop.proxy-target-class}" />
+#if($showDefault)
+        <property name="proxyTargetClass" value="${spring.aop.proxyTargetClass}" />
+#end
         <property name="validator" ref="${validator}" />
     </bean>
 #else
@@ -491,37 +493,6 @@
 
 #if($configType.contains('xml'))
 #if(!$configType.contains('xml:'))
-    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
-#if($showComment)
-        <description>TODO</description>
-#end
-#if($showDefault)
-        <property name="placeholderPrefix" value="${" />
-        <property name="placeholderSuffix" value="}" />
-        <property name="valueSeparator" value=":" />
-        <property name="ignoreUnresolvablePlaceholders" value="false" />
-        <property name="order" value="2147483647" />
-        <property name="localOverride" value="false" />
-        <property name="ignoreResourceNotFound" value="false" />
-#end
-        <property name="fileEncoding" value="UTF-8" />
-        <property name="locations">
-             <list>
-                <value>classpath:application.properties</value>
-            </list>
-        </property>
-    </bean>
-#else
-#if($showComment)
-        <!-- Define org.springframework.context.support.PropertySourcesPlaceholderConfigurer -->
-#end
-    <context:property-placeholder location="classpath:application.properties" file-encoding="UTF-8"
-        #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
-#end
-#end
-
-#if($configType.contains('xml'))
-#if(!$configType.contains('xml:'))
     <bean id="org.springframework.context.annotation.internalConfigurationAnnotationProcessor"
           class="org.springframework.context.annotation.ConfigurationClassPostProcessor"#if(!$showComment)/>#{else}>
         <description>Parse each @Configuration class; Handle any @PropertySource annotations</description>
@@ -568,6 +539,76 @@
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />
     </context:component-scan>
+#end
+#end
+
+#if($configType.contains('xml'))
+#if(!$configType.contains('xml:'))
+    <beans profile="dev">
+        <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+#if($showComment)
+            <description>TODO</description>
+#end
+#if($showDefault)
+            <property name="placeholderPrefix" value="${" />
+            <property name="placeholderSuffix" value="}" />
+            <property name="valueSeparator" value=":" />
+            <property name="ignoreUnresolvablePlaceholders" value="false" />
+            <property name="order" value="2147483647" />
+            <property name="localOverride" value="false" />
+            <property name="ignoreResourceNotFound" value="false" />
+#end
+            <property name="fileEncoding" value="UTF-8" />
+            <property name="locations">
+                <list>
+                    <value>classpath:/application.properties</value>
+                    <value>classpath:/application-dev.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+    <beans profile="test">
+        <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="fileEncoding" value="UTF-8" />
+            <property name="locations">
+                <list>
+                    <value>classpath:/application.properties</value>
+                    <value>classpath:/application-test.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+    <beans profile="prod">
+        <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="fileEncoding" value="UTF-8" />
+            <property name="locations">
+                <list>
+                    <value>classpath:/application.properties</value>
+                    <value>classpath:/application-prod.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+#else
+#if($showComment)
+    <!-- Define org.springframework.context.support.PropertySourcesPlaceholderConfigurer -->
+#end
+    <beans profile="default">
+        <context:property-placeholder location="classpath:/application.properties" file-encoding="UTF-8"
+            #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
+    </beans>
+    <beans profile="dev">
+        <context:property-placeholder location="classpath:/application.properties,classpath:/application-dev.properties" file-encoding="UTF-8"
+            #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
+    </beans>
+    <beans profile="test">
+        <context:property-placeholder location="classpath:/application.properties,classpath:/application-test.properties" file-encoding="UTF-8"
+            #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
+    </beans>
+    <beans profile="prod">
+        <context:property-placeholder location="classpath:/application.properties,classpath:/application-prod.properties" file-encoding="UTF-8"
+            #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
+    </beans>
 #end
 #end
 </beans>
