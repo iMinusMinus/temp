@@ -8,54 +8,74 @@
 1. Build
 
    + ANT
-   
+
      build.xml, build.properties
-     
+
    + Maven
-   
+
      pom.xml, .mvn/jvm.config
-     
+
    + Gradle
-   
+
      build.gradle, gradle.properties  
-     
+
 2. Modules
 
    + web
-   
+
      For Handling HTTP request.
      src/main/webapp/WEB-INF/jsp/,src/main/webapp/WEB-INF/tags/,src/main/webapp/WEB-INF/web.xml
+     src/main/webapp/WEB-INF/extensions   
+     src/main/webapp/WEB-INF/modules   
+     src/main/webapp/WEB-INF/services   
+     src/main/webapp/WEB-INF/tld   
    
    + api
-   
+
      For exposing service to remote client request by RPC.
    
    + service
-   
+ 
    + dal
-   
-     Domain in DDD.
+ 
+      Domain in DDD.
 
 3. Frameworks     
 
    + Spring MVC
-   
-     *-servlet.xml,applicationContext.xml,application.properties,views.properties
+
+     src/main/webapp/WEB-INF:
+     *-servlet.xml,applicationContext.xml   
+     src/main/resources:
+     application*.properties,views.properties
     
    + Struts2
-   
+
      struts.xml
-    
+
+   + CXF
+
+     src/main/webapp/WEB-INF/cxf-servlet.xml
+
+   + Dubbo
+
+     src/main/resources/dubbo*  
+
    + MyBatis
-   
-     mybatis-configuration.xml  
-     
+
+     src/main/resources/mybatis-config.xml,src/main/resources/sqlmap 
+
+   + Hibernate
+
+     src/main/resources/hibernate.cfg.xml,src/main/resources/*.hbm.xml      
+
    + JValidation
-   
-     ValidationMessages.properties
-     
+
+     src/main/resources/ValidationMessages.properties
+
    + Log
-   
-     log4j: log4j.properties
-     log4j2: log4j2.yaml
-     logback: logback.xml    
+
+     JUL: src/main/resources/logging.properties   
+     log4j: src/main/resources/log4j.properties   
+     log4j2: src/main/resources/log4j2.yaml   
+     logback: src/main/resources/logback.xml,src/test/resources/logback-test.xml    

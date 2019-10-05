@@ -27,7 +27,7 @@ public interface MetaClassMapper {
      * @param domain
      * @return id
      */
-#if($configType.contains("@java"))
+#if($configType.contains("@java") and $framework.contains('mybatis'))
     @Insert("INSERT INTO meta_class (class_name, super_class_name) VALUES (#{name}, #{superName})")
     @SelectKey(statement = "SELECT currval('meta_class_id_seq')", before = false, keyProperty = "id", resultType = long.class)
 #end
@@ -38,7 +38,7 @@ public interface MetaClassMapper {
      * @param id
      * @return
      */
-#if($configType.contains("@java"))
+#if($configType.contains("@java") and $framework.contains('mybatis'))
     @Delete("DELETE FROM meta_class WHERE id = #{id}")
 #end
     int delete(long id);
@@ -56,7 +56,7 @@ public interface MetaClassMapper {
      * @param condition
      * @return at most one criteria
      */
-#if($configType.contains("@java"))
+#if($configType.contains("@java") and $framework.contains('mybatis'))
     @Select("<script>SELECT id,class_name,super_class_name FROM meta_class <where><if test='name != null'>class_name = #{name}</if><if test='superName != null'>AND super_class_name=#{superName}</if></where> </script>")
     @Results({@Result(column="id",property="id"),@Result(column="class_name",property="name"),@Result(column="super_class_name", property="superName")})
 #end

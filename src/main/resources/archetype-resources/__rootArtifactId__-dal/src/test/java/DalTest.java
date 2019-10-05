@@ -1,5 +1,6 @@
 package ${package};
 
+import ${package}.dao.MetaClassDaoImpl;
 import ${package}.dao.MetaClassMapper;
 import ${package}.domain.MetaClass;
 
@@ -20,7 +21,10 @@ import javax.annotation.Resource;
 public class DalTest {
 
     @Resource
-    private MetaClassMapper metaClassDao;
+    private MetaClassMapper metaClassMapper;
+
+    @Resource
+    private MetaClassMapper metaClassDaoImpl;
 
 #if($framework.contains('mybatis'))
     @Test
@@ -28,17 +32,21 @@ public class DalTest {
         MetaClass mc = new MetaClass();
         mc.setName("java.beans.Bean");
         //XXX PostgreSQL serial bug?
-        long id = metaClassDao.save(mc);
+        long id = metaClassMapper.save(mc);
         Assert.assertNotEquals(0, id);
-        MetaClass qr = metaClassDao.findOne(mc);
+        MetaClass qr = metaClassMapper.findOne(mc);
         //Assert.assertEquals(id, qr.getId());
-        metaClassDao.delete( qr.getId());
+        metaClassMapper.delete( qr.getId());
     }
-#elseif($framework.contains('hibernate'))
+#end
+#if($framework.contains('hibernate'))
 
     @Test
     public void testHibernateConfig() {
-
+        MetaClass mc = new MetaClass();
+        mc.setName("java.beans.BeanDescriptor");
+        metaClassDaoImpl.save(mc);
+        metaClassDaoImpl.delete(mc.getId());
     }
 #end
 

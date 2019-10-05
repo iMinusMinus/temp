@@ -201,15 +201,19 @@
 #end
 #if($framework.contains('jpa'))
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="packagesToScan" value="" />
+#if($showDefault)
+        <property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml" />
+#end
+        <property name="packagesToScan" value="${groupId}.${artifactId}" />
         <property name="#if($framework.contains('jta'))jtaDataSource#{else}dataSource#{end}" ref="${dataSource}" />
-        <property name="mappingResources" ref="" />
+        <!--<property name="mappingResources" value="${spring.jpa.mappingResources}" />-->
+        <property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
     </bean>
     <bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-        <property name="showSql" value="\${spring.jpa.showSql}" />
-        <property name="database" value="\${spring.jpa.database}" />
-        <property name="databasePlatform" value="\${spring.jpa.databasePlatform}" />
-        <property name="generateDdl" value="\${spring.jpa.generateDdl}" />
+        <property name="showSql" value="${spring.jpa.showSql}" />
+        <property name="database" value="${spring.jpa.database}" />
+        <property name="databasePlatform" value="${spring.jpa.databasePlatform}" />
+        <property name="generateDdl" value="${spring.jpa.generateDdl}" />
     </bean>
 #end
 #if($framework.contains('jta'))
@@ -286,10 +290,11 @@
         <property name="sqlSessionFactoryBeanName" value="${sqlSessionFactory}" />
     </bean>
 #end
-#elseif($framework.contains('hibernate'))
+#end
+#if($framework.contains('hibernate'))
     <bean id="${sessionFactory}" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <property name="dataSource" ref="${dataSource}" />
-        <property name="configLocations" value="classpath:hibernate.cfg.xml" />
+        <!--<property name="configLocations" value="classpath:hibernate.cfg.xml" />-->
     </bean>
 #end
     <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor">

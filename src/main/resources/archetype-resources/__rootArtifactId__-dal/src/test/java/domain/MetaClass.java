@@ -3,10 +3,9 @@ package ${package}.domain;
 
 import java.util.List;
 
-#if($frameworks.contains("jpa") and $config.contains("@"))
-import  javax.persistence.Column;
+#if($framework.contains("jpa") and $configType.contains("@"))
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -23,7 +22,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-#if($frameworks.contains("jpa") and $config.contains("@"))
+#if($framework.contains("jpa") and $configType.contains("@"))
 @Entity
 @Table(name = "meta_class")
 #end
@@ -32,7 +31,7 @@ public class MetaClass extends AbstractDomain {
     /**
      * class name.
      */
-#if($frameworks.contains("jpa") and $config.contains("@"))
+#if($framework.contains("jpa") and $configType.contains("@"))
     @Column(name = "class_name", nullable = false, length = 65535)
 #end
     private String name;
@@ -40,12 +39,12 @@ public class MetaClass extends AbstractDomain {
     /**
      * super class name
      */
-#if($frameworks.contains("jpa") and $config.contains("@"))
+#if($framework.contains("jpa") and $configType.contains("@"))
     @Column(name = "super_class_name", length = 255)
 #end
     private String superName;
 
-#if($frameworks.contains("jpa") and $config.contains("@"))
+#if($framework.contains("jpa") and $configType.contains("@"))
     @OneToMany
     @JoinColumn(name = "class_name")
 #end

@@ -10,7 +10,7 @@
   <groupId>${groupId}</groupId>
   <artifactId>${artifactId}</artifactId>
   <version>${version}</version>
-  <packaging>${packagingType}</packaging>
+  <packaging>pom</packaging>
 
   <!-- #if(${packagingType} == "pom") -->
   <modules>
@@ -145,8 +145,13 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
-        <version>5.3.7.Final</version>
+        <version>4.3.11.Final</version>
       </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>4.3.11.Final</version>
+        </dependency>
       <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
@@ -283,6 +288,11 @@
         <artifactId>spring-jdbc</artifactId>
         <version>4.3.20.RELEASE</version>
       </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>4.3.20.RELEASE</version>
+        </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-test</artifactId>
@@ -500,33 +510,28 @@
     <profiles>
         <profile>
             <id>dev</id>
-            <properties>
-                <spring.profiles.active>dev</spring.profiles.active>
-            </properties>
+            <properties/>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>spring.profiles.active</name>
+                    <value>dev</value>
+                </property>
             </activation>
         </profile>
         <profile>
             <id>test</id>
-            <properties>
-                <spring.profiles.active>test</spring.profiles.active>
-            </properties>
             <activation>
                 <property>
-                    <name>SPRING_PROFILES_ACTIVE</name>
+                    <name>spring.profiles.active</name>
                     <value>test</value>
                 </property>
             </activation>
         </profile>
         <profile>
             <id>prod</id>
-            <properties>
-                <spring.profiles.active>prod</spring.profiles.active>
-            </properties>
             <activation>
                 <property>
-                    <name>SPRING_PROFILES_ACTIVE</name>
+                    <name>spring.profiles.active</name>
                     <value>prod</value>
                 </property>
             </activation>

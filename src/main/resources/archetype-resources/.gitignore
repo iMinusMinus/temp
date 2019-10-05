@@ -21,6 +21,8 @@ $RECYCLE.BIN/
 # Refer https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore
 #end
 .idea/**
+*.iml
+target/
 
 #if($showComment)
 # Refer https://github.com/github/gitignore/blob/master/Global/Eclipse.gitignore

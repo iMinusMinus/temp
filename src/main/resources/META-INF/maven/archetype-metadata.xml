@@ -20,37 +20,34 @@ under the License.
 -->
 <archetype-descriptor xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0"
                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0
-  http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd" name="${artifactId}" partial="false">
-  <requiredProperty key="groupId">
-    <defaultValue>ml.iamwhatiam</defaultValue>
-      <validationRegex>\w+.\w+</validationRegex>
-  </requiredProperty>
-  <requiredProperty key="packagingType">
-    <defaultValue>pom</defaultValue>
-  </requiredProperty>
-    <requiredProperty key="showDefault">
-        <defaultValue>false</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="showComment">
-        <defaultValue>false</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="configType">
-        <defaultValue>xml:,@java</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="buildTool">
-        <defaultValue>Maven</defaultValue>
-        <validationRegex>(Maven)|(ANT)|(Gradle)</validationRegex>
-    </requiredProperty>
-    <requiredProperty key="framework">
-        <defaultValue>spring,mybatis</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="logConfigFile">
-        <defaultValue>logback.xml</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="servletName">
-        <defaultValue>dispatcherServlet</defaultValue>
-    </requiredProperty>
+                      xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0
+                      http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd"
+                      name="temp" partial="false">
+    <requiredProperties>
+        <requiredProperty key="groupId">
+            <defaultValue>ml.iamwhatiam</defaultValue>
+            <validationRegex>\w+.\w+</validationRegex>
+        </requiredProperty>
+      <requiredProperty key="packagingType">
+        <defaultValue>pom</defaultValue>
+      </requiredProperty>
+        <requiredProperty key="showDefault">
+            <defaultValue>false</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="showComment">
+            <defaultValue>false</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="configType">
+            <defaultValue>xml:,@java</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="buildTool">
+            <defaultValue>Maven</defaultValue>
+            <validationRegex>(Maven)|(ANT)|(Gradle)</validationRegex>
+        </requiredProperty>
+        <requiredProperty key="framework">
+            <defaultValue>springMVC,spring,mybatis,dubbo,druid</defaultValue>
+        </requiredProperty>
+    </requiredProperties>
   <fileSets>
     <fileSet filtered="true" packaged="true" encoding="UTF-8">
       <directory>src/main/java</directory>

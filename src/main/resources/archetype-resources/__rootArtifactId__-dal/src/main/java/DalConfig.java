@@ -33,14 +33,13 @@ import org.mybatis.spring.SqlSessionTemplate;
 #if($framework.contains('hibernate'))
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
-
 import org.hibernate.SessionFactory;
 #end
 
 #if($framework.contains('druid'))
 import com.alibaba.druid.pool.DruidDataSource;
 #end
-#if($framework.contains('hibernate'))
+#if($framework.contains('hikari'))
 import com.zaxxer.hikari.HikariDataSource;
 #end
 
@@ -93,10 +92,9 @@ public class DalConfig {
     }
 #else
     @Bean
-    public PlatformTransactionManager transactionManager(DataSource dataSource) throws Exception {
+    public PlatformTransactionManager transactionManager(DataSource dataSource#if($framework.contains('hibernate')), SessionFactory sessionFactory#{end}) throws Exception {
 #if($framework.contains('hibernate'))
-        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-        transactionManager.setDataSource(dataSource);
+        HibernateTransactionManager transactionManager = new HibernateTransactionManager(sessionFactory);
 #else
         PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
 #end
@@ -133,10 +131,12 @@ public class DalConfig {
 
 #if($framework.contains('hibernate'))
     @Bean
-    public SessionFactory sessionFactory(DataSource dataSource) throws Exception {
+    public LocalSessionFactoryBean sessionFactory(DataSource dataSource) throws Exception {
         LocalSessionFactoryBean factory = new LocalSessionFactoryBean();
         factory.setDataSource(dataSource);
-        return factory.getObject();
+        factory.setPackagesToScan(new String[] {"${package}"});
+//        factory.setHibernateProperties();
+        return factory;
     }
 #end
 #if($framework.contains('mybatis'))

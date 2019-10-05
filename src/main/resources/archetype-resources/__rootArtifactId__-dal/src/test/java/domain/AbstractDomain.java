@@ -6,12 +6,12 @@ import lombok.ToString;
 
 import java.io.Serializable;
 
-#if($frameworks.contains("jpa") and $config.contains("@"))
+#if($framework.contains("jpa") and $configType.contains("@"))
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 #end
 
-#if($frameworks.contains("jpa") and $config.contains("@"))
+#if($framework.contains("jpa") and $configType.contains("@"))
 @MappedSuperclass
 #end
 @Getter
@@ -19,7 +19,7 @@ import javax.persistence.MappedSuperclass;
 @ToString
 public abstract class AbstractDomain implements Serializable {
 
-#if($frameworks.contains("jpa") and $config.contains("@"))
+#if($framework.contains("jpa") and $configType.contains("@"))
     @Id
 #end
     protected long id;
