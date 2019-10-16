@@ -47,7 +47,11 @@
       <surefire.reportNameSuffix></surefire.reportNameSuffix>
       <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
       <session.parallel>true</session.parallel>
+      <maven.tomcat.url>http://localhost:8080/manager/text</maven.tomcat.url>
+      <tomcat.username>admin</tomcat.username>
 #end
+      <maven.tomcat.charset>UTF-8</maven.tomcat.charset>
+      <maven.tomcat.path>/</maven.tomcat.path>
   </properties>
 
   <dependencyManagement>
@@ -481,6 +485,19 @@
 
 #end
                   <primaryArtifact>false</primaryArtifact>
+              </configuration>
+          </plugin>
+          <plugin>
+              <groupId>org.apache.tomcat.maven</groupId>
+              <artifactId>tomcat8-maven-plugin</artifactId>
+              <version>2.2</version>
+              <configuration>
+#if($showDefault)
+                  <url>${maven.tomcat.url}</url>
+                  <charset>${maven.tomcat.charset}</charset>
+                  <username>${tomcat.username}</username>
+#end
+                    <path>${maven.tomcat.path}</path>
               </configuration>
           </plugin>
         <plugin>

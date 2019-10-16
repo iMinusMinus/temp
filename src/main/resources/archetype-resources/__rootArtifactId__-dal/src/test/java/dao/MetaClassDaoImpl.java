@@ -26,7 +26,8 @@ public class MetaClassDaoImpl /* extends HibernateDaoSupport */ implements MetaC
     @Override
     @Transactional
     public int delete(long id) {
-        sessionFactory.getCurrentSession().delete(id);
+        ## sessionFactory.getCurrentSession().delete(entity); 按id删除，但非空列需赋值；打印SQL为update meta_class set class_name = ? where class_name = ?
+        sessionFactory.getCurrentSession().createQuery("delete MetaClass m where m.id = " + id).executeUpdate();
         return 0;
     }
 

@@ -1,6 +1,7 @@
 package ${package};
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -135,7 +136,11 @@ public class DalConfig {
         LocalSessionFactoryBean factory = new LocalSessionFactoryBean();
         factory.setDataSource(dataSource);
         factory.setPackagesToScan(new String[] {"${package}"});
-//        factory.setHibernateProperties();
+//        factory.setConfigLocations("classpath:hibernate.cfg.xml");
+//        factory.setMappingResources("*.hbm.xml");
+        Properties hibernateProperties = new Properties();
+        hibernateProperties.load(DalConfig.class.getClassLoader().getResourceAsStream("hibernate.properties"));
+        factory.setHibernateProperties(hibernateProperties);
         return factory;
     }
 #end
