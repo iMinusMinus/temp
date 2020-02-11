@@ -193,7 +193,43 @@
         <servlet-name>cxf</servlet-name>
         <url-pattern>${cxf.path}/*</url-pattern>
     </servlet-mapping>
+
 #end
+#if($framework.contains('druid'))
+    <servlet>
+        <servlet-name>druidStat</servlet-name>
+        <servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+#if($showDefault)      
+        <init-param>
+#if($showComment)
+            <description>#[[Optional. If not empty, login required!]]#</description>
+#end          
+            <param-name>loginUsername</param-name>
+            <param-value></param-value>
+        </init-param>
+        <init-param>
+            <param-name>loginPassword</param-name>
+            <param-value></param-value>
+        </init-param>
+        <init-param>
+#if($showComment)
+            <description>#[[Optional. Allowed IP address/range, comma separate. Deny priority superior to this!]]#</description>
+#end          
+            <param-name>allow</param-name>
+            <param-value></param-value>
+        </init-param>
+        <init-param>
+            <param-name>deny</param-name>
+            <param-value></param-value>
+        </init-param>
+#end      
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>druidStat</servlet-name>
+        <url-pattern>/druid/*</url-pattern>
+    </servlet-mapping>
+  
+#end  
 #if($framework.contains('springMVC'))
     <servlet>
 #if($showComment)
