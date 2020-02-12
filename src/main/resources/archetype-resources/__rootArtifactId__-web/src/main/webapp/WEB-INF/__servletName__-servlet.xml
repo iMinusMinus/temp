@@ -245,7 +245,13 @@
         <property name="locations">
             <list>
                 <value>classpath:/META-INF/resources/</value>
+                <value>classpath:/resources/</value>
+                <value>classpath:/static/</value>
+                <value>classpath:/public/</value>
+
                 <value>classpath:/META-INF/resources/webjars/</value>
+
+                <value>/</value>
             </list>
         </property>
         <property name="cache-period" value="-1" />
@@ -258,6 +264,9 @@
             <map>
                 <entry key="/swagger-ui.html" value-ref="${resourceHandler}" />
                 <entry key="/webjars/**">
+                    <ref bean="${resourceHandler}" />
+                </entry>
+                <entry key="**/favicon.ico">
                     <ref bean="${resourceHandler}" />
                 </entry>
             </map>

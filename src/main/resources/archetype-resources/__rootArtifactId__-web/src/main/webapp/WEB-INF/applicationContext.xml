@@ -262,12 +262,12 @@
         <property name="username" value="${spring.datasource.username}" />
         <property name="password" value="${spring.datasource.password}" />
         <property name="filters" value="stat,slf4j,wall" />
-        <property name="maxActive" value="20" />
-        <property name="initialSize" value="1" />
-        <property name="maxWait" value="60000" />
-        <property name="minIdle" value="1" />
+        <property name="maxActive" value="${spring.datasource.druid.maxActive}" />
+        <property name="initialSize" value="${spring.datasource.druid.initialSize}" />
+        <property name="maxWait" value="${spring.datasource.druid.maxWait}" />
+        <property name="minIdle" value="${spring.datasource.druid.minIdle}" />
         <property name="validationQuery" value="${spring.datasource.validationQuery}" />
-        <property name="connectionProperties" value="druid.stat.slowSqlMillis=200;druid.stat.mergeSql=true" />
+        <property name="connectionProperties" value="${spring.datasource.druid.connectProperties}" />
     </bean>
 #if($framework.contains('mybatis') and $framework.contains('spring'))
     <bean id="${sqlSessionFactory}" class="org.mybatis.spring.SqlSessionFactoryBean">
