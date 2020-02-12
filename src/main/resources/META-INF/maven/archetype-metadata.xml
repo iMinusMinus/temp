@@ -47,6 +47,61 @@ under the License.
         <requiredProperty key="framework">
             <defaultValue>springMVC,spring,mybatis,dubbo,druid</defaultValue>
         </requiredProperty>
+        <requiredProperty key="servletName">
+            <defaultValue>dispatcherServlet</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="resourceHandler">
+            <defaultValue>resourceHandler</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="contentNegotiationManager">
+            <defaultValue>mvcContentNegotiationManager</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="conversionService">
+            <defaultValue>mvcConversionService</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="validator">
+            <defaultValue>mvcValidator</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="webBindingInitializer">
+            <defaultValue>webBindingInitializer</defaultValue>
+        </requiredProperty>
+
+        <requiredProperty key="byteArrayHttpMessageConverter">
+            <defaultValue>byteArrayHttpMessageConverter</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="stringHttpMessageConverter">
+            <defaultValue>stringHttpMessageConverter</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="resourceHttpMessageConverter">
+            <defaultValue>resourceHttpMessageConverter</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="sourceHttpMessageConverter">
+            <defaultValue>sourceHttpMessageConverter</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="allEncompassingFormHttpMessageConverter">
+            <defaultValue>allEncompassingFormHttpMessageConverter</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="jaxb2xmlHtppMessageConverter">
+            <defaultValue>jaxb2xmlHtppMessageConverter</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="jackson2jsonHttpMessageConverter">
+            <defaultValue>jackson2jsonHttpMessageConverter</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="thymeleafTemplateEngine">
+            <defaultValue>templateEngine</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="thymeleafTemplateResolvers">
+            <defaultValue>templateResolvers</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="dataSource">
+            <defaultValue>dataSource</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="sqlSessionFactory">
+            <defaultValue>sqlSessionFactory</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="sessionFactory">
+            <defaultValue>sessionFactory</defaultValue>
+        </requiredProperty>
     </requiredProperties>
   <fileSets>
     <fileSet filtered="true" packaged="true" encoding="UTF-8">
