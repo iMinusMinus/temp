@@ -39,8 +39,8 @@
         <file>${logging.path}/${logging.file}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${logging.path}/${logging.file}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
-            <maxFileSize>${logging.file.max-size}</maxFileSize>
-            <maxHistory>${logging.file.max-history}</maxHistory>
+            <maxFileSize>${logging.file.maxSize}</maxFileSize>
+            <maxHistory>${logging.file.maxHistory}</maxHistory>
             <totalSizeCap>100GB</totalSizeCap>
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
