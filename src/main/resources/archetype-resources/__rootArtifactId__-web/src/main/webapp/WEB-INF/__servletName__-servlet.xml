@@ -201,7 +201,7 @@
 #if($showDefault)
         <property name="order" value="-2147483648" />
 #end
-        <property name="contentNegotiationManager" ref="mvcContentNegotiationManager" />
+        <property name="contentNegotiationManager" ref="${contentNegotiationManager}" />
         <property name="viewResolvers">
             <list>
                 <ref bean="viewResolver" />
@@ -324,11 +324,11 @@
     <!--
     <mvc:interceptors>
         <bean class="" />
-        <ref="" />
+        <ref bean="" />
         <mvc:interceptor>
             <description>!exclude.match || include == null || include.match. See org.springframework.web.servlet.handler.MappedInterceptor#matches</description>
             <bean class=""/>
-            <ref="" />
+            <ref bean="" />
             <mvc:mapping path="" />
             <mvc:exclude-mapping path="" />
         </mvc:interceptor>
@@ -347,8 +347,7 @@
     <bean id="${allEncompassingFormHttpMessageConverter}" class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter" />
     <bean id="${jaxb2xmlHtppMessageConverter}" class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />
     <bean id="${jackson2jsonHttpMessageConverter}" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
-#end
-#if(!$configType.contains('xml:'))
+
     <bean id="${contentNegotiationManager}" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
 #if($showComment)
         <description>Factory bean produce bean type of 'org.springframework.web.accept.ContentNegotiationManager'</description>
@@ -360,10 +359,10 @@
         <property name="parameterName" value="format" />
 #end
         <property name="mediaTypes">
-            <properties>
-                <entry key="xml" value="application/xml" />
-                <entry key="json" value="application/json" />
-            </properties>
+            <props>
+                <prop key="xml">application/xml</prop>
+                <prop key="json">application/json</prop>
+            </props>
         </property>
     </bean>
     <bean id="${conversionService}" class="org.springframework.format.support.FormattingConversionServiceFactoryBean"#if(!$showComment)/>#{else}>
@@ -392,14 +391,14 @@
         </description>
 #end
         <property name="order" value="0" />
-        <property name="contentNegotiationManager" ref="mvcContentNegotiationManager" />
+        <property name="contentNegotiationManager" ref="${contentNegotiationManager}" />
         <property name="removeSemicolonContent" value="true" />
     </bean>
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
 #if($showComment)
         <description>@ControllerAdvice, @ModelAttribute, @RequestMapping, @InitBinder</description>
 #end
-        <property name="contentNegotiationManager" ref="mvcContentNegotiationManager" />
+        <property name="contentNegotiationManager" ref="${contentNegotiationManager}" />
         <property name="webBindingInitializer" ref="${webBindingInitializer}" />
         <property name="messageConverters">
             <list>
@@ -415,7 +414,7 @@
     </bean>
     <bean class="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver" #if(!$showComment)/>#{else}>
         <description>Resolves exceptions by invoking an @ExceptionHandler method in a @ControllerAdvice class.</description>
-        <property name="contentNegotiationManager" ref="mvcContentNegotiationManager" />
+        <property name="contentNegotiationManager" ref="${contentNegotiationManager}" />
         <property name="messageConverters">
             <list>
                 <ref bean="${byteArrayHttpMessageConverter}" />
@@ -431,13 +430,13 @@
     </bean>
 #{end}
     <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
-        <construct-arg index="0">
+        <constructor-arg index="0">
             <list>
-                <ref id="${stringHttpMessageConverter}" />
-                <ref id="${jaxb2xmlHtppMessageConverter}" />
-                <ref id="${jackson2jsonHttpMessageConverter}" />
+                <ref bean="${stringHttpMessageConverter}" />
+                <ref bean="${jaxb2xmlHtppMessageConverter}" />
+                <ref bean="${jackson2jsonHttpMessageConverter}" />
             </list>
-        </construct-arg>
+        </constructor-arg>
     </bean>
     <bean id="methodValidationPostProcessor" class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor">
 #if($showComment)
@@ -464,7 +463,7 @@
     org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.
     -->
 #end
-    <mvc:annotation-driven>
+    <mvc:annotation-driven #if($showDefault)content-negotiation-manager="${contentNegotiationManager}"#{end}>
 #if($showDefault)
         <mvc:message-converters register-defaults="false">
             <ref bean="${byteArrayHttpMessageConverter}" />
@@ -543,7 +542,7 @@
     And exclude filter is precedence of include filter.
     -->
 #end
-    <context:component-scan base-package="${groupId}.${artifactId}" #if($showDefault)use-default-filters="true" annotation-config="true"#{end}>
+    <context:component-scan base-package="${groupId}.${rootArtifactId}" use-default-filters="false" #if($showDefault)annotation-config="true"#{end}>
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />

@@ -401,6 +401,7 @@
                 <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>## resources, testResources
+
                     <version>3.0.2</version>
 #if($showDefault)
                     <configuration>
@@ -422,6 +423,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>## compile, testCompile
+
                     <version>3.7.0</version>
 #if($showDefault)
                     <configuration>
@@ -448,6 +450,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>## test
+
                     <version>2.20.1</version>
                     <configuration>
 #if($showDefault)
@@ -598,6 +601,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>## jar
+
                     <version>3.1.0</version>
                     <configuration>
 #if($showDefault)
@@ -658,13 +662,16 @@
                         <path>${maven.tomcat.path}</path>
                     </configuration>
                     <dependencies>
-                        <groupId>jstl</groupId>
-                        <artifactId>jstl</artifactId>
-                        <version>1.2</version>
+                        <dependency>
+                            <groupId>jstl</groupId>
+                            <artifactId>jstl</artifactId>
+                            <version>1.2</version>
+                        </dependency>
                     </dependencies>
                 </plugin>
                 <plugin>
                     <artifactId>maven-install-plugin</artifactId>## install
+
                     <version>2.5.2</version>
 #if($showDefault)
                     <configuration>
@@ -674,6 +681,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-deploy-plugin</artifactId>## deploy
+
                     <version>2.8.2</version>
 #if($showDefault)
                     <configuration>
@@ -686,7 +694,14 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        ## tomcat7:run
+        #** tomcat7:run
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+        *#
     </build>
     <profiles>
         <profile>
