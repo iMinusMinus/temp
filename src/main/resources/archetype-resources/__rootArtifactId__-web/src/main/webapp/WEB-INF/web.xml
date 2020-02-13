@@ -79,7 +79,7 @@
     </context-param>
 #end
 
-#if($framework.contains('spring') and $framework.contains('struts2'))
+#if($framework.contains('spring'))
     <listener>
 #if($showComment)
         <description>This will create a parent ApplicationContext of servlet's ApplicationContext.
