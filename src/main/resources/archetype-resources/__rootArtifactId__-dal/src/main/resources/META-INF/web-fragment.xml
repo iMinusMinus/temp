@@ -1,29 +1,43 @@
 <web-fragment version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd">
-
+#if($framework.contains('druid'))
     <servlet>
         <servlet-name>druidStat</servlet-name>
         <servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
         <init-param>
+#if($showComment)
+            <description>#[[Optional. If not empty, login required!]]#</description>
+#end
             <param-name>loginUsername</param-name>
-            <param-value>druid</param-value>
+            <param-value></param-value>
         </init-param>
         <init-param>
             <param-name>loginPassword</param-name>
-            <param-value>druid</param-value>
+            <param-value></param-value>
         </init-param>
         <init-param>
+#if($showComment)
+            <description>#[[Optional. Allowed IP address/range, comma separate. Deny priority superior to this!]]#</description>
+#end
             <param-name>allow</param-name>
-            <param-value>0::1,127.0.0.1</param-value>
+            <param-value>0:0:0:0:0:0:0:1,0::1,127.0.0.1</param-value>
         </init-param>
         <init-param>
             <param-name>deny</param-name>
             <param-value></param-value>
         </init-param>
         <init-param>
+#if($showComment)
+            <description>#[[Optional. Get real ip pass by reversed http proxy!]]#</description>
+#end
+            <param-name>remoteAddress</param-name>
+            <param-value></param-value>
+        </init-param>
+
+        <init-param>
             <param-name>resetEnabled</param-name>
-            <param-value>true</param-value>
+            <param-value></param-value>
         </init-param>
         <init-param>
             <param-name>jmxUrl</param-name>
@@ -42,4 +56,5 @@
         <servlet-name>druidStat</servlet-name>
         <url-pattern>/druid/*</url-pattern>
     </servlet-mapping>
+#end
 </web-fragment>
