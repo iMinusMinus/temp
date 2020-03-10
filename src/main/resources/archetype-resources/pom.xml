@@ -15,9 +15,12 @@
     <!-- #if(${packagingType} == "pom") -->
     <modules>
         <module>${rootArtifactId}-api</module>
-        <module>${rootArtifactId}-dal</module>
-        <module>${rootArtifactId}-service</module>
-        <module>${rootArtifactId}-web</module>
+
+        <module>${rootArtifactId}-interfaces</module>
+        <module>${rootArtifactId}-application</module>
+        <module>${rootArtifactId}-domain</module>
+        <module>${rootArtifactId}-infrastructure</module>
+
     </modules>
     <!-- #end -->
 
@@ -105,17 +108,22 @@
             </dependency>
             <dependency>
                 <groupId>${groupId}</groupId>
-                <artifactId>${rootArtifactId}-dal</artifactId>
+                <artifactId>${rootArtifactId}-domain</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>${groupId}</groupId>
-                <artifactId>${rootArtifactId}-service</artifactId>
+                <artifactId>${rootArtifactId}-infrastructure</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>${groupId}</groupId>
-                <artifactId>${rootArtifactId}-web</artifactId>
+                <artifactId>${rootArtifactId}-application</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${groupId}</groupId>
+                <artifactId>${rootArtifactId}-interfaces</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
@@ -218,6 +226,16 @@
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>42.2.5</version>
+            </dependency>
+            <dependency>
+                <groupId>com.rabbitmq</groupId>
+                <artifactId>amqp-client</artifactId>
+                <version>5.8.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>2.4.0</version>
             </dependency>
             <dependency>
                 <groupId>org.aspectj</groupId>

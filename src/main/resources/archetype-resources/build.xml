@@ -19,7 +19,7 @@
 
     </patternset>
     <patternset id="file.dubbo">
-        <include name="${rootArtifactId}-service/src/main/resources/dubbo*" />
+        <include name="${rootArtifactId}-infrastructure/src/main/resources/dubbo*" />
     </patternset>
     <patternset id="file.cxf">
 

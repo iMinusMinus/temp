@@ -28,9 +28,9 @@ under the License.
             <defaultValue>ml.iamwhatiam</defaultValue>
             <validationRegex>\w+.\w+</validationRegex>
         </requiredProperty>
-      <requiredProperty key="packagingType">
-        <defaultValue>pom</defaultValue>
-      </requiredProperty>
+        <requiredProperty key="packagingType">
+            <defaultValue>pom</defaultValue>
+        </requiredProperty>
         <requiredProperty key="showDefault">
             <defaultValue>false</defaultValue>
         </requiredProperty>
@@ -103,14 +103,14 @@ under the License.
             <defaultValue>sessionFactory</defaultValue>
         </requiredProperty>
     </requiredProperties>
-  <fileSets>
-    <fileSet filtered="true" packaged="true" encoding="UTF-8">
-      <directory>src/main/java</directory>
-    </fileSet>
-    <fileSet filtered="true" packaged="true" encoding="UTF-8">
-      <directory>src/test/java</directory>
-    </fileSet>
-  </fileSets>
+    <fileSets>
+        <fileSet filtered="true" packaged="true" encoding="UTF-8">
+            <directory>src/main/java</directory>
+        </fileSet>
+        <fileSet filtered="true" packaged="true" encoding="UTF-8">
+            <directory>src/test/java</directory>
+        </fileSet>
+    </fileSets>
     <modules>
         <module id="${rootArtifactId}-api" name="${rootArtifactId}-api" dir="__rootArtifactId__-api">
             <fileSets>
@@ -119,7 +119,7 @@ under the License.
                 </fileSet>
             </fileSets>
         </module>
-        <module id="${rootArtifactId}-dal" name="${rootArtifactId}-dal" dir="__rootArtifactId__-dal">
+        <module id="${rootArtifactId}-infrastructure" name="${rootArtifactId}-infrastructure" dir="__rootArtifactId__-infrastructure">
             <fileSets>
                 <fileSet filtered="true" packaged="true" encoding="UTF-8">
                     <directory>src/main/java</directory>
@@ -135,7 +135,7 @@ under the License.
                 </fileSet>
             </fileSets>
         </module>
-        <module id="${rootArtifactId}-service" name="${rootArtifactId}-service" dir="__rootArtifactId__-service">
+        <module id="${rootArtifactId}-domain" name="${rootArtifactId}-domain" dir="__rootArtifactId__-domain">
             <fileSets>
                 <fileSet filtered="true" packaged="true" encoding="UTF-8">
                     <directory>src/main/java</directory>
@@ -151,7 +151,23 @@ under the License.
                 </fileSet>
             </fileSets>
         </module>
-        <module id="${rootArtifactId}-web" name="${rootArtifactId}-web" dir="__rootArtifactId__-web">
+        <module id="${rootArtifactId}-application" name="${rootArtifactId}-application" dir="__rootArtifactId__-application">
+            <fileSets>
+                <fileSet filtered="true" packaged="true" encoding="UTF-8">
+                    <directory>src/main/java</directory>
+                </fileSet>
+                <fileSet filtered="true" encoding="UTF-8">
+                    <directory>src/main/resources</directory>
+                </fileSet>
+                <fileSet filtered="true" packaged="true" encoding="UTF-8">
+                    <directory>src/test/java</directory>
+                </fileSet>
+                <fileSet filtered="true" encoding="UTF-8">
+                    <directory>src/test/resources</directory>
+                </fileSet>
+            </fileSets>
+        </module>
+        <module id="${rootArtifactId}-interfaces" name="${rootArtifactId}-interfaces" dir="__rootArtifactId__-interfaces">
             <fileSets>
                 <fileSet filtered="true" packaged="true" encoding="UTF-8">
                     <directory>src/main/java</directory>

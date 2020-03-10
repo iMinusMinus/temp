@@ -13,6 +13,22 @@
     <packaging>jar</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>${groupId}</groupId>
+            <artifactId>${rootArtifactId}-domain</artifactId>
+        </dependency>
+#if($framework.contains('rabbitmq'))
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+        </dependency>
+#end
+#if($framework.contains('kafka'))
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+        </dependency>
+#end
 #if($framework.contains('druid'))
         <dependency>
             <groupId>com.alibaba</groupId>
