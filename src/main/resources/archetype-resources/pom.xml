@@ -162,11 +162,6 @@
                 <optional>true</optional>
             </dependency>
             <dependency>
-                <groupId>javax.transaction</groupId>
-                <artifactId>jta</artifactId>
-                <version>1.1</version>
-            </dependency>
-            <dependency>
                 <groupId>javax.cache</groupId>
                 <artifactId>cache-api</artifactId>
                 <version>1.1.0</version>
@@ -213,6 +208,11 @@
                 <version>4.3.11.Final</version>
             </dependency>
             <dependency>
+                <groupId>org.jboss.spec.javax.transaction</groupId>
+                <artifactId>jboss-transaction-api_1.2_spec</artifactId>
+                <version>1.1.1.Final</version>
+            </dependency>
+            <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>6.0.6</version>
@@ -231,6 +231,11 @@
                 <groupId>com.rabbitmq</groupId>
                 <artifactId>amqp-client</artifactId>
                 <version>5.8.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.amqp</groupId>
+                <artifactId>spring-rabbit</artifactId>
+                <version>2.2.5.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.kafka</groupId>

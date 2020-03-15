@@ -22,6 +22,10 @@
             <artifactId>${rootArtifactId}-domain</artifactId>
         </dependency>
         <dependency>
+            <groupId>${groupId}</groupId>
+            <artifactId>${rootArtifactId}-application</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
         </dependency>

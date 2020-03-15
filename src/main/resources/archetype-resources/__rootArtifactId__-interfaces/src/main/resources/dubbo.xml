@@ -6,7 +6,7 @@
        http://dubbo.apache.org/schema/dubbo http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
 
     <dubbo:application name="${dubbo.application.name}"  version="${dubbo.application.version}" environment="${dubbo.application.environment}"
-                       owner="dubbo.application.owner" logger="${dubbo.application.logger}"/>
+                       owner="${dubbo.application.owner}" logger="${dubbo.application.logger}"/>
     <dubbo:registry id="${dubbo.registry.id}" address="${dubbo.registry.addresss}" transport="${dubbo.registry.transport}"/>
     <dubbo:protocol id="${dubbo.protocol.id}" name="${dubbo.protocol.name}" port="${dubbo.protocol.port}"
                     serialization="${dubbo.protocol.serialization}" transporter="${dubbo.protocol.transporter}"

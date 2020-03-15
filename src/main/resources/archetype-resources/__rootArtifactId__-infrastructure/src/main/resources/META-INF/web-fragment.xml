@@ -29,10 +29,12 @@
         </init-param>
         <init-param>
 #if($showComment)
-            <description>#[[Optional. Get real ip pass by reversed http proxy!]]#</description>
+            <description>#[[Optional. Get ip from HTTP header passed by proxy!]]#</description>
 #end
             <param-name>remoteAddress</param-name>
             <param-value></param-value>
+## NGINX: X-Real-IP
+## Apache: X-Forwarded-For
         </init-param>
 
         <init-param>
