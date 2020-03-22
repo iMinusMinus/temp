@@ -127,7 +127,7 @@
     org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor.
     -->
 #end
-    <context:component-scan base-package="${groupId}.${rootArtifactId}" use-default-filters="true" #if($showDefault)annotation-config="true"#{end}>
+    <context:component-scan base-package="${package}" use-default-filters="false" #if($showDefault)annotation-config="true"#{end}>
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Service" />
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository" />
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Component" />

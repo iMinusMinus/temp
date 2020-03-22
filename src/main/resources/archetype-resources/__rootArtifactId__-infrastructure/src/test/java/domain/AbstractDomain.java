@@ -27,6 +27,7 @@ public abstract class AbstractDomain implements Serializable {
     @SequenceGenerator(name = "pg_meta_class_seq", sequenceName = "meta_class_id_seq")
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="pg_meta_class_seq")## SEQUENCE: PsotgreSQL/Oracle, IDENTITY: MySQL
 #end
+
     protected long id;
 
 }

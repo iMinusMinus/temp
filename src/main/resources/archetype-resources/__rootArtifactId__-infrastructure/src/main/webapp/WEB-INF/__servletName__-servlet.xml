@@ -542,7 +542,7 @@
     And exclude filter is precedence of include filter.
     -->
 #end
-    <context:component-scan base-package="${groupId}.${rootArtifactId}" use-default-filters="false" #if($showDefault)annotation-config="true"#{end}>
+    <context:component-scan base-package="${package}" use-default-filters="false" #if($showDefault)annotation-config="true"#{end}>
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />

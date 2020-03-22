@@ -10,7 +10,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
 #end
-#if(!$configType.contains('xml:') and !$configType.contains('@'))
+#if($configType.contains('xml'))
+#if(!$configType.contains('xml:'))
     <bean id="rabbitConnectionFactory" class="org.springframework.amqp.rabbit.connection.CachingConnectionFactory">
         <constructor-arg type="com.rabbitmq.client.ConnectionFactory">
             <bean class="org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean">
@@ -28,9 +29,6 @@
         <property name="connectionCacheSize" value="${spring.rabbitmq.cache.connection.size}" />
 #end
     </bean>
-    <bean id="rabbitListenerContainerFactory" class="org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory">
-        <property name="connectionFactory" ref="rabbitConnectionFactory" />
-    </bean>
     <bean id="${amqpAdmin}" class="org.springframework.amqp.rabbit.core.RabbitAdmin">
         <constructor-arg index="0" type="org.springframework.amqp.rabbit.connection.ConnectionFactory" ref="rabbitConnectionFactory" />
 #if($showDefault)
@@ -40,18 +38,14 @@
         </property>
 #end
     </bean>
-#if($showDefault)
-    <bean id="${rabbitMessageConverter}" class="org.springframework.amqp.support.converter.SimpleMessageConverter" #if(!$showComment)/>#{else}
-        <description>According message property named contentType, convert message body to suitable object</description>
-    </bean>#{end}
-#end
-#elseif($configType.contains('xml:') and !$configType.contains('@'))
+#else
     <rabbit:connection-factory id="rabbitConnectionFactory"
                            host="${spring.rabbitmq.host}" port="${spring.rabbitmq.port}"
                            username="${spring.rabbitmq.username}" password="${spring.rabbitmq.password}"
                            virtual-host="${spring.rabbitmq.virtualHost}"/>
     <rabbit:admin connection-factory="rabbitConnectionFactory" #if($showDefault)auto-startup="true" #{end}/>
-#else
+#end
+#if($configType.contains('@'))
 #if($showComment)
         <!--
         Handle annotation such as @RabbitListener(queues = {}/*,bindings = {@QueueBinding(exchange = @Exchange)}, queuesToDeclare = {@Queue(arguments = {@Argument})}*/), @RabbitHandler.
@@ -62,6 +56,16 @@
         Property 'containerFactoryBeanName' has default value 'rabbitListenerContainerFactory'.
         -->
 #end
+
     <rabbit:annotation-driven #if($showDefault)container-factory="rabbitListenerContainerFactory" #{end}/>
+#end
+    <bean id="rabbitListenerContainerFactory" class="org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory">
+        <property name="connectionFactory" ref="rabbitConnectionFactory" />
+    </bean>
+#if($showDefault)
+    <bean id="${rabbitMessageConverter}" class="org.springframework.amqp.support.converter.SimpleMessageConverter"#if(!$showComment) />#{else}>
+        <description>According message property named contentType, convert message body to suitable object</description>
+    </bean>#{end}
+#end
 #end
 </beans>

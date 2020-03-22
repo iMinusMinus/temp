@@ -1,6 +1,6 @@
 package ${package};
 
-#if($framework.contains('rabbitmq'))
+#if($framework.contains('rabbitmq') and !$configType.contains('xml'))
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -10,8 +10,6 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
-
-import com.rabbitmq.client.ConnectionFactory;
 
 #end
 #if($framework.contains('kafka'))
@@ -28,11 +26,11 @@ import org.springframework.context.annotation.Configuration;
  * @date 2020-03-14
  */
 @Configuration
-#if($framework.contains('rabbitmq'))
+#if($framework.contains('rabbitmq') and !$configType.contains('xml'))
 @EnableRabbit
 #end
 #if($framework.contains('kafka'))
-@EnableRabbit
+@EnableKafka
 #end
 public class MqConfig {
 
@@ -51,13 +49,13 @@ public class MqConfig {
     @Value("${spring.rabbitmq.virtualHost}")
     private String virtualHost;
 
-#if($framework.contains('rabbitmq'))
+#if($framework.contains('rabbitmq') and !$configType.contains('xml'))
     @Bean
-    public ConnectionFactory rabbitConnectionFactory() throws Exception {
+    public com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory() throws Exception {
         RabbitConnectionFactoryBean connectionFactory = new RabbitConnectionFactoryBean();
         connectionFactory.setHost(host);
         connectionFactory.setPort(port);
-        connectionFactory.setUserName(username);
+        connectionFactory.setUsername(username);
         connectionFactory.setPassword(password);
         connectionFactory.setVirtualHost(virtualHost);
         connectionFactory.afterPropertiesSet();

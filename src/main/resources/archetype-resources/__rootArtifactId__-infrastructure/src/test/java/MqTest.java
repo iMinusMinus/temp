@@ -6,6 +6,7 @@ import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 #end
 import org.junit.Before;
@@ -35,9 +36,9 @@ public class MqTest extends ContainerBase {
     private RabbitTemplate rabbitTemplate;
 
     @RabbitListener(bindings = {
-            @QueueBinding(exchange = @Exchange(name = "amq.direct"),
-                    value = @Queue(name = "amqp.queue.test.unique"),
-                    key = {"iMinusMinus"})})
+            @QueueBinding(exchange = @Exchange(value = "amq.direct"),
+                    value = @Queue(value = "amq.test"),
+                    key = "iMinusMinus")})
     public void handleMessage(String text) {
         Assert.assertEquals(text, message);
     }

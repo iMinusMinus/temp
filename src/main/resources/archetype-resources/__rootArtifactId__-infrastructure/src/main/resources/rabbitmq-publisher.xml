@@ -10,7 +10,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
 #end
-#if(!$configType.contains('xml:') and !$configType.contains('@'))
+#if(!$configType.contains('xml:'))
 #**
 * Defined exchanges: amq.direct, amq.fanout, amq.headers, amq.match, amq.rabbitmqtrace, amq.topic.
 * An exchange can be bound multi queue, whether delivery to this queue depends on type of exchange.
@@ -46,7 +46,7 @@
         </property>
 #end
     </bean>
-#elseif($configType.contains('xml:') and !$configType.contains('@'))
+#else
 #if($showDefault)
     <rabbit:fanout-exchange name="amq.fanout" />
 #end
@@ -54,6 +54,5 @@
         routing-key="${spring.rabbitmq.template.routingKey}" encoding="UTF-8"
         receive-timeout="${spring.rabbitmq.template.receiveTimeout}" reply-timeout="${spring.rabbitmq.template.replyTimeout}"
         message-converter="${rabbitMessageConverter}" #{end}/>
-#else
 #end
 </beans>
