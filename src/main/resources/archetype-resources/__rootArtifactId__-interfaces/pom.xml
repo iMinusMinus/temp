@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>${artifactId}</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
@@ -112,6 +112,12 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
+#if($framework.contains('dubbo'))
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo</artifactId>
+        </dependency>
+#end
         <dependency>
             <groupId>com.caucho</groupId>
             <artifactId>hessian</artifactId>
@@ -132,14 +138,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

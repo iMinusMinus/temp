@@ -1,4 +1,4 @@
-package ${package}.service;
+package ${package}.ws;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -7,9 +7,9 @@ import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.ResponseWrapper;
 
-import ${package}.dto.ObjectFactory;
-import ${package}.dto.OpenFund;
-import ${package}.dto.OpenFundBase;
+import ${package}.ws.dto.ObjectFactory;
+import ${package}.ws.dto.OpenFund;
+import ${package}.ws.dto.OpenFundBase;
 
 /**
  * @see wsdl2java生成的结果

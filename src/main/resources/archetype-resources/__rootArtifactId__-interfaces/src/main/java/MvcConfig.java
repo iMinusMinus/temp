@@ -6,7 +6,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 @Configuration
-@ComponentScan(value = "${groupId}.${artifactId}")
+@ComponentScan(value = "${package}")
 @EnableWebMvc
 public class MvcConfig extends WebMvcConfigurationSupport {
 

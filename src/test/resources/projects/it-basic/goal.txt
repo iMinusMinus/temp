@@ -1,1 +1,1 @@
-verify -Dspring.profiles.active=dev
+verify -Dspring.profiles.active=dev -Ddubbo.registry.id=registryService -Ddubbo.registry.addresss=127.0.0.1:9090 -Ddubbo.application.name=temp

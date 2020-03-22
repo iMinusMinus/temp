@@ -1,8 +1,6 @@
-package ${package}.service;
+package ${package};
 
-import ${package}.BaseAppTest;
-import ${package}.service.ChinaOpenFund;
-import ${package}.api.EchoService;
+import ${package}.ws.ChinaOpenFund;
 
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
@@ -21,7 +19,7 @@ import org.junit.Test;
 /**
  * Webservice测试类
  */
-public class WebServiceTest extends BaseAppTest {
+public class WebServiceTest extends ContainerBase {
 
     public static class JaxWsDynaClientFactory extends JaxWsDynamicClientFactory {
         protected JaxWsDynaClientFactory(Bus bus) {

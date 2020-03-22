@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#if($configType.contains('xml:'))
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+#end
+#if(!$configType.contains('xml:'))
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+#else
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+#end
+#if(!$configType.contains('xml:') and !$configType.contains('@'))
+    <bean class="org.springframework.amqp.rabbit.config.BindingFactoryBean">
+#if($showComment)
+        <description>exchange can bind to queue or another exchange.
+        If exchange type is direct or topic, please specify routingKey!
+        If exchange type is headers, please specify arguments!</description>
+#end
+        <property name="exchange" value="amq.fanout" />
+        <property name="destinationQueue" ref="${queueName}" />
+    </bean>
+    <bean id="${queueName}" class="org.springframework.amqp.core.Queue">
+        <constructor-arg index="0" value="${queueName}" />
+#if($showDefault)
+        <constructor-arg index="1" value="true" />
+        <constructor-arg index="2" value="false" />
+        <constructor-arg index="3" value="false" />
+    #end
+    </bean>
+    <bean factory-bean="rabbitListenerContainerFactory" factory-method="createListenerContainer">
+        <property name="messageListener" ref="${rabbitListener}" />
+        <property name="queueNames" value="${queueName}">
+    </bean>
+#*
+    <bean class="org.springframework.amqp.rabbit.config.ListenerContainerFactoryBean">
+#if($showComment)
+        <description>create 'org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer' by default,
+        or 'org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer' if specify 'type' as 'direct'</description>
+#end
+#if($showDefault)
+        <property name="type" value="${spring.rabbitmq.listener.type}" />
+        <property name="missingQueuesFatal" value="${spring.rabbitmq.listener.simple.missingQueuesFatal}" />
+#end
+        <property name="connectionFactory" ref="rabbitConnectionFactory" />
+        <property name="messageListener" ref="${rabbitListener}" />
+        <property name="queues">
+            <description>queue has bound to exchanges</description>
+            <array>
+                <ref bean="${queueName}" />
+            </array>
+        </property>
+    </bean>
+*#
+    <bean id="${rabbitListener}" class="org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter">
+#if($showComment)
+        <description>Convert org.springframework.amqp.core.Message to Object[].
+        Adapt to org.springframework.amqp.core.MessageListener by invoke 'handleMessage' of delegate.</description>
+#end
+#if($showDefault)
+        <property name="responseRoutingKey" value="" />
+        <property name="messageConverter" ref="${rabbitMessageConverter}" />
+        <property name="encoding" value="UTF-8" />
+        <property name="defaultRequeueRejected" value="true" />
+
+        <property name="defaultListenerMethod" value="handleMessage" />
+#end
+        <property name="delegate" ref="messageHandler" />
+    </bean>
+#elseif($configType.contains('xml:') and !$configType.contains('@'))
+    <rabbit:fanout-exchange name="amq.fanout">
+        <rabbit:bindings>
+            <rabbit:binding queue="${queueName}" />
+        </rabbit:bindings>
+    </rabbit:fanout-exchange>
+    <rabbit:queue name="${queueName}" #if($showDefault)durable="false" auto-delete="false" exclusive="false" #{end}/>
+        #if($showComment)
+        <!-- Define list of org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter -->
+        #end
+    <rabbit:listener-container #if($showDefault)connection-factory="rabbitConnectionFactory" #{end}>
+        <rabbit:listener queue-names="${queueName}" ref="${rabbitListener}" />
+    </rabbit:listener-container>
+#else
+#end
+</beans>

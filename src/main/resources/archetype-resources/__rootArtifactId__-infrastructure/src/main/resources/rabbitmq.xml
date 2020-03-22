@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#if($configType.contains('xml:'))
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+#end
+#if(!$configType.contains('xml:'))
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+#else
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+#end
+#if(!$configType.contains('xml:') and !$configType.contains('@'))
+    <bean id="rabbitConnectionFactory" class="org.springframework.amqp.rabbit.connection.CachingConnectionFactory">
+        <constructor-arg type="com.rabbitmq.client.ConnectionFactory">
+            <bean class="org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean">
+                <property name="host" value="${spring.rabbitmq.host}" />
+                <property name="port" value="${spring.rabbitmq.port}" />
+                <property name="username" value="${spring.rabbitmq.username}" />
+                <property name="password" value="${spring.rabbitmq.password}" />
+                <property name="virtualHost" value="${spring.rabbitmq.virtualHost}" />
+            </bean>
+        </constructor-arg>
+#if($showDefault)
+        <property name="channelCheckoutTimeout" value="${spring.rabbitmq.cache.channel.checkoutTimeout}" />
+        <property name="cacheMode" value="${spring.rabbitmq.cache.connection.mode}" />
+        <property name="channelCacheSize" value="${spring.rabbitmq.cache.channel.size}" />
+        <property name="connectionCacheSize" value="${spring.rabbitmq.cache.connection.size}" />
+#end
+    </bean>
+    <bean id="rabbitListenerContainerFactory" class="org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory">
+        <property name="connectionFactory" ref="rabbitConnectionFactory" />
+    </bean>
+    <bean id="${amqpAdmin}" class="org.springframework.amqp.rabbit.core.RabbitAdmin">
+        <constructor-arg index="0" type="org.springframework.amqp.rabbit.connection.ConnectionFactory" ref="rabbitConnectionFactory" />
+#if($showDefault)
+        <property name="autoStartup" value="true" />
+        <property name="taskExecutor">
+            <bean class="org.springframework.core.task.SimpleAsyncTaskExecutor" />
+        </property>
+#end
+    </bean>
+#if($showDefault)
+    <bean id="${rabbitMessageConverter}" class="org.springframework.amqp.support.converter.SimpleMessageConverter" #if(!$showComment)/>#{else}
+        <description>According message property named contentType, convert message body to suitable object</description>
+    </bean>#{end}
+#end
+#elseif($configType.contains('xml:') and !$configType.contains('@'))
+    <rabbit:connection-factory id="rabbitConnectionFactory"
+                           host="${spring.rabbitmq.host}" port="${spring.rabbitmq.port}"
+                           username="${spring.rabbitmq.username}" password="${spring.rabbitmq.password}"
+                           virtual-host="${spring.rabbitmq.virtualHost}"/>
+    <rabbit:admin connection-factory="rabbitConnectionFactory" #if($showDefault)auto-startup="true" #{end}/>
+#else
+#if($showComment)
+        <!--
+        Handle annotation such as @RabbitListener(queues = {}/*,bindings = {@QueueBinding(exchange = @Exchange)}, queuesToDeclare = {@Queue(arguments = {@Argument})}*/), @RabbitHandler.
+        Define bean named 'org.springframework.amqp.rabbit.config.internalRabbitListenerAnnotationProcessor',
+        which type is 'org.springframework.amqp.rabbit.annotation.RabbitListenerAnnotationBeanPostProcessor'.
+        Property 'endpointRegistry' has default value, bean named 'org.springframework.amqp.rabbit.config.internalRabbitListenerEndpointRegistry',
+        and type is 'org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry'.
+        Property 'containerFactoryBeanName' has default value 'rabbitListenerContainerFactory'.
+        -->
+#end
+    <rabbit:annotation-driven #if($showDefault)container-factory="rabbitListenerContainerFactory" #{end}/>
+#end
+</beans>

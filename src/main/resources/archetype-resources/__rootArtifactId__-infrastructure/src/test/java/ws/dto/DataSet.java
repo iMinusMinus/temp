@@ -1,4 +1,4 @@
-package ${package}.dto;
+package ${package}.ws.dto;
 
 import java.io.Serializable;
 

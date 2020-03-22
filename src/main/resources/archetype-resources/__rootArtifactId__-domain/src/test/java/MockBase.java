@@ -1,11 +1,16 @@
 package ${package};
 
 import org.junit.Before;
+#if($configType.contains('@java'))
 import org.junit.runner.RunWith;
+#end
 import org.junit.Test;
 
+#if(!$configType.contains('@java'))
 import org.mockito.MockitoAnnotations;
+#else
 import org.mockito.junit.MockitoJUnitRunner;
+#end
 
 /**
  * base mock class for unit test

@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 @RequestMapping("/{rpc}")
 public class GenericController {
 
-    @Resource
+    //@Resource
     private GenericService genericService;
 
     @RequestMapping(value = "/{service}", method = {RequestMethod.POST})

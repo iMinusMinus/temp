@@ -1,4 +1,4 @@
-package ${package}.dto;
+package ${package}.ws.dto;
 
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;

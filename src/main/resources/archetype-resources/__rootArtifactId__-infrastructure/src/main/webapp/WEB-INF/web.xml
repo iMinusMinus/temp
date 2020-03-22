@@ -24,7 +24,7 @@
 #if($configType.contains('xml'))
         <param-value>/WEB-INF/applicationContext.xml</param-value>
 #else
-        <param-value>${groupId}.${artifactId}.AppConfig</param-value>
+        <param-value>${groupId}.${artifactId}.ContextConfig</param-value>
 #end
     </context-param>
 #end
@@ -338,5 +338,14 @@
         <servlet-name>${servletName}</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+#end
+#if($framework.contains('jsp'))
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <include-prelude>/WEB-INF/jsp/include.jspf</include-prelude>
+            <trim-directive-whitespaces>true</trim-directive-whitespaces>
+        </jsp-property-group>
+    </jsp-config>
 #end
 </web-app>

@@ -72,7 +72,8 @@ public class Struts2Test extends StrutsSpringTestCase {
 
     @Override
     protected String[] getContextLocations() {
-        return new String[]{"file:src/main/webapp/WEB-INF/applicationContext.xml"};
+        //return new String[]{"file:src/main/webapp/WEB-INF/applicationContext.xml"};
+        return new String[] {};
     }
 
 }

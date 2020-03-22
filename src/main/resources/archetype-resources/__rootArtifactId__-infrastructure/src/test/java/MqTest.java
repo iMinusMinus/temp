@@ -11,7 +11,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.junit.Before;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.annotation.Resource;
 
@@ -21,9 +20,7 @@ import javax.annotation.Resource;
  * @author iMinusMinus
  * @date 2020-03-14
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {MqConfig.class})
-public class MqTest {
+public class MqTest extends ContainerBase {
 
     private String message;
 
@@ -47,10 +44,15 @@ public class MqTest {
 #end
 
     @Test
-    public void testProduce() {
+    public void testPublish() {
 #if($frameworks.contains('rabbitmq'))
         rabbitTemplate.convertAndSend("amq.direct", "iMinusMinus", message);
 #end
+    }
+
+    @Test
+    public void testTransactionalPublish() {
+        //TODO
     }
 
 }

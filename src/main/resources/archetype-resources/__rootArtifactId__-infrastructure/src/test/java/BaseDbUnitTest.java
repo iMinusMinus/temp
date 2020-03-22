@@ -25,7 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @date 2019-06-23
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {DalContextConfig.class, DalConfig.class})
+@ContextConfiguration(classes = {ContextConfig.class, DalConfig.class})
 public abstract class BaseDbUnitTest {
 
     @Resource

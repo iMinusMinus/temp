@@ -6,19 +6,12 @@ import ${package}.domain.MetaClass;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {DalContextConfig.class, DalConfig.class})
-@ActiveProfiles(value = {"junit"})
-public class DalTest {
+public class DalTest extends ContainerBase {
 
     @Resource
     private MetaClassMapper metaClassMapper;

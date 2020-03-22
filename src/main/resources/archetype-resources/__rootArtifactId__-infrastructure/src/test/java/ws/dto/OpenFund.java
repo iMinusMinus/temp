@@ -1,4 +1,4 @@
-package ${package}.dto;
+package ${package}.ws.dto;
 
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;

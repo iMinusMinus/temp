@@ -4,15 +4,69 @@
        xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
        http://dubbo.apache.org/schema/dubbo http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
+#if(!$configType.contains('xml:') and $configType.contains('@'))
+    <bean class="org.apache.dubbo.config.spring.beans.factory.annotation.ServiceAnnotationBeanPostProcessor"#if(!$showComment) />#{else}>
+        <description>register 'org.apache.dubbo.config.spring.context.DubboBootstrapApplicationListener' to register service when ContextRefresh.
+        Scan base package, register bean which class hold annotaion 'org.apache.dubbo.config.annotation.Service'.
+        The service bean name pattern is 'interfaceName:version:group'.</description>
+    </bean>#{end}
 
+    <bean id="referenceAnnotationBeanPostProcessor" class="org.apache.dubbo.config.spring.beans.factory.annotation.ReferenceAnnotationBeanPostProcessor"#if(!$showComment) />#{else}>
+        <description>Find bean property which hold annotation 'org.apache.dubbo.config.annotation.Reference' then inject proxy.</description>
+    </bean>#{end}
+
+#elseif(!$configType.contains('xml:') and !$configType.contains('@'))
+
+    <bean class="org.apache.dubbo.config.ApplicationConfig">
+        <property name="name" value="${spring.application.name}" />
+        <!--<property name="environment" value="" />-->
+        <!--<property name="logger" value="slf4j" />-->
+        <!--<property name="registries">-->
+            <!--<list>-->
+
+            <!--</list>-->
+        <!--</property>-->
+        <!--<property name="monitor">-->
+            <!---->
+        <!--</property>-->
+    </bean>
+    <!--<bean class="org.apache.dubbo.config.RegistryConfig">-->
+        <!--<property name="address" value="" />-->
+        <!--<property name="port" value="" />-->
+        <!--<property name="protocol" value="" />-->
+    <!--</bean>-->
+    <!--<bean class="org.apache.dubbo.config.ProtocolConfig">-->
+        <!--<property name="name" value="" />-->
+        <!--<property name="host" value="" />-->
+        <!--<property name="port" value="" />-->
+        <!--<property name="codec" value="" />-->
+        <!--<property name="serialization" value="" />-->
+        <!--<property name="charset" value="" />-->
+        <!--<property name="transporter" value="" />-->
+        <!--<property name="networker" value="" />-->
+    <!--</bean>-->
+#elseif($configType.contains('xml:') and !$configType.contains('@'))
+    <!--
     <dubbo:application name="${dubbo.application.name}"  version="${dubbo.application.version}" environment="${dubbo.application.environment}"
                        owner="${dubbo.application.owner}" logger="${dubbo.application.logger}"/>
     <dubbo:registry id="${dubbo.registry.id}" address="${dubbo.registry.addresss}" transport="${dubbo.registry.transport}"/>
     <dubbo:protocol id="${dubbo.protocol.id}" name="${dubbo.protocol.name}" port="${dubbo.protocol.port}"
                     serialization="${dubbo.protocol.serialization}" transporter="${dubbo.protocol.transporter}"
                     dispatcher="${dubbo.protocol.dispatcher}"/>
+    -->
+#else
+#if($showComment)
+    <!--
+    Define bean of type 'org.apache.dubbo.config.spring.beans.factory.annotation.ServiceAnnotationBeanPostProcessor'.
+    Define bean named 'referenceAnnotationBeanPostProcessor' of type 'org.apache.dubbo.config.spring.beans.factory.annotation.ReferenceAnnotationBeanPostProcessor'.
+    -->
+#end
+    <dubbo:annotation package="${package}" />
+#end
 #if($showComment)
     <!-- override rule:
+    -D > xml > properties
+
     method > interface > global;
     consumer > provider
     -->

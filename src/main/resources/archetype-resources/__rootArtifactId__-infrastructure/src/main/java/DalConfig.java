@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +46,7 @@ import com.zaxxer.hikari.HikariDataSource;
 #end
 
 @Configuration
+@EnableCaching
 #if($framework.contains('mybatis'))
 @MapperScan(basePackages = {"${package}.dao"})
 #end

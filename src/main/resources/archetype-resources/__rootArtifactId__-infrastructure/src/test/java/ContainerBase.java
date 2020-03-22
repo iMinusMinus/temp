@@ -2,7 +2,7 @@ package ${package};
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -14,11 +14,8 @@ import javax.annotation.Resource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(classes = {MvcConfig.class})
-public abstract class BaseMvcTest {
-
-    @Value("${spring.profiles.active}")
-    private String profile;
+@ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/${servletName}-servlet.xml", "file:src/main/webapp/WEB-INF/applicationContext.xml"})
+public abstract class ContainerBase {
 
     @Resource
     private WebApplicationContext wac;
@@ -27,8 +24,7 @@ public abstract class BaseMvcTest {
 
     @Before
     public void setUp() {
-        System.out.println("current run environment: " + profile);
         mvc = MockMvcBuilders.webAppContextSetup(wac).build();
-     }
+    }
 
 }

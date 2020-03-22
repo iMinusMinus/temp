@@ -1,10 +1,26 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#if($configType.contains('xml:'))
        xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+#end
        xmlns="http://www.springframework.org/schema/beans"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+#if($configType.contains('xml:'))
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://dubbo.apache.org/schema/dubbo http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
+#else
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+#end
+#if(!$configType.contains('xml:'))
+    <bean class="org.apache.dubbo.config.ConsumerConfig">
 
-    <dubbo:consumer/>
+    </bean>
+    <!--<bean id="" class="org.apache.dubbo.config.spring.ReferenceBean">-->
+        <!--<property name="interface" value="" />-->
+    <!--</bean>-->
+#else
+    <dubbo:consumer />
 
-    <dubbo:reference interface="${groupId}." id ="beanId"/>
+    <!--
+    <dubbo:reference interface="" id =""/>
+    -->
+#end
 </beans>

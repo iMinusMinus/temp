@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+#if($configType.contains('xml:'))
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+#end
+#if(!$configType.contains('xml:'))
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+#else
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+#end
+#if(!$configType.contains('xml:') and !$configType.contains('@'))
+#**
+* Defined exchanges: amq.direct, amq.fanout, amq.headers, amq.match, amq.rabbitmqtrace, amq.topic.
+* An exchange can be bound multi queue, whether delivery to this queue depends on type of exchange.
+* If exchange type is direct, routingKey must be same. If exchange type is fanout, queues bound match.
+* If exchange type is topic, pattern match. If exchange type is headers, message header matches queue argument.
+*#
+#if($showDefault)
+    <bean class="org.springframework.amqp.core.FanoutExchange">
+        <constructor-arg index="0" value="amq.fanout" />
+        <constructor-arg index="1" value="true" />
+        <constructor-arg index="2" value="false" />
+    </bean>
+#end
+    <bean id="rabbitTemplate" class="org.springframework.amqp.rabbit.core.RabbitTemplate">
+#if($showDefault)
+        <property name="exchange" value="${spring.rabbitmq.template.exchange}" />
+        <property name="routingKey" value="${spring.rabbitmq.template.routingKey}" />
+        <property name="receiveTimeout" value="${spring.rabbitmq.template.receiveTimeout}" />
+        <property name="replyTimeout" value="${spring.rabbitmq.template.replyTimeout}" />
+        <property name="messageConverter" ref="${rabbitMessageConverter}" />
+        <property name="messagePropertiesConverter">
+            <bean class="org.springframework.amqp.rabbit.support.DefaultMessagePropertiesConverter" />
+        </property>
+        <property name="encoding" value="UTF-8" />
+#end
+        <property name="connectionFactory" ref="rabbitConnectionFactory" />
+    </bean>
+    <bean class="org.springframework.amqp.rabbit.core.RabbitMessagingTemplate">
+        <property name="rabbitTemplate" ref="rabbitTemplate" />
+#if($showDefault)
+        <property name="amqpMessageConverter">
+            <bean class="org.springframework.amqp.support.converter.MessagingMessageConverter" />
+        </property>
+#end
+    </bean>
+#elseif($configType.contains('xml:') and !$configType.contains('@'))
+#if($showDefault)
+    <rabbit:fanout-exchange name="amq.fanout" />
+#end
+    <rabbit:template id="rabbitTemplate" connection-factory="rabbitConnectionFactory" #if($showDefault)exchange="${spring.rabbitmq.template.exchange}"
+        routing-key="${spring.rabbitmq.template.routingKey}" encoding="UTF-8"
+        receive-timeout="${spring.rabbitmq.template.receiveTimeout}" reply-timeout="${spring.rabbitmq.template.replyTimeout}"
+        message-converter="${rabbitMessageConverter}" #{end}/>
+#else
+#end
+</beans>
