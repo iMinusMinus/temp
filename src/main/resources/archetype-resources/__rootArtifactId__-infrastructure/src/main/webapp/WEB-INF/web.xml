@@ -168,7 +168,7 @@
     </filter-mapping>
 #end
 
-#if($frameworks.contains("cxf"))
+#if($framework.contains("cxf"))
     <servlet>
         <description>Apache CXF Endpoint</description>
         <servlet-name>cxf</servlet-name>

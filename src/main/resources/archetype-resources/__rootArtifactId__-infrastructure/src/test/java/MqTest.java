@@ -1,6 +1,6 @@
 package ${package};
 
-#if($frameworks.contains('rabbitmq'))
+#if($framework.contains('rabbitmq'))
 import org.springframework.amqp.rabbit.annotation.Argument;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
@@ -30,7 +30,7 @@ public class MqTest extends ContainerBase {
     }
 
 
-#if($frameworks.contains('rabbitmq'))
+#if($framework.contains('rabbitmq'))
     @Resource
     private RabbitTemplate rabbitTemplate;
 
@@ -45,7 +45,7 @@ public class MqTest extends ContainerBase {
 
     @Test
     public void testPublish() {
-#if($frameworks.contains('rabbitmq'))
+#if($framework.contains('rabbitmq'))
         rabbitTemplate.convertAndSend("amq.direct", "iMinusMinus", message);
 #end
     }
