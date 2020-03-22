@@ -37,7 +37,7 @@ public class MqTest extends ContainerBase {
 
     @RabbitListener(bindings = {
             @QueueBinding(exchange = @Exchange(value = "amq.direct"),
-                    value = @Queue(value = "amq.test"),
+                    value = @Queue(value = "queue.test"),
                     key = "iMinusMinus")})
     public void handleMessage(String text) {
         Assert.assertEquals(text, message);

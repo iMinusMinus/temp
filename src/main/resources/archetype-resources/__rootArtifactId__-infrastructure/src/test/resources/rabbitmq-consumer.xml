@@ -8,7 +8,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 #else
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+            http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
 #end
 #if(!$configType.contains('xml:'))
     <bean class="org.springframework.amqp.rabbit.config.BindingFactoryBean">
@@ -21,7 +21,7 @@
         <property name="destinationQueue" ref="queueName" />
     </bean>
     <bean id="queueName" class="org.springframework.amqp.core.Queue">
-        <constructor-arg index="0" value="amq.test" />
+        <constructor-arg index="0" value="queue.test" />
 #if($showDefault)
         <constructor-arg index="1" value="true" />
         <constructor-arg index="2" value="false" />
@@ -30,7 +30,7 @@
     </bean>
     <bean factory-bean="rabbitListenerContainerFactory" factory-method="createListenerContainer">
         <property name="messageListener" ref="rabbitListener" />
-        <property name="queueNames" value="amq.test">
+        <property name="queueNames" value="queue.test">
     </bean>
 #*
     <bean class="org.springframework.amqp.rabbit.config.ListenerContainerFactoryBean">
@@ -70,15 +70,15 @@
 #else
     <rabbit:fanout-exchange name="amq.fanout">
         <rabbit:bindings>
-            <rabbit:binding queue="amq.test" />
+            <rabbit:binding queue="queue.test" />
         </rabbit:bindings>
     </rabbit:fanout-exchange>
-    <rabbit:queue name="amq.test" #if($showDefault)durable="false" auto-delete="false" exclusive="false" #{end}/>
+    <rabbit:queue name="queue.test" #if($showDefault)durable="false" auto-delete="false" exclusive="false" #{end}/>
         #if($showComment)
         <!-- Define list of org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter -->
         #end
     <rabbit:listener-container #if($showDefault)connection-factory="rabbitConnectionFactory" #{end}>
-        <rabbit:listener queue-names="amq.test" ref="messageHandler" />
+        <rabbit:listener queue-names="queue.test" ref="messageHandler" method="handleMessage" />
     </rabbit:listener-container>
 #end
 
