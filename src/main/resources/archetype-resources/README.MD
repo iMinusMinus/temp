@@ -67,7 +67,11 @@
 
    + Hibernate
 
-     src/main/resources/hibernate.cfg.xml,src/main/resources/*.hbm.xml      
+     src/main/resources/hibernate.cfg.xml,src/main/resources/**/*.hbm.xml
+     
+   + JPA
+   
+     src/main/resources/META-INF/persistence.xml        
 
    + JValidation
 

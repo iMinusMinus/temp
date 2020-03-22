@@ -10,7 +10,10 @@
     </class>
     <database-object>
         <create>
-
+            CREATE TABLE meta_class (id BIGINT NOT NULL, class_name VARCHAR(255) NOT NULL, super_class_name VARCHAR(255))
         </create>
+        <drop>
+            DROP TABLE meta_class
+        </drop>
     </database-object>
 </hibernate-mapping>

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 #if($configType.contains('xml:'))
-        xmlns:mvc="http://www.springframework.org/schema/mvc"
-        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
 #end
 #if(!$configType.contains('xml:'))
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -10,8 +9,7 @@
 #else
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+            http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 #end
 #if($configType.contains('xml') and $showDefault)
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver"#if(!$showComment) />#{else}>
@@ -201,7 +199,7 @@
 #if($showDefault)
         <property name="order" value="-2147483648" />
 #end
-        <property name="contentNegotiationManager" ref="${contentNegotiationManager}" />
+        <property name="contentNegotiationManager" ref="mvcContentNegotiationManager" />
         <property name="viewResolvers">
             <list>
                 <ref bean="viewResolver" />
@@ -348,7 +346,7 @@
     <bean id="${jaxb2xmlHtppMessageConverter}" class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />
     <bean id="${jackson2jsonHttpMessageConverter}" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
 
-    <bean id="${contentNegotiationManager}" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+    <bean id="mvcContentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
 #if($showComment)
         <description>Factory bean produce bean type of 'org.springframework.web.accept.ContentNegotiationManager'</description>
 #end
@@ -391,14 +389,14 @@
         </description>
 #end
         <property name="order" value="0" />
-        <property name="contentNegotiationManager" ref="${contentNegotiationManager}" />
+        <property name="contentNegotiationManager" ref="mvcContentNegotiationManager" />
         <property name="removeSemicolonContent" value="true" />
     </bean>
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
 #if($showComment)
         <description>@ControllerAdvice, @ModelAttribute, @RequestMapping, @InitBinder</description>
 #end
-        <property name="contentNegotiationManager" ref="${contentNegotiationManager}" />
+        <property name="contentNegotiationManager" ref="mvcContentNegotiationManager" />
         <property name="webBindingInitializer" ref="${webBindingInitializer}" />
         <property name="messageConverters">
             <list>
@@ -414,7 +412,7 @@
     </bean>
     <bean class="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver" #if(!$showComment)/>#{else}>
         <description>Resolves exceptions by invoking an @ExceptionHandler method in a @ControllerAdvice class.</description>
-        <property name="contentNegotiationManager" ref="${contentNegotiationManager}" />
+        <property name="contentNegotiationManager" ref="mvcContentNegotiationManager" />
         <property name="messageConverters">
             <list>
                 <ref bean="${byteArrayHttpMessageConverter}" />
@@ -463,7 +461,7 @@
     org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.
     -->
 #end
-    <mvc:annotation-driven #if($showDefault)content-negotiation-manager="${contentNegotiationManager}"#{end}>
+    <mvc:annotation-driven #if($showDefault)content-negotiation-manager="mvcContentNegotiationManager"#{end}>
 #if($showDefault)
         <mvc:message-converters register-defaults="false">
             <ref bean="${byteArrayHttpMessageConverter}" />
@@ -499,8 +497,7 @@
 #end
 #end
 
-#if($configType.contains('xml'))
-#if(!$configType.contains('xml:'))
+#if($configType.contains('@'))
     <bean id="org.springframework.context.annotation.internalConfigurationAnnotationProcessor"
           class="org.springframework.context.annotation.ConfigurationClassPostProcessor"#if(!$showComment)/>#{else}>
         <description>Parse each @Configuration class; Handle any @PropertySource annotations</description>
@@ -526,32 +523,8 @@
         <description>Look up field or method with @javax.xml.ws.WebServiceRef, @javax.ejb.EJB, @Resource annotation and inject to it.</description>
     </bean>
 #{end}
-#else
-#if($showComment)
-    <!--
-    Create org.springframework.context.annotation.ClassPathBeanDefinitionScanner to scan classses.
-    Likes &#60;context:annotation-config /&#62;, it also defines
-    org.springframework.context.annotation.ConfigurationClassPostProcessor,
-    org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor,
-    org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor,
-    org.springframework.context.annotation.CommonAnnotationBeanPostProcessor,
-    org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor.
-    If use default filters, spring will enable @ManagedBean, @Named, @Component
-    which means @Controller, @Service, @Repository enabled at same time!
-    If not  use default filters, default nothng will be consider as spring bean.
-    And exclude filter is precedence of include filter.
-    -->
-#end
-    <context:component-scan base-package="${package}" use-default-filters="false" #if($showDefault)annotation-config="true"#{end}>
-        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
-        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
-        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />
-    </context:component-scan>
-#end
 #end
 
-#if($configType.contains('xml'))
-#if(!$configType.contains('xml:'))
     <beans profile="dev">
         <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
 #if($showComment)
@@ -597,26 +570,4 @@
             </property>
         </bean>
     </beans>
-#else
-#if($showComment)
-    <!-- Define org.springframework.context.support.PropertySourcesPlaceholderConfigurer -->
-#end
-    <beans profile="default">
-        <context:property-placeholder location="classpath:/application.properties" file-encoding="UTF-8"
-            #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
-    </beans>
-    <beans profile="dev">
-        <context:property-placeholder location="classpath:/application.properties,classpath:/application-dev.properties" file-encoding="UTF-8"
-            #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
-    </beans>
-    <beans profile="test">
-        <context:property-placeholder location="classpath:/application.properties,classpath:/application-test.properties" file-encoding="UTF-8"
-            #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
-    </beans>
-    <beans profile="prod">
-        <context:property-placeholder location="classpath:/application.properties,classpath:/application-prod.properties" file-encoding="UTF-8"
-            #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
-    </beans>
-#end
-#end
 </beans>

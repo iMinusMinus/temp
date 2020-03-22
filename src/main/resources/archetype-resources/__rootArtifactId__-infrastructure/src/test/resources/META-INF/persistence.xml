@@ -7,7 +7,7 @@
         <description>JPA implemention: Hibernate EntityManager, Oracle Toplink/EclipseLink, Apache  OpenJPA</description>
 #end
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>${groupId}.${artifactId}.Domain</class>
+        <class>${package}.domain.MetaClass</class>
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 #if($showComment)
         <!-- JPA offers two mapping options: annotations and XML mappings.
@@ -18,7 +18,7 @@
         <mapping-file>hbm.xml</mapping-file>
 #end
         <properties>
-            <property name="javax.persistence.transactionType" value="JTA|RESOURCE_LOCAL" />
+            <property name="javax.persistence.transactionType" value="RESOURCE_LOCAL" />
             <property name="javax.persistence.jtaDataSource" value="" />
             <property name="javax.persistence.nonJtaDataSource" value="" />
             <property name="javax.persistence.jdbc.driver" value="" />
@@ -119,7 +119,6 @@
             <property name="hibernate.jmx.usePlatformServer" value="false" />
             <property name="hibernate.jacc.enabled" value="false" />
             <property name="hibernate.service.allow_crawling" value="true" />
-            <property name="hibernate.session_factory_name_is_jndi" value="true" />
             <property name="hibernate.ejb.cfgfile" value="hibernate.cfg.xml" />
             <property name="hibernate.ejb.discard_pc_on_close" value="false" />
             <property name="hibernate.ejb.metamodel.population" value="ignoreUnsupported" />
@@ -133,6 +132,7 @@
             <property name="hibernate.integration.envers.enabled" value="true" />
             <property name="hibernate.integration.spatial.enabled" value="true" />
  #end
+            <property name="hibernate.session_factory_name_is_jndi" value="false" />
 #if($showComment)
             <!-- properties for EclipseLink -->
 #end

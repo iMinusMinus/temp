@@ -9,9 +9,15 @@
 <hibernate-configuration>
     <session-factory name="java:hibernate/SessionFactory">
         <!-- properties: override hibernate.properties -->
-        <property name="connection.datasource"></property>
+        <!--<property name="connection.datasource">java:comp/env/jdbc/datasourc</property>-->
+        <property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>
         <!-- mapping files -->
-        <mapping resource="*.hbm.xml" />
+#if(!$configType.contains('@'))
+        <mapping resource="MetaClass.hbm.xml" />
+#else
+        <mapping class="${package}.domain.MetaClass" />
+        <mapping class="${package}.domain.MetaField" />
+#end
         <!-- cache settings -->
     </session-factory>
 

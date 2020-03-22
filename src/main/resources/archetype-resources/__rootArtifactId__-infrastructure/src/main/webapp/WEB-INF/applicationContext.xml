@@ -11,10 +11,10 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 #{else}
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
 #end
 #if($showDefault)
     <bean id="environment" scope="singleton" class="org.springframework.core.env.StandardEnvironment" #if(!$showComment)/>#{else}>
@@ -117,20 +117,22 @@
     -->
 #end
 #if($showComment)
-    <!-- Create org.springframework.context.annotation.ClassPathBeanDefinitionScanner to scan classses.
-    As enhanced pattern of &#60;context:annotation-config /&#62;, it defines
+    <!--
+    Create org.springframework.context.annotation.ClassPathBeanDefinitionScanner to scan classses.
+    Likes &#60;context:annotation-config /&#62;, it also defines
     org.springframework.context.annotation.ConfigurationClassPostProcessor,
     org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor,
     org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor,
     org.springframework.context.annotation.CommonAnnotationBeanPostProcessor,
-    org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor,
     org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor.
+    If use default filters, spring will enable @ManagedBean, @Named, @Component
+    which means @Controller, @Service, @Repository enabled at same time!
+    If not  use default filters, default nothng will be consider as spring bean.
+    And exclude filter is precedence of include filter.
     -->
 #end
-    <context:component-scan base-package="${package}" use-default-filters="false" #if($showDefault)annotation-config="true"#{end}>
-        <context:include-filter type="annotation" expression="org.springframework.stereotype.Service" />
-        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository" />
-        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component" />
+    <context:component-scan base-package="${package}" use-default-filters="true" #if($showDefault)annotation-config="true"#{end}>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
     </context:component-scan>
 #end
 #if($configType.contains('xml:') and $showComment)
@@ -293,7 +295,7 @@
 #if($framework.contains('hibernate'))
     <bean id="${sessionFactory}" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <property name="dataSource" ref="${dataSource}" />
-        <!--<property name="configLocations" value="classpath:hibernate.cfg.xml" />-->
+        <property name="configLocations" value="classpath:hibernate.cfg.xml" />
     </bean>
 #end
     <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor">
@@ -384,7 +386,7 @@
 #**
  * keep &#60;beans profile="" /&#62;at the end of file!
  *#
-#if($configType.contains('xml:') or ($configType.contains('@') and !$configType.contains('@java')))
+#if($configType.contains('xml:'))
 #if(!$showComment)    <!-- Define org.springframework.context.support.PropertySourcesPlaceholderConfigurer -->#{end}
     <beans profile="default">
         <context:property-placeholder location="classpath:/application.properties" file-encoding="UTF-8"

@@ -53,9 +53,6 @@ under the License.
         <requiredProperty key="resourceHandler">
             <defaultValue>resourceHandler</defaultValue>
         </requiredProperty>
-        <requiredProperty key="contentNegotiationManager">
-            <defaultValue>mvcContentNegotiationManager</defaultValue>
-        </requiredProperty>
         <requiredProperty key="conversionService">
             <defaultValue>mvcConversionService</defaultValue>
         </requiredProperty>

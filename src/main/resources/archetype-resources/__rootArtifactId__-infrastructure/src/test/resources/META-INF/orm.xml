@@ -5,13 +5,16 @@
                                     http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
                  version="1.0">
     <description></description>
-    <package>${groupId}</package>
-    <entity class="${groupId}.${artifactId}.Test" name="Test">
-        <table name="test" />
+    <package>${package}</package>
+    <entity class="${package}.domain.MetaClass" name="metaClass">
+        <table name="meta_class" />
         <attributes>
             <id name="id" />
-            <basic name="version">
-                <column name="ver" length="8" />
+            <basic name="name">
+                <column name="class_name" length="255" />
+            </basic>
+            <basic name="superName">
+                <column name="super_class_name" length="255" />
             </basic>
         </attributes>
     </entity>
