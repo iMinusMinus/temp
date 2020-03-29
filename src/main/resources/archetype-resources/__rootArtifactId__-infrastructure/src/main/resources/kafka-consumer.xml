@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="kafkaListenerContainerFactory" class="org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory">
+        <property name="consumerFactory">
+            <bean class="org.springframework.kafka.core.DefaultKafkaConsumerFactory">
+                <constructor-arg index="0">
+                    <map key-type="java.lang.String" value-type="java.lang.Object">
+                        <entry key="bootstrap.servers" value="${spring.kafka.bootstrapServers}" />
+                        <entry key="client.id" value="${spring.kafka.clientId}" />
+
+                        <entry key="auto.commit.interval.ms" value="${spring.kafka.consumer.autoCommitInterval}" />
+                        <entry key="auto.offset.reset" value="${spring.kafka.consumer.autoOffsetReset}" />
+                        <entry key="enable.auto.commit" value="${spring.kafka.consumer.enableAutoCommit}" />
+                        <entry key="fetch.max.wait.ms" value="spring.kafka.consumer.fetchMaxWait" />
+                        <entry key="fetch.min.bytes" value="${spring.kafka.consumer.fetchMinSize}" />
+                        <entry key="group.id" value="${spring.kafka.consumer.groupId}" />
+                        <entry key="heartbeat.interval.ms" value="${spring.kafka.consumer.heartbeatInterval}" />
+                        <entry key="isolation.level" value="${spring.kafka.consumer.isolationLevel}" />
+                        <entry key="key.serializer" value="${spring.kafka.producer.keySerializer}" />
+                        <entry key="value.serializer" value="${spring.kafka.producer.valueSerializer}" />
+                        <entry key="max.poll.records" value="${spring.kafka.consumer.maxPollRecords}" />
+                    </map>
+                </constructor-arg>
+            </bean>
+        </property>
+#if($showDefault)
+        <property name="topicCheckTimeout" value="30" />
+
+        <property name="ackMode" value="${spring.kafka.listener.ackMode}" />
+        <property name="pollTimeout" value="${spring.kafka.listener.pollTimeout}" />
+        <property name="noPollThreshold" value="${spring.kafka.listener.noPollThreshold}" />
+        <property name="monitorInterval" value="${spring.kafka.listener.monitorInterval}" />
+        <property name="missingTopicsFatal" value="spring.kafka.listener.missingTopicsFatal" />
+        <property name="replyTemplate" ref="${kafkaTemplate}" />
+        <property name="transactionManager" ref="${kafkaTransactionManager}" />
+#end
+    </bean>
+
+    <bean id="org.springframework.kafka.config.internalKafkaListenerAnnotationProcessor"
+          class="org.springframework.kafka.annotation.KafkaListenerAnnotationBeanPostProcessor"#if(!$showComment and !$showDefault) />#{else}>
+        <description>
+        @EnableKafka import bean.
+        Handle anotations like 'org.springframework.kafka.annotation.KafkaListener',
+        'org.springframework.kafka.annotation.KafkaListeners' and 'org.springframework.kafka.annotation.KafkaHandler'.
+        Wrap it as a 'org.springframework.kafka.config.MethodKafkaListenerEndpoint'.</description>
+#if($showDefault)
+        <property name="charset" value="UTF-8" />
+        <property name="defaultContainerFactoryBeanName" value="kafkaListenerContainerFactory" />
+#end
+    </bean>#{end}
+
+    <bean id="org.springframework.kafka.config.internalKafkaListenerEndpointRegistry"
+          class="org.springframework.kafka.config.KafkaListenerEndpointRegistry"#if(!$showComment) />#{else}>
+        <description>
+        @EnableKafka import bean.
+        Create 'org.springframework.kafka.listener.MessageListenerContainer'
+            with 'org.springframework.kafka.config.KafkaListenerEndpoint'
+            and 'org.springframework.kafka.config.KafkaListenerContainerFactory',
+        then register it to BeanFactory.</description>
+    </bean>#{end}
+
+
+</beans>

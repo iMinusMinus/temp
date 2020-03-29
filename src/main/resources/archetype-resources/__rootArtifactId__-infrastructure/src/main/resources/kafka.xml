@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="${kafkaProducerFactory}" class="org.springframework.kafka.core.DefaultKafkaProducerFactory">
+        <constructor-arg index="0">
+            <map key-type="java.lang.String" value-type="java.lang.Object">
+                <entry key="bootstrap.servers" value="${spring.kafka.bootstrapServers}" />
+                <entry key="client.id" value="${spring.kafka.clientId}" />
+
+                <entry key="acks" value="${spring.kafka.producer.acks}" />
+                <entry key="batch.size" value="${spring.kafka.producer.batchSize}" />
+                <entry key="buffer.memory" value="${spring.kafka.producer.bufferMemory}" />
+                <entry key="compression.type" value="${spring.kafka.producer.compressionType}" />
+                <entry key="key.serializer" value="${spring.kafka.producer.keySerializer}" />
+                <entry key="retries" value="${spring.kafka.producer.retries}" />
+                <entry key="value.serializer" value="${spring.kafka.producer.valueSerializer}" />
+                <entry key="transactional.id" value="${spring.kafka.producer.transactionIdPrefix}" />
+            </map>
+        </constructor-arg>
+    </bean>
+
+    <bean id="${kafkaTransactionManager}" class="org.springframework.kafka.transaction.KafkaTransactionManager">
+        <constructor-arg index="0">
+            <ref bean="${kafkaProducerFactory}" />
+        </constructor-arg>
+    </bean>
+
+</beans>

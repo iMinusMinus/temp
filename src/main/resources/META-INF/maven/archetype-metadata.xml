@@ -99,6 +99,15 @@ under the License.
         <requiredProperty key="sessionFactory">
             <defaultValue>sessionFactory</defaultValue>
         </requiredProperty>
+        <requiredProperty key="kafkaProducerFactory">
+            <defaultValue>kafkaProducerFactory</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="kafkaTemplate">
+            <defaultValue>kafkaTemplate</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="kafkaTransactionManager">
+            <defaultValue>kafkaTransactionManager</defaultValue>
+        </requiredProperty>
     </requiredProperties>
     <fileSets>
         <fileSet filtered="true" packaged="true" encoding="UTF-8">

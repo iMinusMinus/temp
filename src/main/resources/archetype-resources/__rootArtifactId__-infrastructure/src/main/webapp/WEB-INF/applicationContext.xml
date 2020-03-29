@@ -373,6 +373,9 @@
 #if($framework.contains('rabbitmq'))
     <import resource="classpath*:rabbitmq*.xml" />
 #end
+#if($framework.contains('kafka'))
+    <import resource="classpath*:kafka*.xml" />
+#end
 #if($framework.contains('quartz'))
     <bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="jobFactory" ref="jobFactory" />

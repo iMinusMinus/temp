@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="${kafkaTemplate}" class="org.springframework.kafka.core.KafkaTemplate">
+        <constructor-arg index="0">
+            <ref bean="${kafkaProducerFactory}" />
+        </constructor-arg>
+#if($showDefault)
+        <constructor-arg index="1" value="false" />
+        <property name="defaultTopic" value="${spring.kafka.template.defaultTopic}"/>
+        <property name="messageConverter">
+            <bean class="org.springframework.kafka.support.converter.MessagingMessageConverter" />
+        </property>
+        <property name="producerListener">
+            <bean class="org.springframework.kafka.support.LoggingProducerListener" />
+        </property>
+#end
+    </bean>
+
+</beans>
