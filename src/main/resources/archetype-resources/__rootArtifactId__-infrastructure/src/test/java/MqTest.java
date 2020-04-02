@@ -9,6 +9,12 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 #end
+#if($framework.contains('kafka'))
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
+
+#end
+
 import org.junit.Before;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,7 +36,6 @@ public class MqTest extends ContainerBase {
         message = String.valueOf(System.currentTimeMillis());
     }
 
-
 #if($framework.contains('rabbitmq'))
     @Resource
     private RabbitTemplate rabbitTemplate;
@@ -40,6 +45,16 @@ public class MqTest extends ContainerBase {
                     value = @Queue(value = "queue.test"),
                     key = "iMinusMinus")})
     public void handleMessage(String text) {
+        Assert.assertEquals(text, message);
+    }
+
+#end
+#if($framework.contains('kafka'))
+    @Resource
+    private KafkaTemplate kafkaTemplate;
+
+    @KafkaListener(topics = {"txTopic"})
+    public void onMessage(String text) {
         Assert.assertEquals(text, message);
     }
 #end
@@ -53,7 +68,12 @@ public class MqTest extends ContainerBase {
 
     @Test
     public void testTransactionalPublish() {
-        //TODO
+#if($framework.contains('kafka'))
+        kafkaTemplate.executeInTransaction(kafkaTemplate -> {
+            kafkaTemplate.send("txTopic", message);
+            return true;
+        });
+#end
     }
 
 }

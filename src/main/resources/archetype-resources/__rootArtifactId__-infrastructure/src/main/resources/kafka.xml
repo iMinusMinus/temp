@@ -19,9 +19,11 @@
                 <entry key="transactional.id" value="${spring.kafka.producer.transactionIdPrefix}" />
             </map>
         </constructor-arg>
+        <property name="transactionIdPrefix" value="${spring.kafka.producer.transactionIdPrefix}" />
     </bean>
 
     <bean id="${kafkaTransactionManager}" class="org.springframework.kafka.transaction.KafkaTransactionManager">
+        <description>If KafkaTransactionManager exist, must use executeInTransaction or send within @Transactional</description>
         <constructor-arg index="0">
             <ref bean="${kafkaProducerFactory}" />
         </constructor-arg>

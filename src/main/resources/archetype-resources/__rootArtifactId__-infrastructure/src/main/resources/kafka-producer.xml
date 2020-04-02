@@ -4,6 +4,10 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="${kafkaTemplate}" class="org.springframework.kafka.core.KafkaTemplate">
+#if($showComment)
+        <description>Delegate 'org.apache.kafka.clients.producer.Producer'.
+            Invoke 'org.springframework.kafka.support.ProducerListener' as callback when send complete.</description>
+#end
         <constructor-arg index="0">
             <ref bean="${kafkaProducerFactory}" />
         </constructor-arg>
@@ -11,7 +15,10 @@
         <constructor-arg index="1" value="false" />
         <property name="defaultTopic" value="${spring.kafka.template.defaultTopic}"/>
         <property name="messageConverter">
-            <bean class="org.springframework.kafka.support.converter.MessagingMessageConverter" />
+            <bean class="org.springframework.kafka.support.converter.MessagingMessageConverter"#if(!$showComment) />#{else}>
+                <description>Convert 'org.springframework.messaging.Message' and topic to 'org.apache.kafka.clients.producer.ProducerRecord' before send.</description>
+            </bean>#{end}
+
         </property>
         <property name="producerListener">
             <bean class="org.springframework.kafka.support.LoggingProducerListener" />

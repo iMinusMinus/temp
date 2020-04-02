@@ -19,8 +19,8 @@
                         <entry key="group.id" value="${spring.kafka.consumer.groupId}" />
                         <entry key="heartbeat.interval.ms" value="${spring.kafka.consumer.heartbeatInterval}" />
                         <entry key="isolation.level" value="${spring.kafka.consumer.isolationLevel}" />
-                        <entry key="key.serializer" value="${spring.kafka.producer.keySerializer}" />
-                        <entry key="value.serializer" value="${spring.kafka.producer.valueSerializer}" />
+                        <entry key="key.deserializer" value="${spring.kafka.consumer.keyDeserializer}" />
+                        <entry key="value.deserializer" value="${spring.kafka.consumer.valueDeserializer}" />
                         <entry key="max.poll.records" value="${spring.kafka.consumer.maxPollRecords}" />
                     </map>
                 </constructor-arg>
@@ -47,8 +47,8 @@
         'org.springframework.kafka.annotation.KafkaListeners' and 'org.springframework.kafka.annotation.KafkaHandler'.
         Wrap it as a 'org.springframework.kafka.config.MethodKafkaListenerEndpoint'.</description>
 #if($showDefault)
-        <property name="charset" value="UTF-8" />
-        <property name="defaultContainerFactoryBeanName" value="kafkaListenerContainerFactory" />
+        <!--<property name="charset" value="UTF-8" />-->
+        <!--<property name="defaultContainerFactoryBeanName" value="kafkaListenerContainerFactory" />-->
 #end
     </bean>#{end}
 
