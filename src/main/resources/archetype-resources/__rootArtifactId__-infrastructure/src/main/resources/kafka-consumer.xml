@@ -11,31 +11,26 @@
                         <entry key="bootstrap.servers" value="${spring.kafka.bootstrapServers}" />
                         <entry key="client.id" value="${spring.kafka.clientId}" />
 
-                        <entry key="auto.commit.interval.ms" value="${spring.kafka.consumer.autoCommitInterval}" />
-                        <entry key="auto.offset.reset" value="${spring.kafka.consumer.autoOffsetReset}" />
-                        <entry key="enable.auto.commit" value="${spring.kafka.consumer.enableAutoCommit}" />
-                        <entry key="fetch.max.wait.ms" value="spring.kafka.consumer.fetchMaxWait" />
-                        <entry key="fetch.min.bytes" value="${spring.kafka.consumer.fetchMinSize}" />
-                        <entry key="group.id" value="${spring.kafka.consumer.groupId}" />
-                        <entry key="heartbeat.interval.ms" value="${spring.kafka.consumer.heartbeatInterval}" />
+#if($showComment)
+                        <!--<entry key="auto.commit.interval.ms" value="${spring.kafka.consumer.autoCommitInterval}" />-->
+                        <!--<entry key="auto.offset.reset" value="${spring.kafka.consumer.autoOffsetReset}" />-->
+                        <!--<entry key="enable.auto.commit" value="${spring.kafka.consumer.enableAutoCommit}" />-->
+                        <!--<entry key="fetch.max.wait.ms" value="spring.kafka.consumer.fetchMaxWait" />-->
+                        <!--<entry key="fetch.min.bytes" value="${spring.kafka.consumer.fetchMinSize}" />-->
+                        <!--<entry key="heartbeat.interval.ms" value="${spring.kafka.consumer.heartbeatInterval}" />-->
+                        <!--<entry key="max.poll.records" value="${spring.kafka.consumer.maxPollRecords}" />-->
+#end
                         <entry key="isolation.level" value="${spring.kafka.consumer.isolationLevel}" />
+                        <entry key="group.id" value="${spring.kafka.consumer.groupId}" />
                         <entry key="key.deserializer" value="${spring.kafka.consumer.keyDeserializer}" />
                         <entry key="value.deserializer" value="${spring.kafka.consumer.valueDeserializer}" />
-                        <entry key="max.poll.records" value="${spring.kafka.consumer.maxPollRecords}" />
                     </map>
                 </constructor-arg>
             </bean>
         </property>
 #if($showDefault)
-        <property name="topicCheckTimeout" value="30" />
-
-        <property name="ackMode" value="${spring.kafka.listener.ackMode}" />
-        <property name="pollTimeout" value="${spring.kafka.listener.pollTimeout}" />
-        <property name="noPollThreshold" value="${spring.kafka.listener.noPollThreshold}" />
-        <property name="monitorInterval" value="${spring.kafka.listener.monitorInterval}" />
-        <property name="missingTopicsFatal" value="spring.kafka.listener.missingTopicsFatal" />
-        <property name="replyTemplate" ref="${kafkaTemplate}" />
-        <property name="transactionManager" ref="${kafkaTransactionManager}" />
+        <!--<property name="missingTopicsFatal" value="${spring.kafka.listener.missingTopicsFatal}" />-->
+        <!--<property name="replyTemplate" ref="${kafkaTemplate}" />-->
 #end
     </bean>
 
