@@ -7,7 +7,7 @@
     <!-- @see http://docs.jboss.org/hibernate/orm/5.3/userguide/html_single/Hibernate_User_Guide.html -->
 #end
 <hibernate-configuration>
-    <session-factory name="java:hibernate/SessionFactory">
+    <session-factory>
         <!-- properties: override hibernate.properties -->
         <!--<property name="connection.datasource">java:comp/env/jdbc/datasourc</property>-->
         <property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>
