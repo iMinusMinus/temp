@@ -148,6 +148,12 @@
             <artifactId>dubbo</artifactId>
         </dependency>
 #end
+#if($framework.contains('quartz'))
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+        </dependency>
+#end
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
