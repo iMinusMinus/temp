@@ -6,10 +6,16 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
+#if($framework.contains('quartz') and !$configType.contains('xml'))
+import org.springframework.scheduling.annotation.EnableScheduling;
+#end
 import org.springframework.stereotype.Controller;
 
 @Configuration
 @ComponentScan(value = "${package}", excludeFilters = @ComponentScan.Filter(value = {Controller.class}))
+#if($framework.contains('quartz') and !$configType.contains('xml'))
+@EnableScheduling
+#end
 public class ContextConfig {
 
     @Bean

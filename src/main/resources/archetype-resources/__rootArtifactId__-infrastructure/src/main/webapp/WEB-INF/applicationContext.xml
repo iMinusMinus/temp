@@ -377,12 +377,43 @@
     <import resource="classpath*:kafka*.xml" />
 #end
 #if($framework.contains('quartz'))
+#if($configType.contains('@'))
+    <bean id="taskScheduler" class="java.util.concurrent.ScheduledThreadPoolExecutor">
+#if($showComment)
+        <description>Type must be 'org.springframework.scheduling.TaskScheduler' or 'java.util.concurrent.ScheduledExecutorService'.</description>
+#end
+        <constructor-arg index="0" value="1" />
+    </bean>
+    <bean id="org.springframework.context.annotation.internalScheduledAnnotationProcessor"
+          class="org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor"#if(!$showComment) />#{else}>
+        <description>Handle bean which method has annotation 'org.springframework.scheduling.annotation.Scheduled',
+            wrap it as 'org.springframework.scheduling.config.Task', and schedule it with 'taskScheduler'.</description>
+    </bean>#{end}
+#end
     <bean id="jobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="name" value="jobName" />
+#if($showDefault)
         <property name="group" value="DEFAULT" />
-        <property name="durability" value="true" />
+        <property name="durability" value="false" />
+#end
         <property name="jobClass" value="${package}.scheduling.NoOp" />
         <property name="applicationContextJobDataKey" value="applicationContext" />
+    </bean>
+    <bean id="pojoJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <description>Non persistable! Non clusterable!
+            Invocation of init method failed; nested exception is org.quartz.JobPersistenceException:
+                Couldn't store job: Unable to serialize JobDataMap for insertion into database because the value of property 'methodInvoker' is not serializable:
+                    org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean [See nested exception:
+                        java.io.NotSerializableException:
+                            Unable to serialize JobDataMap for insertion into database because the value of property 'methodInvoker' is not serializable:
+                                org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean]</description>
+        <property name="targetObject" ref="messageHandler" />
+        <property name="targetMethod" value="handleMessage" />
+        <property name="arguments">
+            <array>
+                <value>Valar Morghulis</value>
+            </array>
+        </property>
     </bean>
     <bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="jobFactory">
