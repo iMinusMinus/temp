@@ -17,7 +17,7 @@
 
    + Gradle
 
-     build.gradle, gradle.properties  
+     settings.gradle, build.gradle, gradle.properties  
 
 2. Modules
 
@@ -34,9 +34,7 @@
 
      For exposing service to remote client request by RPC.
    
-   + service
- 
-   + dal
+   + domain
  
       Domain in DDD.
 
@@ -76,10 +74,17 @@
    + JValidation
 
      src/main/resources/ValidationMessages.properties
+     
+   + RabbitMQ
+   
+     src/main/resources/rabbitmq*.xml
+     
+   + Kafka
+   
+     src/main/resources/kafka*.xml
 
    + Log
 
      JUL: src/main/resources/logging.properties   
-     log4j: src/main/resources/log4j.properties   
      log4j2: src/main/resources/log4j2.yaml   
      logback: src/main/resources/logback.xml,src/test/resources/logback-test.xml    
