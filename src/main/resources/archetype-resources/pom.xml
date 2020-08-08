@@ -16,10 +16,8 @@
     <modules>
         <module>${rootArtifactId}-api</module>
 
-        <module>${rootArtifactId}-interfaces</module>
-        <module>${rootArtifactId}-application</module>
+        <module>${rootArtifactId}-app</module>
         <module>${rootArtifactId}-domain</module>
-        <module>${rootArtifactId}-infrastructure</module>
 
     </modules>
     <!-- #end -->
@@ -113,17 +111,7 @@
             </dependency>
             <dependency>
                 <groupId>${groupId}</groupId>
-                <artifactId>${rootArtifactId}-infrastructure</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${groupId}</groupId>
-                <artifactId>${rootArtifactId}-application</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${groupId}</groupId>
-                <artifactId>${rootArtifactId}-interfaces</artifactId>
+                <artifactId>${rootArtifactId}-app</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
@@ -143,6 +131,7 @@
                 <artifactId>jstl</artifactId>
                 <version>1.2</version>
                 <scope>provided</scope>
+                <classifier>sources</classifier>
             </dependency>
             <dependency>
                 <groupId>javax.validation</groupId>
@@ -216,16 +205,19 @@
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>6.0.6</version>
+                <scope>runtime</scope>
             </dependency>
             <dependency>
                  <groupId>com.oracle</groupId>
                  <artifactId>ojdbc</artifactId>
                  <version>6</version>
+                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>42.2.5</version>
+                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
