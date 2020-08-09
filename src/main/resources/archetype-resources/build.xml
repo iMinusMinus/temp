@@ -107,7 +107,7 @@
                memoryinitialsize="${maven.compiler.meminitial}" memorymaximumsize="${maven.compiler.maxmem}"
                fork="${maven.compiler.fork}" deprecation="${maven.compiler.showDeprecation}" verbose="${maven.compiler.verbose}">
             <src>
-                <pathelement location="${project.build.sourceDirectory)" />
+                <pathelement location="${project.build.sourceDirectory}" />
             </src>
             <classpath refid="build.classpath" />
         </javac>
@@ -141,7 +141,7 @@
                memoryinitialsize="${maven.compiler.meminitial}" memorymaximumsize="${maven.compiler.maxmem}"
                fork="${maven.compiler.fork}" deprecation="${maven.compiler.showDeprecation}" verbose="${maven.compiler.verbose}">
             <src>
-                <pathelement location="${project.build.testOutputDirectory)" />
+                <pathelement location="${project.build.testOutputDirectory}" />
             </src>
             <classpath>
                 <path refid="build.test.classpath" />

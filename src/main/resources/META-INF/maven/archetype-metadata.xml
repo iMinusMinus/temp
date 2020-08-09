@@ -109,11 +109,37 @@ under the License.
             <defaultValue>kafkaTransactionManager</defaultValue>
         </requiredProperty>
     </requiredProperties>
+
+    <fileSets>
+        <fileSet filtered="true" encoding="UTF-8">
+            <directory></directory>
+            <includes>
+                <include>.gitignore</include>
+                <include>.travis.yml</include>
+                <include>build*</include>
+                <include>Dockerfile</include>
+                <include>gradle.properties</include>
+                <include>README.MD</include>
+                <include>settings.gradle</include>
+                <include>sonar-project.properties</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
     <modules>
         <module id="${rootArtifactId}-api" name="${rootArtifactId}-api" dir="__rootArtifactId__-api">
             <fileSets>
                 <fileSet filtered="true" packaged="true" encoding="UTF-8">
                     <directory>src/main/java</directory>
+                </fileSet>
+
+                <fileSet filtered="true" encoding="UTF-8">
+                    <directory></directory>
+                    <includes>
+                        <include>build.gradle</include>
+                        <include>build.xml</include>
+                        <include>README.MD</include>
+                    </includes>
                 </fileSet>
             </fileSets>
         </module>
@@ -134,6 +160,15 @@ under the License.
                 <fileSet filtered="true" encoding="UTF-8">
                     <directory>src/test/resources</directory>
                 </fileSet>
+
+                <fileSet filtered="true" encoding="UTF-8">
+                    <directory></directory>
+                    <includes>
+                        <include>build.gradle</include>
+                        <include>build.xml</include>
+                        <include>README.MD</include>
+                    </includes>
+                </fileSet>
             </fileSets>
         </module>
         <module id="${rootArtifactId}-domain" name="${rootArtifactId}-domain" dir="__rootArtifactId__-domain">
@@ -149,6 +184,15 @@ under the License.
                 </fileSet>
                 <fileSet filtered="true" encoding="UTF-8">
                     <directory>src/test/resources</directory>
+                </fileSet>
+
+                <fileSet filtered="true" encoding="UTF-8">
+                    <directory></directory>
+                    <includes>
+                        <include>build.gradle</include>
+                        <include>build.xml</include>
+                        <include>README.MD</include>
+                    </includes>
                 </fileSet>
             </fileSets>
         </module>

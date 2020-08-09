@@ -1,0 +1,45 @@
+apply plugin: 'maven-publish'
+
+description '${rootArtifactId} api'
+
+dependencies {
+    implementation('javax.validation:validation-api')
+    implementation('javax.ws.rs:javax.ws.rs-api')
+    compileOnly('org.projectlombok:lombok')
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = '${rootArtifactId}-api'
+                description = '${rootArtifactId} api'
+                licenses {
+                    licence {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'iMinusMinus'
+                        name 'iMinusMinus'
+                        email 'mean.leung@outlook.com'
+                    }
+                }
+                scm {
+                    connection 'scm:git:git://vcs.iamwhatiam.ml/${rootArtifactId}.git'
+                    developerConnection 'scm:ssh:git://vcs.iamwhatiam.ml/${rootArtifactId}.git'
+                    url 'http://vcs.iamwhatiam.ml/${rootArtifactId}'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releaseUrl = 'http://repo.iamwhatiam.ml/repository/iamwhatiam-releases/'
+            def snapshotUrl = 'http://repo.iamwhatiam.ml/repository/iamwhatiam-snapshots/'
+            url = version.endsWith('SNAPSHOT') ? snapshotUrl : releaseUrl
+        }
+    }
+}

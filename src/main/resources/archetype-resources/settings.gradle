@@ -1,0 +1,25 @@
+#if($showComment)
+// script for multi project
+#end
+pluginManagement {
+    repositories {
+        maven {
+            url 'http://repo.iamwhatiam.ml/repository/maven-public/'
+        }
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name='${rootArtifactId}'
+include '${rootArtifactId}-api', '${rootArtifactId}-domain', '${rootArtifactId}-app'
+
+//buildCache {
+//    remote(HttpBuildCache) {
+//        url = ''
+////        credentials {
+////            username = ''
+////            password = ''
+////        }
+//        allowUntrustedServer = true
+//    }
+//}

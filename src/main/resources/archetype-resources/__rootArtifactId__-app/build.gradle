@@ -1,0 +1,8 @@
+apply plugin: 'war'
+
+description '${rootArtifactId} app'
+
+dependencies {
+    implementation project(':${rootArtifactId}-api')
+    implementation project(':${rootArtifactId}-domain')
+}

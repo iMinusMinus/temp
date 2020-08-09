@@ -1,0 +1,9 @@
+description '${rootArtifactId} domain'
+
+dependencies {
+    implementation('javax.validation:validation-api')
+    implementation('org.slf4j:slf4j-api')
+    compileOnly('org.projectlombok:lombok')
+    testImplementation('junit:junit')
+    testImplementation('org.mockito:mockito-core')
+}

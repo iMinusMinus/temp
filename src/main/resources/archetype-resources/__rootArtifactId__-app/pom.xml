@@ -46,9 +46,8 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet.jsp.jstl</groupId>
-            <artifactId>jstl</artifactId>
+            <artifactId>jstl-api</artifactId>
             <scope>provided</scope>
-            <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
