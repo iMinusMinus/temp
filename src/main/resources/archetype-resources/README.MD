@@ -1,7 +1,5 @@
 ## Refer
 1. [Velocity](http://velocity.apache.org/engine/devel/user-guide.html)
-## TODO
-自定义clean plugin，移除明确不使用的模板
 
 ## Dependency Tree
 
