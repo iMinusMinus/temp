@@ -192,7 +192,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>cxf</servlet-name>
-        <url-pattern>${cxf.path}/*</url-pattern>
+        <url-pattern>${cxfPath}/*</url-pattern>
     </servlet-mapping>
 
 #end
@@ -261,6 +261,7 @@
 #end
 #if($showDefault)
         ## FrameworkServlet
+
         <init-param>
 #if($showComment)
             <description>Optional</description>
@@ -297,6 +298,7 @@
             <param-value>false</param-value>
         </init-param>
         ## DispatcherServlet
+
         <init-param>
 #if($showComment)
             <description>Optional</description>

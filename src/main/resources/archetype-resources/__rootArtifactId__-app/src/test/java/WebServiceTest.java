@@ -1,5 +1,8 @@
 package ${package};
 
+import ${package}.api.in.EchoRequest;
+import ${package}.api.out.EchoResponse;
+
 import ${package}.ws.ChinaOpenFund;
 
 import org.apache.cxf.Bus;
@@ -7,6 +10,7 @@ import org.apache.cxf.BusFactory;
 import org.apache.cxf.common.util.Compiler;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.helpers.JavaUtils;
+import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 
@@ -80,5 +84,14 @@ public class WebServiceTest extends ContainerBase {
         System.out.println(ws.getFundCodeNameDataSet());
     }
 
+    @Test
+    public void testCxfJaxRs() {
+        EchoResponse response = WebClient.create("http://127.0.0.1:8080${cxfPath}")
+                .path("/test/echo")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .post(new EchoRequest(), EchoResponse.class);
+        Assert.assertEquals(null, response);
+    }
 
 }

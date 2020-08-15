@@ -18,7 +18,6 @@
 
         <module>${rootArtifactId}-app</module>
         <module>${rootArtifactId}-domain</module>
-
     </modules>
     <!-- #end -->
 
@@ -99,21 +98,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>${groupId}</groupId>
-                <artifactId>${rootArtifactId}-api</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${groupId}</groupId>
-                <artifactId>${rootArtifactId}-domain</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${groupId}</groupId>
-                <artifactId>${rootArtifactId}-app</artifactId>
-                <version>${version}</version>
-            </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
@@ -312,6 +296,26 @@
                 <version>3.3.2</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http-undertow</artifactId>
+                <version>3.3.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-rs-extension-providers</artifactId>
+                <version>3.3.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jettison</groupId>
+                <artifactId>jettison</artifactId>
+                <version>1.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-rs-client</artifactId>
+                <version>3.3.2</version>
+            </dependency>
+            <dependency>
                 <groupId>com.caucho</groupId>
                 <artifactId>hessian</artifactId>
                 <version>4.0.62</version>
@@ -439,7 +443,6 @@
     <build>
         <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
             <plugins>
-##TODO clean plugin: remove unuse template
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>3.0.0</version>

@@ -11,7 +11,7 @@
 #if($showComment)
     <!-- http://localhost:8080/${cxf.path}/rpc?wsdl -->
 #end
-    <jaxws:endpoint id="generic" implementor="${package}.service.GenericServiceImpl" address="/rpc">
+    <jaxws:endpoint id="generic" implementor="${package}.rpc.GenericServiceImpl" address="/rpc">
         <jaxws:features>
             <bean class="org.apache.cxf.feature.LoggingFeature"/>
         </jaxws:features>
@@ -19,7 +19,7 @@
 #if($showComment)
     <!-- curl -G http://localhost:8080/${cxf.path}/test/echo -->
 #end
-    <bean id="echo" class="${package}.service.EchoServiceImpl" />
+    <bean id="echo" class="${package}.ws.EchoServiceImpl" />
     <jaxrs:server>
         <jaxrs:serviceBeans>
             <ref bean="echo" />

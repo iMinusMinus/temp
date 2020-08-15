@@ -3,6 +3,8 @@ package ${package}.api.out;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,6 +18,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@XmlRootElement
 public class EchoResponse implements Serializable {
 
     private static final long SerialVersionUUID = 1L;
