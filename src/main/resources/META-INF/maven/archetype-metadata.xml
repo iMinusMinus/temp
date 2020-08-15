@@ -156,9 +156,21 @@ under the License.
                 </fileSet>
                 <fileSet filtered="true" packaged="true" encoding="UTF-8">
                     <directory>src/test/java</directory>
+                    <excludes>
+                        <exclude>com/caucho/hessian/test/*</exclude>
+                        <exclude>org/apache/dubbo/registry/dubbo/*</exclude>
+                    </excludes>
                 </fileSet>
                 <fileSet filtered="true" encoding="UTF-8">
                     <directory>src/test/resources</directory>
+                </fileSet>
+
+                <fileSet encoding="UTF-8">
+                    <directory>src/test/java</directory>
+                    <includes>
+                        <include>com/caucho/hessian/test/*</include>
+                        <include>org/apache/dubbo/registry/dubbo/*</include>
+                    </includes>
                 </fileSet>
 
                 <fileSet filtered="true" encoding="UTF-8">
