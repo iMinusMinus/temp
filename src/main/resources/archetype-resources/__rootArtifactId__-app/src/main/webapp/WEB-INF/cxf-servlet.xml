@@ -19,11 +19,11 @@
 #if($showComment)
     <!-- curl -G http://localhost:8080/${cxf.path}/test/echo -->
 #end
-    <bean id="echo" class="${package}.ws.EchoServiceImpl" />
-    <jaxrs:server>
-        <jaxrs:serviceBeans>
-            <ref bean="echo" />
-        </jaxrs:serviceBeans>
-    </jaxrs:server>
+    <!--<bean id="echo" class="${package}.ws.EchoServiceImpl" />-->
+    <!--<jaxrs:server>-->
+        <!--<jaxrs:serviceBeans>-->
+            <!--<ref bean="echo" />-->
+        <!--</jaxrs:serviceBeans>-->
+    <!--</jaxrs:server>-->
 
 </beans>

@@ -4,18 +4,25 @@ import ${package}.api.in.EchoRequest;
 import ${package}.api.out.EchoResponse;
 
 import ${package}.ws.ChinaOpenFund;
+import ${package}.ws.EchoServiceImpl;
 
+#if($framework.contains('cxf'))
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
 import org.apache.cxf.common.util.Compiler;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.helpers.JavaUtils;
+import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
+#end
 
 import java.io.File;
 import java.util.List;
+
+import javax.ws.rs.core.MediaType;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,6 +32,7 @@ import org.junit.Test;
  */
 public class WebServiceTest extends ContainerBase {
 
+#if($framework.contains('cxf'))
     public static class JaxWsDynaClientFactory extends JaxWsDynamicClientFactory {
         protected JaxWsDynaClientFactory(Bus bus) {
             super(bus);
@@ -84,14 +92,24 @@ public class WebServiceTest extends ContainerBase {
         System.out.println(ws.getFundCodeNameDataSet());
     }
 
+    /**
+     * 测试本地JAX-RS服务
+     */
     @Test
     public void testCxfJaxRs() {
+        JAXRSServerFactoryBean factoryBean = new JAXRSServerFactoryBean();
+        factoryBean.setResourceClasses(EchoServiceImpl.class);
+        factoryBean.setResourceProvider(EchoServiceImpl.class, new SingletonResourceProvider(new EchoServiceImpl()));
+        factoryBean.setAddress("http://localhost:8080${cxfPath}");
+        factoryBean.create();
+
         EchoResponse response = WebClient.create("http://127.0.0.1:8080${cxfPath}")
                 .path("/test/echo")
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
+                .type(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
                 .post(new EchoRequest(), EchoResponse.class);
         Assert.assertEquals(null, response);
     }
+#end
 
 }

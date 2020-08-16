@@ -1,4 +1,4 @@
-package ${package};
+package ${package}.ws;
 
 import ${package}.api.EchoService;
 import ${package}.api.in.EchoRequest;
