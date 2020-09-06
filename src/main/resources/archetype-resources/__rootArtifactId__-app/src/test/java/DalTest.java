@@ -7,29 +7,33 @@ import ${package}.domain.MetaClass;
 import org.junit.Assert;
 import org.junit.Test;
 
+import org.springframework.test.annotation.Repeat;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
+@Transactional("transactionManager")
 public class DalTest extends ContainerBase {
 
+#if($framework.contains('mybatis'))
     @Resource
     private MetaClassMapper metaClassMapper;
+#end
 
+#if($framework.contains('hibernate'))
     @Resource
     private MetaClassMapper metaClassDaoImpl;
+#end
 
 #if($framework.contains('mybatis'))
     @Test
     public void testMyBatisConfig() {
         MetaClass mc = new MetaClass();
         mc.setName("java.beans.Bean");
-        //XXX PostgreSQL serial bug?
-        long id = metaClassMapper.save(mc);
-        Assert.assertNotEquals(0, id);
-        MetaClass qr = metaClassMapper.findOne(mc);
-        //Assert.assertEquals(id, qr.getId());
-        metaClassMapper.delete( qr.getId());
+        long effect = metaClassMapper.save(mc);
+        Assert.assertEquals(1, effect);
+        metaClassMapper.delete(mc.getId());
     }
 #end
 #if($framework.contains('hibernate'))
@@ -45,7 +49,22 @@ public class DalTest extends ContainerBase {
 
     @Test
     @Rollback
+    @Repeat(2)
     public void testTransaction() {
+        // assert first. then run SQL, finally test framework rollback
+        MetaClass mc = new MetaClass();
+        mc.setName("java.beans.BeanInfo");
+#if($framework.contains('mybatis'))
+        int effect = metaClassMapper.count(mc);
+#elseif($framework.contains('hibernate'))
+        int effect metaClassDaoImpl.count(mc);
+#end
+        Assert.assertEquals(0, effect);
 
+#if($framework.contains('mybatis'))
+        metaClassMapper.save(mc);
+#elseif($framework.contains('hibernate'))
+        metaClassDaoImpl.save(mc);
+#end
     }
 }

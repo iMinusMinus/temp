@@ -67,6 +67,9 @@ public interface MetaClassMapper {
      * @param condition
      * @return
      */
+#if($configType.contains("@java") and $framework.contains('mybatis'))
+    @Select("<script>SELECT COUNT(*) FROM meta_class <where><if test='name != null'>class_name = #{name}</if><if test='superName != null'>AND super_class_name=#{superName}</if></where> </script>")
+#end
     int count(MetaClass condition);
 
     /**
