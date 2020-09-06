@@ -50,10 +50,36 @@ for(int i = 0; i < resources.length; i++) {
 
 //clean unused xml
 for(int j = 0; j < legacyConfigResources.length; j++) {
+    List<String> xmlResources = new ArrayList<>()
+    xmlResources.add("mybatis-config.xml")
+    List<String> dubboXmlConfigs = Arrays.asList("dubbo.xml", "dubbo-consumer.xml", "dubbo-provider.xml")
+    List<String> kafkaXmlConfigs = Arrays.asList("kafka.xml", "kafka-consumer.xml", "kafka-producer.xml")
+    List<String> rabbitMQXmlConfigs = Arrays.asList("rabbitmq.xml", "rabbitmq-publisher.xml")
+    xmlResources.addAll(dubboXmlConfigs)
+    xmlResources.addAll(kafkaXmlConfigs)
+    xmlResources.addAll(rabbitMQXmlConfigs)
     if(!request.properties.configType.contains("xml")) {
-        List<String> xmlResources = Arrays.asList("dubbo.xml", "dubbo-consumer.xml", "dubbo-provider.xml", "kafka.xml", "kafka-consumer.xml", "kafka-producer.xml", "mybatis-config.xml", "rabbitmq.xml", "rabbitmq-publisher.xml")
         if(xmlResources.contains(legacyConfigResources[i].getName())) {
             legacyConfigResources[i].delete()
+            xmlResources.remove(legacyConfigResources[i].getName())
+        }
+    }
+    if(!request.properties.framework.contains("dubbo")) {
+        if(dubboXmlConfigs.contains(legacyConfigResources[i].getName())) {
+            legacyConfigResources[i].delete()
+            xmlResources.remove(legacyConfigResources[i].getName())
+        }
+    }
+    if(!request.properties.framework.contains("kafka")) {
+        if(kafkaXmlConfigs.contains(legacyConfigResources[i].getName())) {
+            legacyConfigResources[i].delete()
+            xmlResources.remove(legacyConfigResources[i].getName())
+        }
+    }
+    if(!request.properties.framework.contains("rabbitmq")) {
+        if(rabbitMQXmlConfigs.contains(legacyConfigResources[i].getName())) {
+            legacyConfigResources[i].delete()
+            xmlResources.remove(legacyConfigResources[i].getName())
         }
     }
 }
