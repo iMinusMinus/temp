@@ -1,7 +1,7 @@
 package ${package};
 
-import org.junit.Before;
 #if($configType.contains('@java'))
+import org.junit.Before;
 import org.junit.runner.RunWith;
 #end
 import org.junit.Test;

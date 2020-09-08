@@ -59,27 +59,27 @@ for(int j = 0; j < legacyConfigResources.length; j++) {
     xmlResources.addAll(kafkaXmlConfigs)
     xmlResources.addAll(rabbitMQXmlConfigs)
     if(!request.properties.configType.contains("xml")) {
-        if(xmlResources.contains(legacyConfigResources[i].getName())) {
-            legacyConfigResources[i].delete()
-            xmlResources.remove(legacyConfigResources[i].getName())
+        if(xmlResources.contains(legacyConfigResources[j].getName())) {
+            legacyConfigResources[j].delete()
+            xmlResources.remove(legacyConfigResources[j].getName())
         }
     }
     if(!request.properties.framework.contains("dubbo")) {
-        if(dubboXmlConfigs.contains(legacyConfigResources[i].getName())) {
-            legacyConfigResources[i].delete()
-            xmlResources.remove(legacyConfigResources[i].getName())
+        if(dubboXmlConfigs.contains(legacyConfigResources[j].getName())) {
+            legacyConfigResources[j].delete()
+            xmlResources.remove(legacyConfigResources[j].getName())
         }
     }
     if(!request.properties.framework.contains("kafka")) {
-        if(kafkaXmlConfigs.contains(legacyConfigResources[i].getName())) {
-            legacyConfigResources[i].delete()
-            xmlResources.remove(legacyConfigResources[i].getName())
+        if(kafkaXmlConfigs.contains(legacyConfigResources[j].getName())) {
+            legacyConfigResources[j].delete()
+            xmlResources.remove(legacyConfigResources[j].getName())
         }
     }
     if(!request.properties.framework.contains("rabbitmq")) {
-        if(rabbitMQXmlConfigs.contains(legacyConfigResources[i].getName())) {
-            legacyConfigResources[i].delete()
-            xmlResources.remove(legacyConfigResources[i].getName())
+        if(rabbitMQXmlConfigs.contains(legacyConfigResources[j].getName())) {
+            legacyConfigResources[j].delete()
+            xmlResources.remove(legacyConfigResources[j].getName())
         }
     }
 }

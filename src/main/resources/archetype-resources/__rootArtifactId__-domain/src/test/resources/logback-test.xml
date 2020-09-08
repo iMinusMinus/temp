@@ -32,18 +32,18 @@
     <!-- 需要创建logging_event, logging_event_exception, logging_event_property三张表
     <appender name="DB" class="ch.qos.logback.classic.db.DBAppender">-->
     <!--
-    <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
-      <dataSource class="com.mchange.v2.c3p0.ComboPooledDataSource" />
-      <driverClass>org.mariadb.jdbc.Driver</driverClass>
-        <url>jdbc:mysql://localhost:3306/demo</url>
-        <user>app_log</user>
-        <password>r0b0t</password>
-  </connectionSource>
+        <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+            <dataSource class="com.mchange.v2.c3p0.ComboPooledDataSource" />
+            <driverClass>org.mariadb.jdbc.Driver</driverClass>
+            <url>jdbc:mysql://localhost:3306/demo</url>
+            <user>app_log</user>
+            <password>r0b0t</password>
+        </connectionSource>
 
-  <connectionSource class="ch.qos.logback.core.db.JNDIConnectionSource">
-    <jndiLocation>java:comp/env/jdbc/mdb_pool</jndiLocation>
-  </connectionSource>
-</appender>
+        <connectionSource class="ch.qos.logback.core.db.JNDIConnectionSource">
+            <jndiLocation>java:comp/env/jdbc/mdb_pool</jndiLocation>
+        </connectionSource>
+    </appender>
     -->
 
 </configuration>
