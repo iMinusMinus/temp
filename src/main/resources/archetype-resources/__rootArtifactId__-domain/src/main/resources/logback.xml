@@ -6,7 +6,8 @@
 #end
 <configuration#if($showDefault) packagingData="false"#end>
     <property resource="application.properties" />
-    <include url="http://iamwhatiam.ml/pub/logback.xml"/>
+    <!--<include url="http://iamwhatiam.ml/pub/logback.xml"/>-->
+    <!--<include resource="org/springframework/boot/logging/logback/base.xml" />-->
 
     <contextName>${spring.application.name}</contextName>
 #if($showComment)
