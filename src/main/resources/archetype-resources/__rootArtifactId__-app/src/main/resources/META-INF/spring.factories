@@ -1,0 +1,55 @@
+# Spring Cloud
+#if($showComment)
+# refer: org.springframework.cloud.bootstrap.BootstrapApplicationListener
+#end
+#org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+
+#if($showComment)
+# refer: org.springframework.cloud.commons.util.SpringFactoryImportSelector
+#end
+#org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker=\
+#org.springframework.cloud.client.discovery.EnableDiscoveryClient=\
+
+#############################################
+# Spring Boot
+#if($showComment)
+# refer: org.springframework.boot.loader.tools.Repackager
+#end
+#org.springframework.boot.loader.tools.LayoutFactory=\
+
+#if($showComment)
+# refer: org.springframework.boot.SpringApplication
+#end
+# Initializers
+#org.springframework.context.ApplicationContextInitializer=\
+# Application Listeners
+#org.springframework.context.ApplicationListener=\
+#org.springframework.boot.SpringApplicationRunListener=\
+#org.springframework.boot.SpringBootExceptionReporter=\
+#if($showComment)
+# Failure analyzers, refer: org.springframework.boot.SpringBootExceptionReporter/org.springframework.boot.diagnostics.FailureAnalyzers
+#end
+#org.springframework.boot.diagnostics.FailureAnalyzer=\
+
+#if($showComment)
+# refer: org.springframework.context.ApplicationListener/org.springframework.boot.context.config.ConfigFileApplicationListener
+#end
+#org.springframework.boot.env.EnvironmentPostProcessor=\
+#org.springframework.boot.env.PropertySourceLoader=\
+
+#if($showComment)
+# Auto Configuration Import, refer: org.springframework.boot.autoconfigure.AutoConfigurationImportSelector
+#end
+#org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+#org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=\
+#org.springframework.boot.autoconfigure.AutoConfigurationImportListener=\
+
+#if($showComment)
+# Template availability providers, refer: org.springframework.boot.autoconfigure.web.servlet.,WebMvcAutoConfiguration
+#end
+#org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
+
+#if($showComment)
+# refer: org.springframework.boot.autoconfigure.ImportAutoConfiguration/org.springframework.boot.autoconfigure.ImportAutoConfigurationImportSelector
+#end
+#

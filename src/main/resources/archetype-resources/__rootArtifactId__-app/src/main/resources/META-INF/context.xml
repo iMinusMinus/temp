@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+#if($showComment)
+<!-- http://tomcat.apache.org/tomcat-7.0-doc/config/context.html -->
+<!-- Tomcat specific resource configuration: -->
+<!--     1. $CATALINA_BASE/conf/server.xml Context -->
+<!--     2. this per-web-application context XML -->
+
+<!-- 在Servlet3及以上版本时，可以启用tomcat的StandardContext属性addWebinfClassesResources，来处理META-INF/resources下的静态文件 -->
+#end
+<Context addWebinfClassesResources="true" #if($showDefault)allowCasualMultipartParsing="false" allowMultipleLeadingForwardSlashInPath="false"
+        backgroundProcessorDelay="-1" className="org.apache.catalina.core.StandardContext" cookies="true"
+        createUploadTargets="false" crossContext="false" dispatchersUseEncodedPaths="true"
+        failCtxIfServletStartFails="false" fireRequestListenersOnForwards="false" logEffectiveWebXml="false"
+        mapperContextRootRedirectEnabled="true" mapperDirectoryRedirectEnabled="false" preemptiveAuthentication="false"
+        reloadable="false" sessionCookieName="JSESSIONID" sessionCookiePathUsesTrailingSlash="false"
+        swallowAbortedUploads="true" swallowOutput="false" tldValidation="false" xmlBlockExternal="true"
+
+        allowLinking="false" antiJARLocking="false" antiResourceLocking="false" cacheMaxSize="10240"
+        cacheObjectMaxSize="512" cacheTTL="5000" cachingAllowed="true" clearReferencesHttpClientKeepAliveThread="true"
+        clearReferencesObjectStreamClassCaches="true" clearReferencesRmiTargets="true" clearReferencesStatic="false"
+        clearReferencesStopThreads="false" clearReferencesStopTimerThreads="false" clearReferencesThreadLocals="true"
+        copyXML="false" jndiExceptionOnFailedWrite="true" renewThreadsWhenStoppingContext="true" unloadDelay="2000"
+        unpackWAR="true" useNaming="true" #{end}>
+#if($showDefault)
+    <Loader className="org.apache.catalina.loader.WebappLoader" delegate="false"
+            loaderClass="org.apache.catalina.loader.WebappClassLoader" searchExternalFirst="false" jarOpenInterval="90000" />
+    <Manager className="org.apache.catalina.session.StandardManager" maxActiveSessions="-1" sessionIdLength="16"
+             persistAuthentication="false" processExpiresFrequency="6" secureRandomClass="java.security.SecureRandom"
+             sessionAttributeNameFilter="null" />
+    <Resources className="org.apache.naming.resources.FileDirContext" />
+#end
+#if($showComment)
+    <!-- name relative to java:comp/env -->
+
+    <!--
+    <Environment name="" type="" value="" override="true" description="Optional" />
+    -->
+
+    <!-- declare the characteristics of the resource to be returned for JNDI lookups of &#60;resource-ref&#62;
+         and &#60;resource-env-ref&#62; elements in the web application deployment descriptor(/WEB-INF/web.xml) -->
+    <!--
+    <Resource name="jdbc/dataSource" auth="Container|Application" closeMethod="close" scope="Shareable|Unshareable"
+              singleton="true" type="javax.sql.DataSource" description="Optional"
+              driverClassName="" url="" username="sa" password="" validationQuery="SELECT 1" />
+    -->
+    <!-- a link to a resource defined in the global JNDI context(conf/server.xml &#60;GlobalNamingResources&#62;) -->
+    <!--
+    <ResourceLink global="UserDatabase" name="tomcat-users" type="org.apache.catalina.UserDatabase" />
+    -->
+    <!-- the characteristics of the UserTransaction to be returned for JNDI lookup for java:comp/UserTransaction -->
+    <!--
+    <Transaction factory="">
+    -->
+#end
+</Context>
