@@ -23,6 +23,9 @@
 
      For Handling HTTP request.
      src/main/webapp/WEB-INF/jsp/,src/main/webapp/WEB-INF/tags/,src/main/webapp/WEB-INF/web.xml
+     src/main/resources/META-INF/context.xml
+     src/main/resources/META-INF/resources/**/\*.[(html)|(js)|(css)|(png)|(jpg)|(gif)|(jpeg)]
+     src/main/resources/META-INF/web-fragment.xml
      src/main/webapp/WEB-INF/extensions   
      src/main/webapp/WEB-INF/modules   
      src/main/webapp/WEB-INF/services   
@@ -36,18 +39,24 @@
  
       Domain in DDD.
 
-3. Frameworks     
+3. Frameworks
+
+   + Spring
+   
+     src/main/webapp/WEB-INF/applicationContext.xml
+     src/main/resources/META-INF/spring.*
 
    + Spring MVC
 
      src/main/webapp/WEB-INF:
-     *-servlet.xml,applicationContext.xml   
+     \*-servlet.xml  
      src/main/resources:
      application*.properties,views.properties
     
    + Struts2
 
-     struts.xml
+     src/main/resources:
+     struts.xml, struts.properties
 
    + CXF
 
@@ -56,14 +65,17 @@
    + Dubbo
 
      src/main/resources/dubbo*  
+     src/main/resource/META-INF/services/org.apache.dubbo.*
 
    + MyBatis
 
-     src/main/resources/mybatis-config.xml,src/main/resources/sqlmap 
+     src/main/resources:
+     mybatis-config.xml,sqlmap/**/\*.xml
 
    + Hibernate
 
-     src/main/resources/hibernate.cfg.xml,src/main/resources/**/*.hbm.xml
+     src/main/resources:
+     hibernate.cfg.xml,**/\*.hbm.xml
      
    + JPA
    
@@ -84,5 +96,5 @@
    + Log
 
      JUL: src/main/resources/logging.properties   
-     log4j2: src/main/resources/log4j2.yaml   
+     log4j2: src/main/resources/log4j2*, src/test/resources/log4j2*   
      logback: src/main/resources/logback.xml,src/test/resources/logback-test.xml    
