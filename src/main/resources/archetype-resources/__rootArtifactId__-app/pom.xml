@@ -227,7 +227,7 @@
             <artifactId>druid</artifactId>
         </dependency>
 #end
-#if($framework.contains('hikrari'))
+#if($framework.contains('hikari'))
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>

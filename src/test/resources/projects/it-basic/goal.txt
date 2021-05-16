@@ -1,1 +1,1 @@
-verify -Dspring.profiles.active=default
+verify -Dspring.profiles.active=junit

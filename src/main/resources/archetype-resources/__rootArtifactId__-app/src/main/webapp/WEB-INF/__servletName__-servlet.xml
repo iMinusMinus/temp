@@ -524,11 +524,10 @@
     </bean>
 #{end}
 #end
-
-    <beans profile="dev">
+    <beans profile="default">
         <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
 #if($showComment)
-            <description>TODO</description>
+            <description>Post process BeanFactory by visitting BeanDefinition, then find placeholder and replace it.</description>
 #end
 #if($showDefault)
             <property name="placeholderPrefix" value="${" />
@@ -539,6 +538,38 @@
             <property name="localOverride" value="false" />
             <property name="ignoreResourceNotFound" value="false" />
 #end
+            <property name="fileEncoding" value="UTF-8" />
+            <property name="locations">
+                <list>
+                    <value>classpath:/application.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+    <beans profile="junit">
+        <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="fileEncoding" value="UTF-8" />
+            <property name="locations">
+                <list>
+                    <value>classpath:/application.properties</value>
+                    <value>classpath:/application-junit.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+    <beans profile="it">
+        <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="fileEncoding" value="UTF-8" />
+            <property name="locations">
+                <list>
+                    <value>classpath:/application.properties</value>
+                    <value>classpath:/application-it.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+    <beans profile="dev">
+        <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
             <property name="fileEncoding" value="UTF-8" />
             <property name="locations">
                 <list>

@@ -472,6 +472,14 @@
         <context:property-placeholder location="classpath:/application.properties" file-encoding="UTF-8"
             #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
     </beans>
+    <beans profile="junit">
+        <context:property-placeholder location="classpath:/application.properties,classpath:/application-junit.properties" file-encoding="UTF-8"
+            #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
+    </beans>
+    <beans profile="it">
+        <context:property-placeholder location="classpath:/application.properties,classpath:/application-it.properties" file-encoding="UTF-8"
+            #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
+    </beans>
     <beans profile="dev">
         <context:property-placeholder location="classpath:/application.properties,classpath:/application-dev.properties" file-encoding="UTF-8"
             #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
