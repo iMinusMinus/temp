@@ -64,6 +64,11 @@ public class DalConfig {
     @Value("${spring.datasource.password}")
     private String password;
 
+#if($framework.contains("druid"))
+    @Value("${spring.datasource.druid.dbType}")
+    private String dbType;
+#end
+
     @Value("${spring.datasource.validationQuery}")
     private String validationQuery;
 
@@ -113,6 +118,7 @@ public class DalConfig {
         dataSource.setUrl(url);
         dataSource.setUsername(username);
         dataSource.setPassword(password);
+        dataSource.setDbType(dbType);
         dataSource.setMinIdle(minIdle);
         dataSource.setInitialSize(initialSize);
         dataSource.setConnectionProperties(connectionProperties);
@@ -120,7 +126,7 @@ public class DalConfig {
         return dataSource;
     }
 #end
-#if($framework.contains('hikrari'))
+#if($framework.contains('hikari'))
     @Bean
     public DataSource dataSource() {
         HikariDataSource dataSource = new HikariDataSource();

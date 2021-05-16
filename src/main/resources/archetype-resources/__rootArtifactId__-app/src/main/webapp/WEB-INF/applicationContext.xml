@@ -253,6 +253,17 @@
 #end
     </bean>
 #end
+#if($framework.contains("hikari"))
+    <bean id="${dataSource}" class="com.zaxxer.hikari.HikariDataSource">
+#if($showComment)
+        <description>HikariCP is a solid, high performance JDBC connection pool.</description>
+#end
+        <property name="driverClassName" value="${spring.datasource.driverClassName}" />
+        <property name="jdbcUrl" value="${spring.datasource.url}" />
+        <property name="username" value="${spring.datasource.username}" />
+        <property name="password" value="${spring.datasource.password}" />
+    </bean>
+#elseif($framework.contains("druid"))
     <bean id="${dataSource}" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 #if($showComment)
         <description>A pooled dataSource better than dbcp and c3p0.
@@ -263,6 +274,7 @@
         <property name="url" value="${spring.datasource.url}" />
         <property name="username" value="${spring.datasource.username}" />
         <property name="password" value="${spring.datasource.password}" />
+        <property name="dbType" value="${spring.datasource.druid.dbType}" />
         <property name="filters" value="stat,slf4j,wall" />
         <property name="maxActive" value="${spring.datasource.druid.maxActive}" />
         <property name="initialSize" value="${spring.datasource.druid.initialSize}" />
@@ -271,6 +283,7 @@
         <property name="validationQuery" value="${spring.datasource.validationQuery}" />
         <property name="connectionProperties" value="${spring.datasource.druid.connectProperties}" />
     </bean>
+#end
 #if($framework.contains('mybatis') and $framework.contains('spring'))
     <bean id="${sqlSessionFactory}" class="org.mybatis.spring.SqlSessionFactoryBean">
 #if($showComment)
