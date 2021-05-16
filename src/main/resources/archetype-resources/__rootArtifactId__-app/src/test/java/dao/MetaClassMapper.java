@@ -29,7 +29,9 @@ public interface MetaClassMapper {
      */
 #if($configType.contains("@java") and $framework.contains('mybatis'))
     @Insert("INSERT INTO meta_class (class_name, super_class_name) VALUES (#{name}, #{superName})")
+#if(!$framework.contains("mysql"))
     @SelectKey(statement = "SELECT currval('meta_class_id_seq')", before = false, keyProperty = "id", resultType = long.class)
+#end
 #end
     long save(MetaClass domain);
 

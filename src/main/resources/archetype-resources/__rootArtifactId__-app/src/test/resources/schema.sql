@@ -1,0 +1,1 @@
+CREATE TABLE meta_class (ID BIGINT NOT NULL, class_name VARCHAR(65535), super_class_name VARCHAR(255), PRIMARY KEY (id));
