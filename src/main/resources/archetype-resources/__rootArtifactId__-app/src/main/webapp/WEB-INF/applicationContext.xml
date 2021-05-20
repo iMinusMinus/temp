@@ -284,6 +284,52 @@
         <property name="connectionProperties" value="${spring.datasource.druid.connectProperties}" />
     </bean>
 #end
+    <bean id="${databasePopulator}" class="org.springframework.jdbc.datasource.init.ResourceDatabasePopulator" abstract="true">
+#if($showDefault)
+        <property name="ignoreFailedDrops" value="false" />
+        <property name="continueOnError" value="${spring.datasource.continueOnError}" />
+        <property name="separator" value="${spring.datasource.separator}" />
+        <property name="commentPrefix" value="--" />
+#end
+        <property name="sqlScriptEncoding" value="${spring.datasource.sqlScriptEncoding}" />
+    </bean>
+    <bean class="org.springframework.jdbc.datasource.init.DataSourceInitializer">
+#if($showComment)
+        <description>refer: org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationConfiguration</description>
+#end
+        <property name="dataSource" ref="${dataSource}" />
+        <property name="enabled" value="false" />
+        <property name="databasePopulator">
+            <bean class="org.springframework.jdbc.datasource.init.CompositeDatabasePopulator">
+                <property name="populators">
+                    <list>
+                        <bean parent="${databasePopulator}">
+                            <property name="scripts">
+                                <bean class="org.springframework.jdbc.config.SortedResourcesFactoryBean">
+                                    <constructor-arg index="0">
+                                        <list>
+                                            <value>${spring.datasource.schema}</value>
+                                        </list>
+                                    </constructor-arg>
+                                </bean>
+                            </property>
+                        </bean>
+                        <bean parent="${databasePopulator}">
+                            <property name="scripts">
+                                <bean class="org.springframework.jdbc.config.SortedResourcesFactoryBean">
+                                    <constructor-arg index="0">
+                                        <list>
+                                            <value>${spring.datasource.data}</value>
+                                        </list>
+                                    </constructor-arg>
+                                </bean>
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
 #if($framework.contains('mybatis') and $framework.contains('spring'))
     <bean id="${sqlSessionFactory}" class="org.mybatis.spring.SqlSessionFactoryBean">
 #if($showComment)
