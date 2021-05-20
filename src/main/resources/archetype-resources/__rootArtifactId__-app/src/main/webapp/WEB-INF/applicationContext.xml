@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 #if($configType.contains('xml:'))
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:cache="http://www.springframework.org/schema/cache"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:cache="http://www.springframework.org/schema/cache"
+    xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 #end
 #if(!$configType.contains('xml:'))
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 #{else}
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
-            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-            http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 #end
 #if($showDefault)
     <bean id="environment" scope="singleton" class="org.springframework.core.env.StandardEnvironment" #if(!$showComment)/>#{else}>
@@ -284,6 +286,12 @@
         <property name="connectionProperties" value="${spring.datasource.druid.connectProperties}" />
     </bean>
 #end
+#if($configType.contains("xml:"))
+    <jdbc:initialize-database data-source="${dataSource}" enabled="false">
+        <jdbc:script location="${spring.datasource.schema}" encoding="${spring.datasource.sqlScriptEncoding}" separator="${spring.datasource.separator}" />
+        <jdbc:script location="${spring.datasource.data}" ignore-failures="!DROPS!ALL" execution="INIT" />
+    </jdbc:initialize-database>
+#elseif($configType.contains("xml"))
     <bean id="${databasePopulator}" class="org.springframework.jdbc.datasource.init.ResourceDatabasePopulator" abstract="true">
 #if($showDefault)
         <property name="ignoreFailedDrops" value="false" />
@@ -295,7 +303,8 @@
     </bean>
     <bean class="org.springframework.jdbc.datasource.init.DataSourceInitializer">
 #if($showComment)
-        <description>refer: org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationConfiguration</description>
+        <description>Execute script after datasource created.
+            refer: org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationConfiguration</description>
 #end
         <property name="dataSource" ref="${dataSource}" />
         <property name="enabled" value="false" />
@@ -330,6 +339,7 @@
             </bean>
         </property>
     </bean>
+#end
 #if($framework.contains('mybatis') and $framework.contains('spring'))
     <bean id="${sqlSessionFactory}" class="org.mybatis.spring.SqlSessionFactoryBean">
 #if($showComment)

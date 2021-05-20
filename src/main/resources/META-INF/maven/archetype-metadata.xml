@@ -99,6 +99,9 @@ under the License.
         <requiredProperty key="sessionFactory">
             <defaultValue>sessionFactory</defaultValue>
         </requiredProperty>
+        <requiredProperty key="databasePopulator">
+            <defaultValue>databasePopulator</defaultValue>
+        </requiredProperty>
         <requiredProperty key="kafkaProducerFactory">
             <defaultValue>kafkaProducerFactory</defaultValue>
         </requiredProperty>
