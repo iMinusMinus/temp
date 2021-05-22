@@ -287,9 +287,9 @@
     </bean>
 #end
 #if($configType.contains("xml:"))
-    <jdbc:initialize-database data-source="${dataSource}" enabled="false">
+    <jdbc:initialize-database data-source="${dataSource}" enabled="false" ignore-failures="NONE">
         <jdbc:script location="${spring.datasource.schema}" encoding="${spring.datasource.sqlScriptEncoding}" separator="${spring.datasource.separator}" />
-        <jdbc:script location="${spring.datasource.data}" ignore-failures="!DROPS!ALL" execution="INIT" />
+        <jdbc:script location="${spring.datasource.data}" execution="INIT" />
     </jdbc:initialize-database>
 #elseif($configType.contains("xml"))
     <bean id="${databasePopulator}" class="org.springframework.jdbc.datasource.init.ResourceDatabasePopulator" abstract="true">
