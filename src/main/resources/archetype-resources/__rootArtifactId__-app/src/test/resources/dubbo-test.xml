@@ -6,16 +6,9 @@
             http://dubbo.apache.org/schema/dubbo http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
 
     <dubbo:application name="temp" owner="iMinusMinus" />
-    <dubbo:protocol port="9090" />
-    <dubbo:service interface="org.apache.dubbo.registry.RegistryService" ref="registryService" ondisconnect="disconnect" callbacks="1000"  version="1.0.0" group="simple">
-        <dubbo:method name="subscribe">
-            <dubbo:argument index="1" callback="true" />
-        </dubbo:method>
-        <dubbo:method name="unsubscribe">
-            <dubbo:argument index="1" callback="false" />
-        </dubbo:method>
-    </dubbo:service>
+    <dubbo:protocol name="injvm" port="0" />
+    <dubbo:service interface="${package}.api.GenericService" ref="genericServiceImpl" />
 
-    <bean id="registryService" class="org.apache.dubbo.registry.dubbo.SimpleRegistryService" />
-    <dubbo:registry address="127.0.0.1:9090" group="simple" version="1.0.0" />
+    <bean id="genericServiceImpl" class="${package}.rpc.GenericServiceImpl" />
+    <dubbo:registry address="N/A" />
 </beans>

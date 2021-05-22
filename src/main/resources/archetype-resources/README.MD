@@ -1,6 +1,15 @@
 ## Refer
 1. [Velocity](http://velocity.apache.org/engine/devel/user-guide.html)
 
+## Usage
+
+- Maven
+
+   ```sh
+   mvn clean install
+   mvn archetype:generate -DarchetypeCatalog=local -DarchetypeGroupId=ml.iamwhatiam.archetype -DarchetypeArtifactId=temp -DarchetypeVersion=1.0-SNAPSHOT
+   ```
+
 ## Dependency Tree
 
 1. Build
@@ -51,7 +60,7 @@
      src/main/webapp/WEB-INF:
      \*-servlet.xml  
      src/main/resources:
-     application*.properties,views.properties
+     application*.properties, messages.properties, messages_[a-z]{2}-[A-Z]{2}.properties, views.properties, ValidationMessages.properties
     
    + Struts2
 
