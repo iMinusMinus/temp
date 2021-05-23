@@ -45,7 +45,7 @@ under the License.
             <validationRegex>(Maven)|(ANT)|(Gradle)</validationRegex>
         </requiredProperty>
         <requiredProperty key="framework">
-            <defaultValue>springMVC,spring,mybatis,dubbo,druid</defaultValue>
+            <defaultValue>springMVC,spring,mybatis,dubbo,druid,log4j2</defaultValue>
         </requiredProperty>
         <requiredProperty key="servletName">
             <defaultValue>dispatcherServlet</defaultValue>

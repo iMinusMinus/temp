@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 #if($configType.contains('xml:'))
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:context="http://www.springframework.org/schema/context"
 #end
 #if(!$configType.contains('xml:'))
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 #else
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 #end
 #if($configType.contains('xml') and $showDefault)
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver"#if(!$showComment) />#{else}>
@@ -32,13 +34,13 @@
     <!-- handlerMapping, org.springframework.web.servlet.DispatcherServlet#initHandlerMappings -->
 #end
     <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"#if(!$showComment) />#{else}>
-        <description>Optional. Name a bean '/foo' or '/foo*', when SimpleControllerHandlerAdapter registed,
+        <description>Optional. Name a bean '/foo' or '/foo*', when SimpleControllerHandlerAdapter registered,
         then use bean which type is org.springframework.web.servlet.mvc.Controller to handleRequest</description>
     </bean>
 #{end}
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"#if(!$showComment) />#{else}>
         <description>Optional. Given org.springframework.web.bind.annotation.RequestMapping on class and method,
-        when AnnotationMethodHandlerAdapter registed, invoke method</description>
+        when AnnotationMethodHandlerAdapter registered, invoke method</description>
     </bean>
 #{end}
 #if($showComment)
@@ -334,7 +336,6 @@
     -->
 #end
 #if($configType.contains('xml'))
-#if(($configType.contains('xml') and !$configType.contains('xml:'))  or $showDefault)
     <bean id="${byteArrayHttpMessageConverter}" class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
     <bean id="${stringHttpMessageConverter}" class="org.springframework.http.converter.StringHttpMessageConverter">
         <constructor-arg index="0" value="UTF-8" />
@@ -363,6 +364,7 @@
             </props>
         </property>
     </bean>
+#if(!$configType.contains('xml:'))
     <bean id="${conversionService}" class="org.springframework.format.support.FormattingConversionServiceFactoryBean"#if(!$showComment)/>#{else}>
         <description>conversionService: org.springframework.format.support.DefaultFormattingConversionService</description>
     </bean>
@@ -381,6 +383,7 @@
         <!--<property name="messageCodesResolver" ref="" />-->
 #end
     </bean>
+#if($configType.contains('@'))
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
 #if($showComment)
         <description>Find class with @Controller and class/method with @RequestMapping.
@@ -427,15 +430,6 @@
         <property name="order" value="0" />
     </bean>
 #{end}
-    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
-        <constructor-arg index="0">
-            <list>
-                <ref bean="${stringHttpMessageConverter}" />
-                <ref bean="${jaxb2xmlHtppMessageConverter}" />
-                <ref bean="${jackson2jsonHttpMessageConverter}" />
-            </list>
-        </constructor-arg>
-    </bean>
     <bean id="methodValidationPostProcessor" class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor">
 #if($showComment)
         <description>org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration#methodValidationPostProcessor</description>
@@ -444,6 +438,26 @@
         <property name="proxyTargetClass" value="${spring.aop.proxyTargetClass}" />
 #end
         <property name="validator" ref="${validator}" />
+    </bean>
+#if($showComment)
+    <!--
+    <bean class="org.springframework.context.annotation.ClassPathBeanDefinitionScanner">
+        <constructor-arg index="0" type="org.springframework.beans.factory.support.BeanDefinitionRegistry" ref="" />
+        <constructor-arg index="1" type="boolean" value="false" />
+        <constructor-arg index="2" type="org.springframework.core.env.Environment" ref="environment" />
+        <constructor-arg index="3" type="org.springframework.core.io.ResourceLoader" ref="" />
+    </bean>
+    -->
+#end
+#end
+    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+        <constructor-arg index="0">
+            <list>
+                <ref bean="${stringHttpMessageConverter}" />
+                <ref bean="${jaxb2xmlHtppMessageConverter}" />
+                <ref bean="${jackson2jsonHttpMessageConverter}" />
+            </list>
+        </constructor-arg>
     </bean>
 #else
 #if($showComment)
@@ -494,6 +508,11 @@
         -->
 #end
     </mvc:annotation-driven>
+#if($configType.contains('@'))
+    <context:component-scan base-package="${package}.web" use-default-filters="false" #if($showDefault)annotation-config="true"#{end}>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+    </context:component-scan>
+#end
 #end
 #end
 
@@ -527,7 +546,7 @@
     <beans profile="default">
         <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
 #if($showComment)
-            <description>Post process BeanFactory by visitting BeanDefinition, then find placeholder and replace it.</description>
+            <description>Post process BeanFactory by visiting BeanDefinition, then find placeholder and replace it.</description>
 #end
 #if($showDefault)
             <property name="placeholderPrefix" value="${" />

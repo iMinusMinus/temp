@@ -133,7 +133,7 @@
     And exclude filter is precedence of include filter.
     -->
 #end
-    <context:component-scan base-package="${package}" use-default-filters="true" #if($showDefault)annotation-config="true"#{end}>
+    <context:component-scan base-package="${package}" use-default-filters="false" #if($showDefault)annotation-config="true"#{end}>
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
     </context:component-scan>
 #end
@@ -284,60 +284,6 @@
         <property name="minIdle" value="${spring.datasource.druid.minIdle}" />
         <property name="validationQuery" value="${spring.datasource.validationQuery}" />
         <property name="connectionProperties" value="${spring.datasource.druid.connectProperties}" />
-    </bean>
-#end
-#if($configType.contains("xml:"))
-    <jdbc:initialize-database data-source="${dataSource}" enabled="false" ignore-failures="NONE">
-        <jdbc:script location="${spring.datasource.schema}" encoding="${spring.datasource.sqlScriptEncoding}" separator="${spring.datasource.separator}" />
-        <jdbc:script location="${spring.datasource.data}" execution="INIT" />
-    </jdbc:initialize-database>
-#elseif($configType.contains("xml"))
-    <bean id="${databasePopulator}" class="org.springframework.jdbc.datasource.init.ResourceDatabasePopulator" abstract="true">
-#if($showDefault)
-        <property name="ignoreFailedDrops" value="false" />
-        <property name="continueOnError" value="${spring.datasource.continueOnError}" />
-        <property name="separator" value="${spring.datasource.separator}" />
-        <property name="commentPrefix" value="--" />
-#end
-        <property name="sqlScriptEncoding" value="${spring.datasource.sqlScriptEncoding}" />
-    </bean>
-    <bean class="org.springframework.jdbc.datasource.init.DataSourceInitializer">
-#if($showComment)
-        <description>Execute script after datasource created.
-            refer: org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationConfiguration</description>
-#end
-        <property name="dataSource" ref="${dataSource}" />
-        <property name="enabled" value="false" />
-        <property name="databasePopulator">
-            <bean class="org.springframework.jdbc.datasource.init.CompositeDatabasePopulator">
-                <property name="populators">
-                    <list>
-                        <bean parent="${databasePopulator}">
-                            <property name="scripts">
-                                <bean class="org.springframework.jdbc.config.SortedResourcesFactoryBean">
-                                    <constructor-arg index="0">
-                                        <list>
-                                            <value>${spring.datasource.schema}</value>
-                                        </list>
-                                    </constructor-arg>
-                                </bean>
-                            </property>
-                        </bean>
-                        <bean parent="${databasePopulator}">
-                            <property name="scripts">
-                                <bean class="org.springframework.jdbc.config.SortedResourcesFactoryBean">
-                                    <constructor-arg index="0">
-                                        <list>
-                                            <value>${spring.datasource.data}</value>
-                                        </list>
-                                    </constructor-arg>
-                                </bean>
-                            </property>
-                        </bean>
-                    </list>
-                </property>
-            </bean>
-        </property>
     </bean>
 #end
 #if($framework.contains('mybatis') and $framework.contains('spring'))
@@ -522,13 +468,68 @@
 #**
  * keep &#60;beans profile="" /&#62;at the end of file!
  *#
-#if($configType.contains('xml:'))
 #if(!$showComment)    <!-- Define org.springframework.context.support.PropertySourcesPlaceholderConfigurer -->#{end}
     <beans profile="default">
         <context:property-placeholder location="classpath:/application.properties" file-encoding="UTF-8"
             #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
     </beans>
     <beans profile="junit">
+#if(!$framework.contains("h2"))
+#if($configType.contains("xml:"))
+        <jdbc:initialize-database data-source="${dataSource}" enabled="false" ignore-failures="NONE">
+            <jdbc:script location="${spring.datasource.schema}" encoding="${spring.datasource.sqlScriptEncoding}" separator="${spring.datasource.separator}" />
+            <jdbc:script location="${spring.datasource.data}" execution="INIT" />
+        </jdbc:initialize-database>
+#else
+        <bean id="${databasePopulator}" class="org.springframework.jdbc.datasource.init.ResourceDatabasePopulator" abstract="true">
+#if($showDefault)
+            <property name="ignoreFailedDrops" value="false" />
+            <property name="continueOnError" value="${spring.datasource.continueOnError}" />
+            <property name="separator" value="${spring.datasource.separator}" />
+            <property name="commentPrefix" value="--" />
+#end
+            <property name="sqlScriptEncoding" value="${spring.datasource.sqlScriptEncoding}" />
+        </bean>
+        <bean class="org.springframework.jdbc.datasource.init.DataSourceInitializer">
+#if($showComment)
+            <description>Execute script after datasource created.
+                refer: org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationConfiguration</description>
+#end
+            <property name="dataSource" ref="${dataSource}" />
+            <property name="enabled" value="false" />
+            <property name="databasePopulator">
+                <bean class="org.springframework.jdbc.datasource.init.CompositeDatabasePopulator">
+                    <property name="populators">
+                        <list>
+                            <bean parent="${databasePopulator}">
+                                <property name="scripts">
+                                    <bean class="org.springframework.jdbc.config.SortedResourcesFactoryBean">
+                                        <constructor-arg index="0">
+                                            <list>
+                                                <value>${spring.datasource.schema}</value>
+                                            </list>
+                                        </constructor-arg>
+                                    </bean>
+                                </property>
+                            </bean>
+                            <bean parent="${databasePopulator}">
+                                <property name="scripts">
+                                    <bean class="org.springframework.jdbc.config.SortedResourcesFactoryBean">
+                                        <constructor-arg index="0">
+                                            <list>
+                                                <value>${spring.datasource.data}</value>
+                                            </list>
+                                        </constructor-arg>
+                                    </bean>
+                                </property>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+            </property>
+        </bean>
+#end
+#end
         <context:property-placeholder location="classpath:/application.properties,classpath:/application-junit.properties" file-encoding="UTF-8"
             #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
     </beans>
@@ -548,5 +549,4 @@
         <context:property-placeholder location="classpath:/application.properties,classpath:/application-prod.properties" file-encoding="UTF-8"
             #if($showDefault)local-override="false" order="2147483647" ignore-unresolvable="false" system-properties-mode="ENVIRONMENT"#{end} />
     </beans>
-#end
 </beans>
