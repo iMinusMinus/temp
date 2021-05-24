@@ -78,8 +78,8 @@ under the License.
         <requiredProperty key="allEncompassingFormHttpMessageConverter">
             <defaultValue>allEncompassingFormHttpMessageConverter</defaultValue>
         </requiredProperty>
-        <requiredProperty key="jaxb2xmlHtppMessageConverter">
-            <defaultValue>jaxb2xmlHtppMessageConverter</defaultValue>
+        <requiredProperty key="jaxb2xmlHttpMessageConverter">
+            <defaultValue>jaxb2xmlHttpMessageConverter</defaultValue>
         </requiredProperty>
         <requiredProperty key="jackson2jsonHttpMessageConverter">
             <defaultValue>jackson2jsonHttpMessageConverter</defaultValue>

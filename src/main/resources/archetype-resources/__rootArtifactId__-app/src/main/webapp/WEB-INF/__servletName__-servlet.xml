@@ -344,7 +344,7 @@
     <bean id="${resourceHttpMessageConverter}" class="org.springframework.http.converter.ResourceHttpMessageConverter" />
     <bean id="${sourceHttpMessageConverter}" class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
     <bean id="${allEncompassingFormHttpMessageConverter}" class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter" />
-    <bean id="${jaxb2xmlHtppMessageConverter}" class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />
+    <bean id="${jaxb2xmlHttpMessageConverter}" class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />
     <bean id="${jackson2jsonHttpMessageConverter}" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
 
     <bean id="mvcContentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
@@ -408,7 +408,7 @@
                 <ref bean="${resourceHttpMessageConverter}" />
                 <ref bean="${sourceHttpMessageConverter}"/>
                 <ref bean="${allEncompassingFormHttpMessageConverter}" />
-                <ref bean="${jaxb2xmlHtppMessageConverter}" />
+                <ref bean="${jaxb2xmlHttpMessageConverter}" />
                 <ref bean="${jackson2jsonHttpMessageConverter}" />
             </list>
         </property>
@@ -423,7 +423,7 @@
                 <ref bean="${resourceHttpMessageConverter}" />
                 <ref bean="${sourceHttpMessageConverter}"/>
                 <ref bean="${allEncompassingFormHttpMessageConverter}" />
-                <ref bean="${jaxb2xmlHtppMessageConverter}" />
+                <ref bean="${jaxb2xmlHttpMessageConverter}" />
                 <ref bean="${jackson2jsonHttpMessageConverter}" />
             </list>
         </property>
@@ -454,7 +454,7 @@
         <constructor-arg index="0">
             <list>
                 <ref bean="${stringHttpMessageConverter}" />
-                <ref bean="${jaxb2xmlHtppMessageConverter}" />
+                <ref bean="${jaxb2xmlHttpMessageConverter}" />
                 <ref bean="${jackson2jsonHttpMessageConverter}" />
             </list>
         </constructor-arg>
@@ -483,7 +483,7 @@
             <ref bean="${resourceHttpMessageConverter}" />
             <ref bean="${sourceHttpMessageConverter}"/>
             <ref bean="${allEncompassingFormHttpMessageConverter}" />
-            <ref bean="${jaxb2xmlHtppMessageConverter}" />
+            <ref bean="${jaxb2xmlHttpMessageConverter}" />
             <ref bean="${jackson2jsonHttpMessageConverter}" />
         </mvc:message-converters>
 #end
