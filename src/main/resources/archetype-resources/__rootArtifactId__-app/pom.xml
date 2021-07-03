@@ -24,6 +24,14 @@
             <version>${project.parent.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
 #if($framework.contains('logback'))
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -88,6 +96,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>
+#if($framework.contains("struts2"))
         <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-core</artifactId>
@@ -113,16 +122,14 @@
             <artifactId>struts2-bean-validation-plugin</artifactId>
         </dependency>
 #**
-        http://localhost:8080/config-browser/index
+        <!-- http://localhost:8080/config-browser/index -->
 *#
         <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-config-browser-plugin</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
+#end
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
@@ -140,13 +147,32 @@
             <artifactId>hibernate-validator</artifactId>
         </dependency>
 #if($framework.contains('dubbo'))
+#if($configType.contains('@'))
         <dependency>
             <groupId>org.apache.dubbo</groupId>
-            <artifactId>dubbo</artifactId>
+            <artifactId>dubbo-common</artifactId>
+        </dependency>
+#end
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-config-spring</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-registry-zookeeper</artifactId>
+        </dependency>
+##<!-- dubbon协议与netty配合，适用于小数据场景(1k);rmi/(http+json)协议适用于大数据场景(50k) -->
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-rpc-dubbo</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-remoting-netty4</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-serialization-hessian2</artifactId>
         </dependency>
 #end
 #if($framework.contains('cxf'))
@@ -298,11 +324,6 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
 #end
-        <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-recipes</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-junit-plugin</artifactId>

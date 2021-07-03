@@ -7,8 +7,8 @@
 
     <dubbo:application name="temp" owner="iMinusMinus" />
     <dubbo:protocol name="injvm" port="0" />
-    <dubbo:service interface="${package}.api.GenericService" ref="genericServiceImpl" />
+    <!--<dubbo:service interface="${package}.api.GenericService" ref="genericServiceImpl" />-->
 
-    <bean id="genericServiceImpl" class="${package}.rpc.GenericServiceImpl" />
+    <!--<bean id="genericServiceImpl" class="${package}.rpc.GenericServiceImpl" />-->
     <dubbo:registry address="N/A" />
 </beans>
