@@ -110,6 +110,11 @@ public class WebServiceTest extends ContainerBase {
                 .post(new EchoRequest(), EchoResponse.class);
         Assert.assertEquals(null, response);
     }
+#else
+    @Test
+    public void testWs() {
+
+    }
 #end
 
 }
