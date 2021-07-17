@@ -75,7 +75,7 @@
         <description>#[[See org.springframework.web.context.ContextLoader#loadParentContext]]#</description>
 #end
         <param-name>parentContextKey</param-name>
-        <param-value>org.springframework.beans.factory.BeanFactory</param-value>
+        <param-value>${parentContextKey}</param-value>
     </context-param>
 #end
 
@@ -168,6 +168,18 @@
     </filter-mapping>
 #end
 
+#if($framework.contains("hystrix"))
+    <servlet>
+        <description>#[[Optional. See org.springframework.cloud.netflix.hystrix.HystrixStreamEndpoint]]#</description>
+        <display-name>HystrixMetricsStreamServlet</display-name>
+        <servlet-name>HystrixMetricsStreamServlet</servlet-name>
+        <servlet-class>com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsStreamServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HystrixMetricsStreamServlet</servlet-name>
+        <url-pattern>/hystrix.stream</url-pattern>
+    </servlet-mapping>
+#end
 #if($framework.contains("cxf"))
     <servlet>
         <description>Apache CXF Endpoint</description>

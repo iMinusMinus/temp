@@ -175,6 +175,74 @@
             <artifactId>dubbo-serialization-hessian2</artifactId>
         </dependency>
 #end
+#if($framework.contains('feign'))
+        <dependency>
+            <groupId>com.netflix.feign</groupId>
+            <artifactId>feign-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.feign</groupId>
+            <artifactId>feign-jaxrs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.feign</groupId>
+            <artifactId>feign-slf4j</artifactId>
+        </dependency>
+#end
+#if($framework.contains('hystrix') and $framework.contains('feign'))
+        <dependency>
+            <groupId>com.netflix.feign</groupId>
+            <artifactId>feign-hystrix</artifactId>
+        </dependency>
+#end
+#if($framework.contains('ribbon'))
+        <dependency>
+            <groupId>com.netflix.ribbon</groupId>
+            <artifactId>ribbon-eureka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.ribbon</groupId>
+            <artifactId>ribbon-loadbalancer</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.ribbon</groupId>
+            <artifactId>ribbon-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+#end
+#if($framework.contains('eureka'))
+        <dependency>
+            <groupId>com.netflix.eureka</groupId>
+            <artifactId>eureka-client</artifactId>
+        </dependency>
+#end
+#if($framework.contains('hystrix'))
+        <dependency>
+            <groupId>com.netflix.hystrix</groupId>
+            <artifactId>hystrix-javanica</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.hystrix</groupId>
+            <artifactId>hystrix-metrics-event-stream</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>1.2.0</version>
+            <scope>compile</scope>
+        </dependency>
+#end
+#if($framework.contains('spectator'))
+        <dependency>
+            <groupId>com.netflix.spectator</groupId>
+            <artifactId>spectator-reg-servo</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.servo</groupId>
+            <artifactId>servo-atlas</artifactId>
+        </dependency>
+#end
 #if($framework.contains('cxf'))
         <dependency>
             <groupId>org.apache.cxf</groupId>
