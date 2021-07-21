@@ -7,7 +7,6 @@ import javax.annotation.PostConstruct;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 #end
-#if($framework.contains('ribbon'))
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +40,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.std.BeanSerializerBase;
 #end
-
+#if($framework.contains('ribbon'))
 import com.netflix.client.AbstractLoadBalancerAwareClient;
 import com.netflix.client.ClientException;
 import com.netflix.client.ClientFactory;
@@ -53,7 +52,7 @@ import com.netflix.client.IClient;
 import com.netflix.client.IResponse;
 import com.netflix.client.RequestSpecificRetryHandler;
 #end
-#if($framework.contains('eureka') or $framework.contains('feign') or $framework.contains('ribbon') or $framework.contains('hystrix') or $framework.contains('spectator'))
+#if($framework.contains('eureka') or $framework.contains('ribbon') or $framework.contains('hystrix') or $framework.contains('spectator'))
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DeploymentContext.ContextKey;
 import com.netflix.config.DynamicPropertyFactory;
@@ -133,6 +132,7 @@ import feign.Retryer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -144,7 +144,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-#if($framework.contains('eureka'))
+#if($framework.contains('eureka') or $framework.contains('feign'))
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 #end
 import org.springframework.http.HttpHeaders;
@@ -166,7 +166,33 @@ import org.springframework.web.client.RestTemplate;
  */
 @Configuration
 @Import(value = RefreshConfiguration.class)
-public class NetflixOSSConfig {
+public class NetflixOSSConfig implements InitializingBean{
+#if($framework.contains('eureka') or $framework.contains('ribbon') or $framework.contains('hystrix') or $framework.contains('spectator'))
+
+    #[[@Value("${spring.profiles.active}")]]#
+    private String activeProfiles;
+
+    #[[@Value("${spring.application.name}")]]#
+    private String appName;
+#end
+
+    public void afterPropertiesSet() throws Exception {
+#if($framework.contains('eureka') or $framework.contains('ribbon') or $framework.contains('hystrix') or $framework.contains('spectator'))
+        String placeholder = "${spring.profiles.active}";
+        String env = ConfigurationManager.getDeploymentContext().getDeploymentEnvironment();
+        if(env == null || env.length() == 0 || placeholder.equals(env)) {
+            ConfigurationManager.getDeploymentContext().setDeploymentEnvironment(activeProfiles);
+        }
+        String stack = ConfigurationManager.getDeploymentContext().getDeploymentStack();
+        if(stack != null && stack.contains(placeholder)) {
+            ConfigurationManager.getDeploymentContext().setDeploymentStack(stack.replace(placeholder, ConfigurationManager.getDeploymentContext().getDeploymentEnvironment()));
+        }
+        String applicationId = ConfigurationManager.getDeploymentContext().getApplicationId();
+        if(applicationId == null || applicationId.length() == 0) {
+            ConfigurationManager.getDeploymentContext().setApplicationId(appName);
+        }
+#end
+    }
 #if($framework.contains('ribbon'))
 
     #[[@Value("${ribbon.eureka.approximateZoneFromHostname:false}")]]#
@@ -174,11 +200,25 @@ public class NetflixOSSConfig {
 
     #[[@Value("${ribbon.client.name:default}")]]#
     private String name = "client";
+
+## // 启动命令加参数"-Dribbon.ClientClassName"也可生效
+    static {
+        System.setProperty("ribbon.ClientClassName", NetflixOSSConfig.LoadBalancerClient.class.getName()); // outter$inner, not outter.inner
+    }
 #end
 #if($framework.contains('feign'))
 
     @Autowired(required = false)
     private List<HttpMessageConverter> converters;
+
+    {
+        if(converters == null) {
+            converters = new ArrayList<HttpMessageConverter>();
+        }
+        if(converters.isEmpty()) {
+            converters.add(new MappingJackson2HttpMessageConverter());
+        }
+    }
 
     @Autowired(required = false)
     private Logger logger;
@@ -540,7 +580,7 @@ public class NetflixOSSConfig {
 ## refer: org.springframework.cloud.netflix.feign.FeignClientsConfiguration
 ## refer: org.springframework.cloud.netflix.feign.FeignAutoConfiguration
 #if($framework.contains('ribbon'))
-        ##refer:org.springframework.cloud.netflix.feign.ribbon.FeignRibbonClientAutoConfiguration
+## refer: org.springframework.cloud.netflix.feign.ribbon.FeignRibbonClientAutoConfiguration
 ## refer: org.springframework.cloud.netflix.feign.ribbon.LoadBalancerFeignClient
 ## refer: org.springframework.cloud.netflix.feign.ribbon.CachingSpringLoadBalancerFactory
 ## refer: org.springframework.cloud.netflix.feign.ribbon.FeignLoadBalancer
@@ -651,63 +691,92 @@ public class NetflixOSSConfig {
         }
     }
 
+## // refer: org.springframework.cloud.netflix.feign.ribbon.FeignLoadBalancer
+## // refer: com.netflix.niws.client.http.RestClient
+    public static class LoadBalancerClient extends AbstractLoadBalancerAwareClient<RibbonRequest, RibbonResponse> {
+
+        public LoadBalancerClient() {
+            super(null);
+        }
+
+        public LoadBalancerClient(IClientConfig clientConfig) {
+            super(null, clientConfig);
+            initWithNiwsConfig(clientConfig);
+        }
+
+        public LoadBalancerClient(ILoadBalancer lb, IClientConfig clientConfig) {
+            super(lb, clientConfig);
+            initWithNiwsConfig(clientConfig);
+        }
+
+        @Override
+        public RibbonResponse execute(RibbonRequest request, IClientConfig configOverride) throws IOException {
+            int defaultConnectTimeoutMillis = 2000; // DefaultClientConfigImpl.DEFAULT_CONNECT_TIMEOUT
+            int defaultReadTimeoutMillis = 5000; // DefaultClientConfigImpl.DEFAULT_READ_TIMEOUT
+            int connectTimeoutMillis = (configOverride != null) ? configOverride.get(CommonClientConfigKey.ConnectTimeout, defaultConnectTimeoutMillis) : defaultConnectTimeoutMillis;
+            int readTimeoutMillis = (configOverride != null) ? configOverride.get(CommonClientConfigKey.ReadTimeout, defaultReadTimeoutMillis) : defaultReadTimeoutMillis;
+            Request.Options options = new Request.Options(connectTimeoutMillis, readTimeoutMillis);
+            Response response = request.client().execute(request.toRequest(), options);
+            return new RibbonResponse(request.getUri(), response);
+        }
+
+        @Override
+        public RequestSpecificRetryHandler getRequestSpecificRetryHandler(RibbonRequest request, IClientConfig requestConfig) {
+            return new RequestSpecificRetryHandler(requestConfig.get(CommonClientConfigKey.RequestSpecificRetryOn, true),
+                    requestConfig.get(CommonClientConfigKey.OkToRetryOnAllOperations, false));
+        }
+    }
+
+## // refer: org.springframework.cloud.netflix.feign.ribbon.LoadBalancerFeignClient
+    public static class LoadBalancerFeignClient implements Client {
+
+        private final Client delegate; // httpclient, okhttp, etc.
+
+        private final String name;
+
+        public LoadBalancerFeignClient(String serviceId, Client delegate) {
+            this.name = serviceId;
+            this.delegate = delegate;
+        }
+
+        @Override
+        public Response execute(Request request, Request.Options options) throws IOException {
+            IClientConfig config = ClientFactory.getNamedConfig(name);
+            URI asUri = URI.create(request.url());
+            String clientName = asUri.getHost();
+            RibbonRequest ribbonRequest = new RibbonRequest(delegate, request, URI.create(request.url().replaceFirst(clientName, "")));
+            AbstractLoadBalancerAwareClient<RibbonRequest, RibbonResponse> ribbonClient = (AbstractLoadBalancerAwareClient) ClientFactory.getNamedClient(name);
+            try {
+                return ribbonClient.executeWithLoadBalancer(ribbonRequest, config).toResponse(); // executeWithLoadBalancer方法可以从request获取loadBalancerKey，ILoadBalancer/IRule在选取实例时可根据loadBalancerKey筛选
+            } catch (ClientException e) {
+                IOException io = null;
+                Throwable t = e;
+                while (true) {
+                    if (t == null) {
+                        break;
+                    }
+                    if (t instanceof IOException) {
+                        io = (IOException) t;
+                    }
+                    t = t.getCause();
+                }
+                if (io != null) {
+                    throw io;
+                }
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     @Bean
     public Client feignClient() {
-        return new Client() { // refer: org.springframework.cloud.netflix.feign.ribbon.LoadBalancerFeignClient
-            @Override
-            public Response execute(Request request, Request.Options options) throws IOException {
-                IClientConfig config = ClientFactory.getNamedConfig(name); // XXX ClientFactory.getNamedConfig(name, new DefaultClientConfigImpl() {{setProperty(CommonClientConfigKey.ConnectTimeout, options.connectTimeoutMillis());setProperty(CommonClientConfigKey.ReadTimeout, options.readTimeoutMillis());}})
-                ILoadBalancer lb = ClientFactory.getNamedLoadBalancer(name, config.getClass());
-                Client delegate = new Client.Default(null, null); // httpclient, okhttp, etc.
-                URI asUri = URI.create(request.url());
-                String clientName = asUri.getHost();
-                RibbonRequest ribbonRequest = new RibbonRequest(delegate, request, URI.create(request.url().replaceFirst(clientName, "")));
-                // IClient ribbonClient = ClientFactory.getNamedClient(name);
-                AbstractLoadBalancerAwareClient<RibbonRequest, RibbonResponse> ribbonClient = new AbstractLoadBalancerAwareClient<RibbonRequest, RibbonResponse>(lb, config) { // refer: org.springframework.cloud.netflix.feign.ribbon.FeignLoadBalancer
-                    @Override
-                    public RibbonResponse execute(RibbonRequest request, IClientConfig configOverride) throws IOException {
-                        int defaultConnectTimeoutMillis = 2000; // DefaultClientConfigImpl.DEFAULT_CONNECT_TIMEOUT
-                        int defaultReadTimeoutMillis = 5000; // DefaultClientConfigImpl.DEFAULT_READ_TIMEOUT
-                        int connectTimeoutMillis = (configOverride != null) ? configOverride.get(CommonClientConfigKey.ConnectTimeout, defaultConnectTimeoutMillis) : defaultConnectTimeoutMillis;
-                        int readTimeoutMillis = (configOverride != null) ? configOverride.get(CommonClientConfigKey.ReadTimeout, defaultReadTimeoutMillis) : defaultReadTimeoutMillis;
-                        Request.Options options = new Request.Options(connectTimeoutMillis, readTimeoutMillis);
-                        Response response = request.client().execute(request.toRequest(), options);
-                        return new RibbonResponse(request.getUri(), response);
-                    }
-
-                    @Override
-                    public RequestSpecificRetryHandler getRequestSpecificRetryHandler(RibbonRequest request, IClientConfig requestConfig) {
-                        return new RequestSpecificRetryHandler(requestConfig.get(CommonClientConfigKey.RequestSpecificRetryOn, true),
-                                requestConfig.get(CommonClientConfigKey.OkToRetryOnAllOperations, false));
-                    }
-                };
-                try {
-                    return ribbonClient.executeWithLoadBalancer(ribbonRequest, config).toResponse(); // executeWithLoadBalancer方法可以从request获取loadBalancerKey，ILoadBalancer/IRule在选取实例时可根据loadBalancerKey筛选
-                } catch (ClientException e) {
-                    IOException io = null;
-                    Throwable t = e;
-                    while (true) {
-                        if (t == null) {
-                            break;
-                        }
-                        if (t instanceof IOException) {
-                            io = (IOException) t;
-                        }
-                        t = t.getCause();
-                    }
-                    if (io != null) {
-                        throw io;
-                    }
-                    throw new RuntimeException(e);
-                }
-            }
-        };
+        return new LoadBalancerFeignClient(name, new Client.Default(null, null));
     }
 #else
 
     @Bean
     public Client feignClient() {
-        return new Client.Default();
+        return new Client.Default(null, null);
     }
 #end
 

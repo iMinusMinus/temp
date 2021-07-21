@@ -175,6 +175,12 @@
             <artifactId>dubbo-serialization-hessian2</artifactId>
         </dependency>
 #end
+#if($framework.contains('eureka') or $framework.contains('ribbon') or $framework.contains('hystrix') or $framework.contains('spectator'))
+        <dependency>
+            <groupId>com.netflix.archaius</groupId>
+            <artifactId>archaius-core</artifactId>
+        </dependency>
+#end
 #if($framework.contains('feign'))
         <dependency>
             <groupId>com.netflix.feign</groupId>
@@ -207,6 +213,10 @@
         </dependency>
         <dependency>
             <groupId>com.netflix.ribbon</groupId>
+            <artifactId>ribbon-archaius</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.ribbon</groupId>
             <artifactId>ribbon-core</artifactId>
             <scope>compile</scope>
         </dependency>
@@ -229,8 +239,6 @@
         <dependency>
             <groupId>io.reactivex</groupId>
             <artifactId>rxjava</artifactId>
-            <version>1.2.0</version>
-            <scope>compile</scope>
         </dependency>
 #end
 #if($framework.contains('spectator'))

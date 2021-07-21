@@ -1,13 +1,21 @@
 package ${package};
 
-import ${package}.api.EchoService;
 import ${package}.api.GenericService;
-import ${package}.api.in.EchoRequest;
-import ${package}.api.out.EchoResponse;
+import ${package}.rs.BankCardValidationService;
+import ${package}.rs.dto.BankCardValidationResult;
 
+#if($framework.contains('eureka') or $framework.contains('ribbon') or $framework.contains('hystrix') or $framework.contains('spectator'))
+import com.netflix.client.config.CommonClientConfigKey;
+import com.netflix.config.ConfigurationManager;
+import com.netflix.config.DynamicPropertyFactory;
+#end
+#if($framework.contains('eureka'))
+import com.netflix.discovery.EurekaClient;
+#end
 #if($framework.contains('feign'))
 import feign.auth.BasicAuthRequestInterceptor;
 import feign.Client;
+import feign.Client.Default;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.Contract;
@@ -24,6 +32,8 @@ import feign.slf4j.Slf4jLogger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import javax.annotation.Resource;
 
 /**
@@ -33,9 +43,30 @@ import javax.annotation.Resource;
  * @date 2020-03-21
  */
 public class RpcTest extends ContainerBase {
+#if($framework.contains('eureka') or $framework.contains('ribbon') or $framework.contains('hystrix') or $framework.contains('spectator'))
+
+    #[[@Value("${spring.profiles.active}")]]#
+    private String activeProfile;
+
+    @Test
+    public void testArchaius() {
+        Assert.assertEquals(activeProfile, ConfigurationManager.getDeploymentContext().getDeploymentEnvironment());
+    }
+#end
 
     @Resource
     private GenericService genericService;
+
+#if($framework.contains('eureka'))
+
+    @Resource
+    private EurekaClient eurekaClient;
+
+    @Test
+    public void testEureka() {
+        Assert.assertNotNull(eurekaClient.getApplications());
+    }
+#end
 #if($framework.contains('feign'))
 
     @Resource
@@ -57,28 +88,43 @@ public class RpcTest extends ContainerBase {
     }
 
 #if($framework.contains('feign'))
+
     @Test
-    public void testEcho() throws Exception {
+    public void testFeign() throws Exception {
+        String name = "alipay";
+        String url = "https://" + name; // scheme: http optional, https must!
+#if($framework.contains('ribbon'))
+        ConfigurationManager.getConfigInstance().setProperty(name + ".ribbon." + CommonClientConfigKey.EnableZoneAffinity.key(), "true");
+        ConfigurationManager.getConfigInstance().setProperty(name + ".ribbon." + CommonClientConfigKey.DeploymentContextBasedVipAddresses.key(), name);
 #if($framework.contains('eureka'))
-        String name = "stats";
-        String url = "http://" + name; // TODO: http must?
+        ConfigurationManager.getConfigInstance().setProperty(name + ".ribbon." + CommonClientConfigKey.NIWSServerListClassName.key(),
+                "com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList");
 #else
-        String url = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/";
+        ConfigurationManager.getConfigInstance().setProperty(name + ".ribbon." + CommonClientConfigKey.NIWSServerListClassName.key(),
+                "com.netflix.loadbalancer.ConfigurationBasedServerList");
+        ConfigurationManager.getConfigInstance().setProperty(name + ".ribbon." + CommonClientConfigKey.ListOfServers.key(),
+                "ccdcapi.alipay.com:443"); // 当协议为https时，即便是默认端口，也必须带上，否则使用http默认的80端口
 #end
-        EchoService service = #if($framework.contains('hystrix'))Hystrix#{end}Feign.builder()
-            .client(feignClient)
+#end
+        BankCardValidationService service = #if($framework.contains('hystrix'))Hystrix#{end}Feign.builder()
+            .client(new NetflixOSSConfig.LoadBalancerFeignClient(name, new Client.Default(new sun.security.ssl.SSLSocketFactoryImpl(), (hostname, session) -> true)))
             .contract(feignContract)
             .encoder(feignEncoder)
             .decoder(feignDecoder)
             .logger(new Slf4jLogger()).logLevel(Level.FULL)
-            .requestInterceptor(new BasicAuthRequestInterceptor("username", "password")).retryer(Retryer.NEVER_RETRY)
-            .target(EchoService.class, url#{if}($framework.contains('hystrix')), new EchoService() {
+            .requestInterceptor(new BasicAuthRequestInterceptor("username", "password")) // just for fun
+            .retryer(Retryer.NEVER_RETRY)
+            .target(BankCardValidationService.class, url#{if}($framework.contains('hystrix')), new BankCardValidationService() {
                 @Override
-                public EchoResponse echo(EchoRequest request) {
-                    return new EchoResponse();
+                public BankCardValidationResult validate(String cardNo, boolean cardBinCheck) {
+                    BankCardValidationResult mock = new BankCardValidationResult();
+                    mock.setKey(cardNo);
+                    return mock;
                 }
             }#{end});
-        System.out.println(service.echo(new EchoRequest()));
+        String cardNo = "6227003320232234322";
+        BankCardValidationResult response = service.validate(cardNo, true);
+        Assert.assertEquals(cardNo, response.getKey());
     }
 #end
 

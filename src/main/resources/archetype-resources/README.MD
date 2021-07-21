@@ -70,6 +70,14 @@
    + CXF
 
      src/main/webapp/WEB-INF/cxf-servlet.xml
+     
+   + NetflixOSS
+   
+     src/main/java/NetflixOSSConfig.java
+   
+     archaius: src/main/resources/config.properties
+    
+     eureka: src/main/resources/eureka-client*.properties
 
    + Dubbo
 
