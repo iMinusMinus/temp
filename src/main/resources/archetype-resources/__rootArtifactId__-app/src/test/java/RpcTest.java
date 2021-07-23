@@ -4,13 +4,20 @@ import ${package}.api.GenericService;
 import ${package}.rs.BankCardValidationService;
 import ${package}.rs.dto.BankCardValidationResult;
 
-#if($framework.contains('eureka') or $framework.contains('ribbon') or $framework.contains('hystrix') or $framework.contains('spectator'))
+#if($framework.contains('ribbon'))
 import com.netflix.client.config.CommonClientConfigKey;
+#end
+#if($framework.contains('eureka') or $framework.contains('ribbon') or $framework.contains('hystrix') or $framework.contains('spectator'))
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 #end
 #if($framework.contains('eureka'))
 import com.netflix.discovery.EurekaClient;
+#end
+#if($framework.contains('spectator'))
+import com.netflix.spectator.api.Counter;
+import com.netflix.spectator.api.Registry;
+import com.netflix.spectator.api.Statistic;
 #end
 #if($framework.contains('feign'))
 import feign.auth.BasicAuthRequestInterceptor;
@@ -29,12 +36,15 @@ import feign.Response;
 import feign.Retryer;;
 import feign.slf4j.Slf4jLogger;
 #end
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 
 /**
  * RPC consumer test
@@ -43,6 +53,34 @@ import javax.annotation.Resource;
  * @date 2020-03-21
  */
 public class RpcTest extends ContainerBase {
+#if($framework.contains('spectator'))
+
+    @Resource
+    private Registry registry;
+
+    // servo: @Monitor(name = "passedTestCount", type = DataSourceType.COUNTER)
+    private Counter passedTest;
+
+    @Before
+    public void setUp() {
+        if(passedTest == null) {
+            // servo(<init>): Monitors.registerObject(name, this) or DefaultMonitorRegistry.getInstance().register(name, this);
+            passedTest = registry.counter(registry.createId("passedTestCount", Arrays.asList(Statistic.count)));
+        }
+    }
+
+    @Test
+    public void testMetrics() {
+        passedTest.increment(1L);
+        Assert.assertTrue(passedTest.count() > 0);
+    }
+
+    @After
+    public void tearDown() {
+        passedTest.increment(1L);
+    }
+
+#end
 #if($framework.contains('eureka') or $framework.contains('ribbon') or $framework.contains('hystrix') or $framework.contains('spectator'))
 
     #[[@Value("${spring.profiles.active}")]]#

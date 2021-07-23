@@ -101,9 +101,14 @@ import com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList;
 import com.netflix.niws.loadbalancer.NIWSDiscoveryPing;
 #end
 #if($framework.contains('spectator'))
+import com.netflix.servo.DefaultMonitorRegistry;
 import com.netflix.servo.publish.atlas.AtlasMetricObserver;
 import com.netflix.servo.publish.atlas.BasicAtlasConfig;
 import com.netflix.servo.publish.atlas.ServoAtlasConfig;
+import com.netflix.servo.publish.BasicMetricFilter;
+import com.netflix.servo.publish.MetricPoller;
+import com.netflix.servo.publish.MonitorRegistryMetricPoller;
+import com.netflix.servo.tag.BasicTagList;
 import com.netflix.servo.tag.TagList;
 import com.netflix.spectator.api.Registry;
 import com.netflix.spectator.servo.ServoRegistry;
@@ -146,6 +151,9 @@ import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 #if($framework.contains('eureka') or $framework.contains('feign'))
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+#end
+#if($framework.contains('spectator'))
+import org.springframework.scheduling.annotation.Scheduled;
 #end
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -1176,7 +1184,18 @@ public class NetflixOSSConfig implements InitializingBean{
                 return DynamicPropertyFactory.getInstance().getIntProperty("servo.atlas.batchSize", 10000).get();
             }
         };
-        return new AtlasMetricObserver(config, commonTags); // spring-cloud-netflix使用restTemplate推送到atlas
+        BasicTagList tags = (BasicTagList) BasicTagList.EMPTY;
+        if(commonTags != null && !commonTags.isEmpty()) {
+            tags.copy(commonTags);
+        }
+        return new AtlasMetricObserver(config, tags); // spring-cloud-netflix使用restTemplate推送到atlas
+    }
+
+    @Scheduled(fixedDelayString = "${spring.metrics.export.triggers.atlas.delayMillis}", initialDelayString = "${spring.metrics.export.triggers.atlas.delayMillis}")
+    public void exporter() {
+        //System.setProperty(DefaultMonitorRegistry.class.getCanonicalName() + ".registryClass", "com.netflix.servo.BasicMonitorRegistry");
+        MetricPoller poller = new MonitorRegistryMetricPoller();
+        atlasObserver().update(poller.poll(BasicMetricFilter.MATCH_ALL));
     }
 ## refer: org.springframework.cloud.netflix.metrics.servo.ServoMetricsAutoConfiguration
 ## refer: org.springframework.cloud.netflix.metrics.spectator.SpectatorMetricsAutoConfiguration
