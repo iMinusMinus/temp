@@ -24,7 +24,7 @@
 #if($configType.contains('xml'))
         <param-value>/WEB-INF/applicationContext.xml</param-value>
 #else
-        <param-value>${groupId}.${artifactId}.ContextConfig</param-value>
+        <param-value>${package}.ContextConfig</param-value>
 #end
     </context-param>
 #end
@@ -249,7 +249,7 @@
 #if($configType.contains('xml'))
             <param-value>/WEB-INF/#if($namespace)${namespace}#{else}${servletName}-servlet#{end}.xml</param-value>
 #else
-            <param-value>${groupId}.${artifactId}.MvcConfig</param-value>
+            <param-value>${package}.MvcConfig</param-value>
 #end
         </init-param>
 #end

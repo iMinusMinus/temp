@@ -17,8 +17,8 @@ import javax.annotation.Resource;
 @WebAppConfiguration
 @ContextHierarchy({
 #{if}($parentContextKey)    @ContextConfiguration(classes = {${package}.NetflixOSSConfig.class}),#{end}
-    @ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/applicationContext.xml"}),
-    @ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/${servletName}-servlet.xml"})
+    @ContextConfiguration(#{if}($configType.contains('xml'))locations = {"file:src/main/webapp/WEB-INF/applicationContext.xml"}#{else}classes = {${package}.ContextConfig}#{end}),
+    @ContextConfiguration(#{if}($configType.contains('xml'))locations = {"file:src/main/webapp/WEB-INF/${servletName}-servlet.xml"}#{else}classes = {${package}.MvcConfig}#{end})
 })
 public abstract class ContainerBase {
 
