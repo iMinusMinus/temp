@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 //@PropertySource(value = {"classpath:application.properties"})
-@ComponentScan(value = "${package}")
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
 public class AppConfig {
 
 
+    // no quartz configuration here, use xxl-job, elasticjob instead!
 }
