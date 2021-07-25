@@ -1,24 +1,24 @@
 package ${package}.aop;
 
-import ${package}.BaseAppTest;
-import ${package}.AppConfig;
-
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import org.junit.Assert;
+import org.junit.runner.RunWith;
 import org.junit.Test;
 
 import javax.annotation.Resource;
 
-@ContextConfiguration(classes = {AppConfig.class, AopConfigTest.class})
-public class AopTest extends BaseAppTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {AopConfigTest.class})
+public class AopTest {
 
     @Resource
     private TargetInterfaceTest cglibProxiedTarget;
 
     @Test
     public void testProxiedByCGLIB() {
-
-
+        Assert.assertTrue(cglibProxiedTarget.getClass().getCanonicalName().contains("CGLIB"));
     }
 
 }

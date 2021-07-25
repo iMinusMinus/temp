@@ -247,7 +247,11 @@
                 <groupId>org.apache.dubbo</groupId>
                 <artifactId>dubbo-config-spring</artifactId>
                 <version>2.7.12</version>
+#if(!$configType.contains("xml"))
+                <scope>compile</scope>
+#else
                 <scope>runtime</scope>
+#end
             </dependency>
             <dependency>
                 <groupId>org.apache.dubbo</groupId>

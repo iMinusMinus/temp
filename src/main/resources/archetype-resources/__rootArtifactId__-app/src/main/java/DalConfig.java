@@ -4,13 +4,12 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 //import org.springframework.core.io.Resource;
 //import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 //import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.transaction.PlatformTransactionManager;
 #if($framework.contains('jta'))
 #if($container.contains('weblogic'))
@@ -46,7 +45,6 @@ import com.zaxxer.hikari.HikariDataSource;
 #end
 
 @Configuration
-@EnableCaching
 #if($framework.contains('mybatis'))
 @MapperScan(basePackages = {"${package}.dao"})
 #end
@@ -177,9 +175,10 @@ public class DalConfig {
     }
 #end
 
+## // refer: org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration
     @Bean
-    public CacheManager cacheManager() throws Exception {
-        return new org.springframework.cache.support.NoOpCacheManager();
+    public PersistenceExceptionTranslationPostProcessor persistenceExceptionTranslationPostProcessor() {
+        return new PersistenceExceptionTranslationPostProcessor();
     }
 
 }

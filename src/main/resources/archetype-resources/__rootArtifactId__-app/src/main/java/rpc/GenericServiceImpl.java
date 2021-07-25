@@ -3,8 +3,12 @@ package ${package}.rpc;
 import ${package}.api.GenericService;
 import ${package}.api.except.GenericException;
 
-#if($framework.contains('dubbo') and $configType.contains('@'))
-import org.apache.dubbo.config.annotation.Service;
+#if($configType.contains('@'))
+#if($framework.contains('dubbo'))
+import org.apache.dubbo.config.annotation.DubboService;
+#else
+import org.springframework.stereotype.Service;
+#end
 #end
 
 /**
@@ -12,8 +16,12 @@ import org.apache.dubbo.config.annotation.Service;
  * @author iMinusMinus
  * @date 2019-05-03
  */
-#if($framework.contains('dubbo') and $configType.contains('@'))
+#if($configType.contains('@'))
+#if($framework.contains('dubbo'))
+@DubboService(application = "${dubboApplicationConfigBeanName}")
+#else
 @Service
+#end
 #end
 public class GenericServiceImpl implements GenericService {
 

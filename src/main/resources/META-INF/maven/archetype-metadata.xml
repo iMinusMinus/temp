@@ -105,6 +105,12 @@ under the License.
         <requiredProperty key="kafkaProducerFactory">
             <defaultValue>kafkaProducerFactory</defaultValue>
         </requiredProperty>
+        <requiredProperty key="dubboApplicationConfigBeanName">
+            <defaultValue>dubboApplication</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="dubboRegistryConfigBeanName">
+            <defaultValue>dubboRegistry</defaultValue>
+        </requiredProperty>
         <requiredProperty key="kafkaTemplate">
             <defaultValue>kafkaTemplate</defaultValue>
         </requiredProperty>

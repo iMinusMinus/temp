@@ -24,6 +24,7 @@ public class Struts2Test extends StrutsSpringTestCase {
         executeAction("/test/execute");
         System.out.println("IF YOU SEE " + now + "IN CONSOLE, THIS TEST PASSED");
     }
+#if($configType.contains("xml"))
 
     @Test
     public void testInheritAction() throws Exception {
@@ -49,6 +50,7 @@ public class Struts2Test extends StrutsSpringTestCase {
         Struts2Action action = (Struts2Action) ap.getAction();
         System.out.println(ap.execute());
     }
+#end
 
     //fix Couldn't get resource paths for class path resource [WEB-INF/jsp/]
     @Override

@@ -24,9 +24,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author iMinusMinus
  * @date 2019-06-23
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ContextConfig.class, DalConfig.class})
-public abstract class BaseDbUnitTest {
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(classes = {AppConfig.class, DalConfig.class})
+public abstract class BaseDbUnitTest extends ContainerBase { // FIXME 使用不同的上下文会导致h2初始脚本重复执行而报错
 
     @Resource
     private DataSource dataSource;
@@ -34,8 +34,12 @@ public abstract class BaseDbUnitTest {
     private IDatabaseConnection conn;
 
     @Before
-    public void setUp() throws Exception {
-        conn = new DatabaseConnection(DataSourceUtils.getConnection(dataSource));
+    public void setUp() {
+        try {
+            conn = new DatabaseConnection(DataSourceUtils.getConnection(dataSource));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected IDatabaseConnection getConnection() {
