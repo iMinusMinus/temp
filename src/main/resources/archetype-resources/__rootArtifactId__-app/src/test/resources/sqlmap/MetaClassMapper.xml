@@ -1,26 +1,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="${package}.dao.MetaClassMapper">
-    <typeAlias alias="metaClass" type="${package}.domain.MetaClass" />
 
     <sql id="baseColumnList">
         id,class_name,super_class_name
     </sql>
 
-    <resultMap  id="lazyBaseResultMap" type="metaClass">
-        <result column="id" property="id" jdbcType="INT" javaType="long" />
-        <result  column="class_name" property="name" jdbcType="VARCHAR" javaType="string" />
-        <result  column="super_class_name" property="superName" jdbcType="VARCHAR" javaType="string" />
+    <resultMap id="lazyBaseResultMap" type="metaClass">
+        <result column="id" property="id" jdbcType="BIGINT" javaType="long" />
+        <result column="class_name" property="name" jdbcType="VARCHAR" javaType="string" />
+        <result column="super_class_name" property="superName" jdbcType="VARCHAR" javaType="string" />
     </resultMap>
-    <resultMap  id="baseResultMap" extends="lazyBaseResultMap">
+    <resultMap id="baseResultMap" extends="lazyBaseResultMap" type="metaClass">
         <collection property="fields" ofType="${package}.domain.MetaField" javaType="arraylist"
                     column="class_name" select="query"/>
     </resultMap >
 
-    <select id="lazyQuery" parameterType="metaClass" resultType="baseResultMap">
+    <!-- parameterMap is deprecated! Inline parameters are preferred -->
+
+    <select id="lazyQuery" parameterType="metaClass" resultMap="baseResultMap" #if($showDefault)statementType="PREPARED"#{end}>
         SELECT <include refid="baseColumnList" />
           FROM meta_class
         <where>
-            <if test="id != null">
+            <if test="id != 0">
             AND id = #{id}
             </if>
             <if test="name != null">
@@ -32,11 +33,11 @@
         </where>
     </select>
 
-    <select id="query"  parameterType="metaClass" resultType="baseResultMap">
-        SELECT <include refid="baseColumnList" />,<include refid="${package}.dao.MetaFieldMapper.columnsWithoutId" />
+    <select id="query" parameterType="metaClass" resultMap="baseResultMap">
+        SELECT c.id, c.class_name, c.super_class_name, f.name, f.type, f.position, f.format, f.flag
           FROM meta_class c, meta_field f
          WHERE c.class_name = f.class_name
-        <if test="id != null">
+        <if test="id != 0">
            AND c.id = #{id}
         </if>
         <if test="name != null">

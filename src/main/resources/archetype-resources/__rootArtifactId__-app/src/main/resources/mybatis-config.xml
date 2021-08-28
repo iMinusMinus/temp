@@ -5,9 +5,13 @@
     <!-- http://www.mybatis.org/mybatis-3/configuration.html -->
     <!--
     <properties resource="">
-        <property name="" value=""/>
+        <property name="initial_context" value=""/>
+        <property name="env.data_source" value=""/>
     </properties>
     -->
+#end
+#if($showComment)
+    <!-- refer: org.apache.ibatis.builder.xml.XMLConfigBuilder#settingsElement -->
 #end
     <settings>
 #if($showDefault)
@@ -39,11 +43,15 @@
         <setting name="logImpl" value="SLF4J"/>
     </settings>
 #if($showComment)
-    <!--
     <typeAliases>
-        <typeAlias alias="simpleName" type="FQCN"/>
-        <package name="${groupId}.${artifactId}.domain"/>
+#if($configType.contains('xml'))
+        <typeAlias alias="metaClass" type="${package}.domain.MetaClass" />
+        <typeAlias alias="metaField" type="${package}.domain.MetaField" />
+#else
+        <package name="${package}.domain"/>
+#end
     </typeAliases>
+    <!--
     <typeHandlers>
         <typeHandler handler="" />
     </typeHandlers>

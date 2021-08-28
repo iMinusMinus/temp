@@ -11,6 +11,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 #end
 
+#if($framework.contains('mybatis') and !$configType.contains('xml'))
+import org.apache.ibatis.type.Alias;
+#end
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -21,6 +25,9 @@ import lombok.ToString;
 #if($framework.contains("jpa") and $configType.contains("@"))
 @Entity
 @Table(name = "meta_field")
+#end
+#if($framework.contains('mybatis') and !$configType.contains('xml'))
+@Alias("metaField")
 #end
 public class MetaField extends AbstractDomain {
 

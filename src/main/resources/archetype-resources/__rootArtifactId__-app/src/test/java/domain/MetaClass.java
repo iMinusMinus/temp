@@ -11,6 +11,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 #end
 
+#if($framework.contains('mybatis') and !$configType.contains('xml'))
+import org.apache.ibatis.type.Alias;
+#end
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -25,6 +29,10 @@ import lombok.ToString;
 #if($framework.contains("jpa") and $configType.contains("@"))
 @Entity
 @Table(name = "meta_class")
+#end
+#if($framework.contains('mybatis') and !$configType.contains('xml'))
+## // Optional. default alias: getClass().getSimpleName()
+@Alias("metaClass")
 #end
 public class MetaClass extends AbstractDomain {
 
