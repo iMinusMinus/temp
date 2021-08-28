@@ -14,10 +14,14 @@ import java.io.OutputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -142,6 +146,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -167,6 +175,7 @@ import org.springframework.web.client.RestTemplate;
 #end
 
 ## // eureka-server和zuul应用已存在独立war，无需整合
+## // Prana为独立程序，供非JVM应用使用
 /**
  * Netflix OSS configuration: eureka, feign, ribbon, hystrix, servo
  * @author iMinusMinus
@@ -174,7 +183,7 @@ import org.springframework.web.client.RestTemplate;
  */
 @Configuration
 @Import(value = RefreshConfiguration.class)
-public class NetflixOSSConfig implements InitializingBean{
+public class NetflixOSSConfig implements InitializingBean, EnvironmentAware {
 #if($framework.contains('eureka') or $framework.contains('ribbon') or $framework.contains('hystrix') or $framework.contains('spectator'))
 
     #[[@Value("${spring.profiles.active}")]]#
@@ -183,6 +192,60 @@ public class NetflixOSSConfig implements InitializingBean{
     #[[@Value("${spring.application.name}")]]#
     private String appName;
 #end
+
+## // refer: org.springframework.cloud.client.HostInfoEnvironmentPostProcessor
+    public void setEnvironment(Environment environment) {
+        String hostnameKey = "spring.cloud.client.hostname";
+        String ipAddressKey = "spring.cloud.client.ipAddress";
+        InetAddress result = null;
+        int lowest = Integer.MAX_VALUE;
+        try {
+            for (Enumeration<NetworkInterface> nics = NetworkInterface.getNetworkInterfaces(); nics.hasMoreElements(); ) {
+                NetworkInterface ifc = nics.nextElement();
+                if (ifc.isUp()) {
+                    if (ifc.getIndex() < lowest || result == null) {
+                        lowest = ifc.getIndex();
+                    } else if (result != null) {
+                        continue;
+                    }
+
+                    // maybe ignore some interface
+                    for (Enumeration<InetAddress> addrs = ifc.getInetAddresses(); addrs.hasMoreElements(); ) {
+                        InetAddress address = addrs.nextElement();
+                        if (!address.isLoopbackAddress()) { // maybe ignore some address
+                            result = address;
+                        }
+                    }
+                }
+            }
+        } catch (IOException ioe) {
+            // ignore
+        }
+        if(result == null) {
+            try {
+                result = InetAddress.getLocalHost();
+            } catch (UnknownHostException uhe) {
+                // ignore
+            }
+        }
+        String hostname = (result != null) ? result.getHostName() : "localhost";
+        String ipAddress = (result != null) ? result.getHostAddress() : "127.0.0.1";
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put(hostnameKey, hostname);
+        map.put(ipAddressKey, ipAddress);
+        MapPropertySource propertySource = new MapPropertySource("springCloudClientHostInfo", map);
+        if(environment instanceof ConfigurableEnvironment) {
+            ((ConfigurableEnvironment) environment).getPropertySources().addLast(propertySource);
+        }
+        if(System.getProperty(hostnameKey) == null) {
+            System.setProperty(hostnameKey, hostname);
+        }
+        if(System.getProperty(ipAddressKey) == null) {
+            System.setProperty(ipAddressKey, ipAddress);
+        }
+
+        // XXX fetch container port then reset 'server.port'
+    }
 
     public void afterPropertiesSet() throws Exception {
 #if($framework.contains('eureka') or $framework.contains('ribbon') or $framework.contains('hystrix') or $framework.contains('spectator'))
@@ -753,6 +816,9 @@ public class NetflixOSSConfig implements InitializingBean{
             URI asUri = URI.create(request.url());
             String clientName = asUri.getHost();
             RibbonRequest ribbonRequest = new RibbonRequest(delegate, request, URI.create(request.url().replaceFirst(clientName, "")));
+## // refer: com.netflix.prana.http.api.ProxyHandler
+            // rx-netty: LoadBalancingHttpClient<ByteBuf, ByteBuf> ribbonClient = RibbonTransport.newHttpClient(new HttpClientPipelineConfigurator<ByteBuf, ByteBuf>(), config);
+            //           return ribbonClient.submit(HttpClientRequest.create()).flatMap( (response) -> {}).onErrorResumeNext((throwable) -> Observerable.just(null)).doOnCompleted(() -> {});
             AbstractLoadBalancerAwareClient<RibbonRequest, RibbonResponse> ribbonClient = (AbstractLoadBalancerAwareClient) ClientFactory.getNamedClient(name);
             try {
                 return ribbonClient.executeWithLoadBalancer(ribbonRequest, config).toResponse(); // executeWithLoadBalancer方法可以从request获取loadBalancerKey，ILoadBalancer/IRule在选取实例时可根据loadBalancerKey筛选
