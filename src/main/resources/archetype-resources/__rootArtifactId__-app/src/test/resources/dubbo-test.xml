@@ -5,7 +5,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
             http://dubbo.apache.org/schema/dubbo http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
 
-    <dubbo:application name="temp" owner="iMinusMinus" />
+    <dubbo:application name="${dubboApplicationConfigBeanName}" owner="iMinusMinus" />
     <dubbo:protocol name="injvm" port="0" />
     <!--<dubbo:service interface="${package}.api.GenericService" ref="genericServiceImpl" />-->
 

@@ -1,6 +1,6 @@
 package ${package};
 
-#if($framework.contains("dubbo"))
+#if($framework.contains("dubbo") and !$configType.contains("xml"))
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.RegistryConfig;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
