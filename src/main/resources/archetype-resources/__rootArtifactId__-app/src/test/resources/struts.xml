@@ -13,14 +13,21 @@
     <!-- @see struts2-json-plugin-*.jar/struts-plugin.xml -->
     <!-- @see struts2-rest-plugin-*.jar/struts-plugin.xml -->
 #end
-    <!-- global.properties, package.properties, ${Action}.properties -->
+    <!-- global.properties, p/k/g/package.properties, p/k/g/${Action}.properties -->
     <constant name="struts.custom.i18n.resources" value="global" />
     <constant name="struts.convention.result.path" value="/WEB-INF/jsp/" />
     <constant name="struts.beanValidation.providerClass" value="org.hibernate.validator.HibernateValidator"/>
 #if($configType.contains('xml'))
 
-    <package name="default" extends="struts-default, json-default" namespace="/struts2">
-        <action name="alias" class="${package}.actions.Struts2Action" method="doInvoke">
+    <package name="default" extends="struts-default,json-default,struts-bean-validation" namespace="/struts2">
+        <global-results>
+            <result name="none">404.jsp</result>
+            <result name="error">error.jsp</result>
+        </global-results>
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception" result="error" />
+        </global-exception-mappings>
+        <action name="beanValidation" class="${package}.actions.Struts2Action" method="doInvoke">
             <result name="success" type="json">
                 <param name="root">form</param>
                 <param name="enableGZIP">true</param>
@@ -32,6 +39,9 @@
                     ^form.elements\[\d+\].name,
                     ^form.elements\[\d+\].value
                 </param>
+            </result>
+            <result name="input" type="httpheader">
+                <param name="status">400</param>
             </result>
             <result name="errorResult" type="redirect">
                 <param name="location">503.html</param>
@@ -47,22 +57,16 @@
                 <param name="errorMessage">forbidden</param>
             </result>
         </action>
-    </package>
-    <package name="another" namespace="/test"  extends="struts-default, json-default,struts-bean-validation">
-        <interceptors>
-            <interceptor-stack name="is">
-                <interceptor-ref name="autowiring" />
-                <interceptor-ref name="i18n" />
-                <interceptor-ref name="logger" />
-                <interceptor-ref name="timer" />
-                <interceptor-ref name="beanValidation" />
-            </interceptor-stack>
-        </interceptors>
-        <default-interceptor-ref name="is" />
-        <action name="execute" class="${package}.actions.Struts2Action" method="doExecute">
-            <interceptor-ref name="is" />
+        <action name="spring" class="${package}.actions.Struts2Action" method="doInvoke">
             ## 使用struts-convension-plugins，视图会默认拼接上namespace和ctionName的路径，即\${struts.convention.result.path}+\${package.namespace}/ + \${actionName}/+\${action.result.location}
             <result name="success" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
+        </action>
+        <action name="notThreadSafe" class="${package}.actions.Struts2Action" method="doExecute">
+            <result name="success" type="json">
+                <param name="includeProperties">
+                    threadUnsafeVar
+                </param>
+            </result>
         </action>
     </package>
 
