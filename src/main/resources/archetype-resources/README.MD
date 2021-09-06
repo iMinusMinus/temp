@@ -54,6 +54,11 @@
    
      src/main/webapp/WEB-INF/applicationContext.xml
      src/main/resources/META-INF/spring.*
+     
+     src/test/resources/caucho.xml
+     
+     src/test/resources/data.sql
+     src/test/resources/schema.sql
 
    + Spring MVC
 
@@ -66,10 +71,14 @@
 
      src/main/resources:
      struts.xml, struts.properties
+     
+     src/test/resources:
+     struts2-spring.xml
 
    + CXF
 
      src/main/webapp/WEB-INF/cxf-servlet.xml
+     src/test/resources/ChinaOpenFundWS.wsdl
      
    + NetflixOSS
    
@@ -92,7 +101,7 @@
    + Hibernate
 
      src/main/resources:
-     hibernate.cfg.xml,**/\*.hbm.xml
+     hibernate.properties, hibernate.cfg.xml, **/\*.hbm.xml
      
    + JPA
    
@@ -109,6 +118,10 @@
    + Kafka
    
      src/main/resources/kafka*.xml
+     
+   + Quartz
+   
+     src/main/resources/quartz.properties  
 
    + Log
 
