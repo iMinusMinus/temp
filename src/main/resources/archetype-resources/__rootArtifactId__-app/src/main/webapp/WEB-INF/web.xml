@@ -353,6 +353,17 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 #end
+#if($framework.contains('spring') and $framework.contains('portlet'))
+    <servlet>
+        <servlet-name>ViewRendererServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.ViewRendererServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ViewRendererServlet</servlet-name>
+        <url-pattern>/WEB-INF/servlet/view</url-pattern>
+    </servlet-mapping>
+#end
 #if($framework.contains('jsp'))
     <jsp-config>
         <jsp-property-group>

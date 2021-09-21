@@ -1,0 +1,178 @@
+<portlet-app xmlns="http://xmlns.jcp.org/xml/ns/portlet"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:ns="http://www.iamwhatiam.ml/portals/EventPortlet"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/portlet http://xmlns.jcp.org/xml/ns/portlet/portlet-app_3_0.xsd"
+             version="3.0" id="${rootArtifactId}-portlet">
+    <portlet>
+        <description>test portlet</description>
+        <portlet-name>test-portlet</portlet-name>
+        <display-name>test portlet</display-name>
+        <portlet-class>${package}.web.PortletTest</portlet-class>
+        <init-param>
+            <name>provider</name>
+            <value>google</value>
+        </init-param>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode><!-- 此Portlet模式一般用于设置或更新Portlet偏好设置 -->
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <supported-locale>zh-Hans</supported-locale>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>messages</resource-bundle>
+        <portlet-info>
+            <title>title of test portlet</title>
+            <title xml:lang="zh">portlet测试标题</title>
+            <short-title>portlet title</short-title>
+        </portlet-info>
+        <keywords>portal, portlet</keywords>
+        <portlet-preferences>
+            <preference>
+                <name>local</name>
+                <value>zh,en</value>
+            </preference>
+        </portlet-preferences>
+        <supported-processing-event>
+            <qname>ns:Search</qname>
+            <qname>track</qname>
+        </supported-processing-event>
+        <supported-publishing-event>
+            <qname>ns:Search</qname>
+            <qname>track</qname>
+        </supported-publishing-event>
+        <supported-public-render-parameter>pub_id</supported-public-render-parameter>
+    </portlet>
+    <portlet>
+        <description>In the Portlet MVC framework, each DispatcherPortlet has its own WebApplicationContext, which inherits all the beans already defined in the Root WebApplicationContext.
+            These inherited beans can be overridden in the portlet-specific scope</description>
+        <portlet-name>${portletName}</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+#if($showDefault)
+        <init-param>
+            <name>contextClass</name>
+            <value>org.springframework.web.portlet.context.XmlPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>namespace</name>
+            <value>${portletName}-portlet</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>${portletName}-portlet.xml</value>
+        </init-param>
+        <init-param>
+            <name>publishContext</name>
+            <value>true</value>
+        </init-param>
+        <init-param>
+            <name>publishEvents</name>
+            <value>true</value>
+        </init-param>
+        <init-param>
+            <name>threadContextInheritable</name>
+            <value>false</value>
+        </init-param>
+        <init-param>
+            <name>userinfoUsernameAttributes</name>
+            <value>user.login.id,user.name</value>
+        </init-param>
+
+        <init-param>
+            <name>detectAllHandlerMappings</name>
+            <value>true</value>
+        </init-param>
+        <init-param>
+            <name>detectAllHandlerAdapters</name>
+            <value>true</value>
+        </init-param>
+        <init-param>
+            <name>detectAllHandlerExceptionResolvers</name>
+            <value>true</value>
+        </init-param>
+        <init-param>
+            <name>detectAllViewResolvers</name>
+            <value>true</value>
+        </init-param>
+        <init-param>
+            <name>forwardActionException</name>
+            <value>true</value>
+        </init-param>
+        <init-param>
+            <name>forwardEventException</name>
+            <value>false</value>
+        </init-param>
+        <init-param>
+            <name>viewRendererUrl</name>
+            <value>/WEB-INF/servlet/view</value>
+        </init-param>
+#end
+        <portlet-info>
+            <title>spring dispatcher portlet</title>
+        </portlet-info>
+    </portlet>
+
+    <!--
+    <custom-portlet-mode>
+        <portlet-mode>modeName</portlet-mode>
+        <portal-managed>false</portal-managed>
+    </custom-portlet-mode>
+    <custom-window-state>
+        <window-state>fixed</window-state>
+    </custom-window-state>
+    -->
+
+    <filter>
+        <filter-name>test-portlet-filter</filter-name>
+        <filter-class>${package}.web.PortletFilterTest</filter-class>
+        <init-param>
+            <name>sampleInitParameterKey</name>
+            <value>sampleValue</value>
+        </init-param>
+        <lifecycle>ACTION_PHASE</lifecycle>
+        <lifecycle>EVENT_PHASE</lifecycle>
+        <lifecycle>HEADER_PHASE</lifecycle>
+        <lifecycle>RENDER_PHASE</lifecycle>
+        <lifecycle>RESOURCE_PHASE</lifecycle>
+    </filter>
+    <filter-mapping>
+        <filter-name>test-portlet-filter</filter-name>
+        <portlet-name>test-portlet</portlet-name>
+    </filter-mapping>
+
+    <default-namespace>https://www.java.net/</default-namespace>
+
+    <event-definition>
+        <qname>ns:Search</qname>
+        <value-type>java.lang.String</value-type>
+    </event-definition>
+    <event-definition>
+        <qname>track</qname>
+        <value-type>java.lang.String</value-type>
+    </event-definition>
+
+    <public-render-parameter>
+        <identifier>pub_id</identifier>
+        <qname>pub_id</qname>
+    </public-render-parameter>
+    <container-runtime-option>
+        <name>javax.portlet.escapeXml</name>
+        <value>true</value>
+    </container-runtime-option>
+    <container-runtime-option>
+        <name>javax.portlet.servletDefaultSessionScope</name>
+        <value>PORTLET_SCOPE</value>
+    </container-runtime-option>
+    <container-runtime-option>
+        <name>javax.portlet.actionScopedRequestAttributes</name>
+        <value>true</value>
+    </container-runtime-option>
+
+    <listener>
+        <description>Test Listener</description>
+        <listener-class>${package}.web.PortletListenerTest</listener-class>
+    </listener>
+</portlet-app>

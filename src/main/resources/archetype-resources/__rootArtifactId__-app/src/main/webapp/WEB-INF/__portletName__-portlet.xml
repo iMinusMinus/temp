@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+#if($configType.contains('xml:'))
+       xmlns:context="http://www.springframework.org/schema/context"
+ #end
+#if(!$configType.contains('xml:'))
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+#else
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+#end
+
+#if($showDefault)
+    <bean id="handlerMapping" class="org.springframework.web.portlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+    <bean class="org.springframework.web.portlet.mvc.SimpleControllerHandlerAdapter" />
+    <bean class="org.springframework.web.portlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+    <bean id="handlerExceptionResolver" class="org.springframework.web.portlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver" />
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" />
+#end
+
+#if($configType.contains('@java'))
+    <context:component-scan base-package="${package}.web"/>
+#end
+
+    <!--
+    <bean class="org.springframework.web.portlet.mvc.PortletWrappingController">
+        <property name="portletClass" value="${package}.web.PortletTest"/>
+        <property name="portletName" value="test-portlet"/>
+        <property name="initParameters">
+            <value>config=/WEB-INF/test-portlet-config.xml</value>
+        </property>
+    </bean>
+    -->
+</beans>
