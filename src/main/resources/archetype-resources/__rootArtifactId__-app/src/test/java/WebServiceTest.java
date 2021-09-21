@@ -17,9 +17,12 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
+import org.apache.cxf.transport.http.HttpDestinationFactory;
+import org.apache.cxf.transport.servlet.ServletDestinationFactory;
 #end
 
 import java.io.File;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
@@ -98,12 +101,24 @@ public class WebServiceTest extends ContainerBase {
     @Test
     public void testCxfJaxRs() {
         JAXRSServerFactoryBean factoryBean = new JAXRSServerFactoryBean();
+
+        // fix: Cannot find any registered HttpDestinationFactory from the Bus
+        // TODO: 移除cxf-rt-transports-http-undertow等web容器的依赖
+        // @see org.apache.cxf.bus.extension.ExtensionManagerBus, org.apache.cxf.bus.extension.ExtensionManagerImpl
+        // 另一种方式是在"META-INF/cxf/bus-extensions.txt"按规则(className:interfaceName:deferred:optional)添加内容，如：
+        // org.apache.cxf.transport.servlet.ServletDestinationFactory:org.apache.cxf.transport.http.HttpDestinationFactory
+        if(factoryBean.getBus().getExtension(HttpDestinationFactory.class) == null) {
+            factoryBean.getBus().setExtension(new ServletDestinationFactory(), HttpDestinationFactory.class);
+        }
+
+        int port = ThreadLocalRandom.current().nextInt(1024, 65535); // Random is ok!
+        String publishAddress = "http://localhost:" + port + "${cxfPath}";
         factoryBean.setResourceClasses(EchoServiceImpl.class);
         factoryBean.setResourceProvider(EchoServiceImpl.class, new SingletonResourceProvider(new EchoServiceImpl()));
-        factoryBean.setAddress("http://localhost:8080${cxfPath}");
+        factoryBean.setAddress(publishAddress);
         factoryBean.create();
 
-        EchoResponse response = WebClient.create("http://127.0.0.1:8080${cxfPath}")
+        EchoResponse response = WebClient.create(publishAddress)
                 .path("/test/echo")
                 .type(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)

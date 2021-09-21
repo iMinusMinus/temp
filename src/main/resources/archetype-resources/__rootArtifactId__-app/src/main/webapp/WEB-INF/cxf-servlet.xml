@@ -10,6 +10,7 @@
 
 #if($showComment)
     <!-- http://localhost:8080/${cxf.path}/rpc?wsdl -->
+    <!-- &#60;jaxws:endpoint id="beanId" implementor="#REF_BEAN_NAME" address="/publish" /&#62; -->
 #end
     <jaxws:endpoint id="generic" implementor="${package}.rpc.GenericServiceImpl" address="/rpc">
         <jaxws:features>
