@@ -16,7 +16,9 @@ import javax.annotation.Resource;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextHierarchy({
-#{if}($parentContextKey)    @ContextConfiguration(classes = {${package}.NetflixOSSConfig.class}),#{end}
+#{if}($parentContextKey)
+    @ContextConfiguration(classes = {${package}.NetflixOSSConfig.class}),
+#{end}
     @ContextConfiguration(#{if}($configType.contains('xml'))locations = {"file:src/main/webapp/WEB-INF/applicationContext.xml"}#{else}classes = {${package}.ContextConfig.class}#{end}),
     @ContextConfiguration(#{if}($configType.contains('xml'))locations = {"file:src/main/webapp/WEB-INF/${servletName}-servlet.xml"}#{else}classes = {${package}.MvcConfig.class}#{end})
 })

@@ -56,10 +56,11 @@ public class DalTest extends ContainerBase {
         mc.setName("java.beans.BeanInfo");
 #if($framework.contains('mybatis'))
         int effect = metaClassMapper.count(mc);
+        Assert.assertEquals(0, effect);
 #elseif($framework.contains('hibernate'))
         int effect metaClassDaoImpl.count(mc);
-#end
         Assert.assertEquals(0, effect);
+#end
 
 #if($framework.contains('mybatis'))
         metaClassMapper.save(mc);
