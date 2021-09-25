@@ -53,8 +53,8 @@
             SELECT currval('meta_class_id_seq')
         </selectKey>
         INSERT INTO meta_class (class_name, super_class_name) VALUES (#{name}, #{superName})
-        ##
+        #*
         pg can use RETURNING id append insert clause, but mybatis get -1
-        ##
+        *#
     </insert>
 </mapper>

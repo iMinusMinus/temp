@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="logImpl" value="SLF4J"/>
+    </settings>
+    <typeAliases>
+#if($configType.contains('xml'))
+        <typeAlias alias="metaClass" type="${package}.domain.MetaClass" />
+        <typeAlias alias="metaField" type="${package}.domain.MetaField" />
+#else
+        <package name="${package}.domain"/>
+#end
+    </typeAliases>
+    <databaseIdProvider type="DB_VENDOR">
+        <property name="MySQL" value="mysql"/>
+        <property name="Oracle" value="oracle" />
+    </databaseIdProvider>
+    <mappers>
+        <mapper resource="sqlMap/MetaClassMapper.xml" />
+        <mapper resource="sqlMap/MetaFieldMapper.xml" />
+    </mappers>
+</configuration>

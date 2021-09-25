@@ -43,6 +43,7 @@
         <setting name="logImpl" value="SLF4J"/>
     </settings>
 #if($showComment)
+    <!--
     <typeAliases>
 #if($configType.contains('xml'))
         <typeAlias alias="metaClass" type="${package}.domain.MetaClass" />
@@ -51,7 +52,7 @@
         <package name="${package}.domain"/>
 #end
     </typeAliases>
-    <!--
+
     <typeHandlers>
         <typeHandler handler="" />
     </typeHandlers>
@@ -72,10 +73,10 @@
 #if($showComment)
     <!-- As this is a list, you can choose set org.mybatis.spring.SqlSessionFactoryBean.mapperLocations instead!
     <mappers>
-        <mapper resource="ml/iamwhatiam/mapper/MetaClassMapper" />
+        <mapper resource="ml/iamwhatiam/mapper/MetaClassMapper.xml" />
         <mapper url="" />
         <mapper class="" />
-        <package name="${groupId}.${artifactId}.dao" />
+        <package name="${package}.dao" />
     </mappers>
     -->
 #end
