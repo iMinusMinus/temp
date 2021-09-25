@@ -10,6 +10,10 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Service;
 #end
 #end
+#if($framework.contains('cxf'))
+
+import javax.jws.WebService;
+#end
 
 /**
  * A ref bean proxy to variety interfaces!
@@ -22,6 +26,10 @@ import org.springframework.stereotype.Service;
 #else
 @Service
 #end
+#end
+#if($framework.contains('cxf'))
+@WebService(endpointInterface = "${package}.api.GenericService", targetNamespace = "http://api.iamwhatiam.ml",
+        serviceName = "GenericServiceImplService", portName = "GenericServiceImplPort")
 #end
 public class GenericServiceImpl implements GenericService {
 
