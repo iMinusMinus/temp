@@ -94,7 +94,7 @@ public class PortletTest #if(!$configType.contains('@java'))extends GenericPortl
 #{end}
     public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException {
         // may be redirect
-        response.setRenderParameter("action", request.getActionParameters().toString());
+        response.getRenderParameters().setValue("action", request.getActionParameters().toString());
         response.setEvent(new QName("http://www.iamwhatiam.ml/portals/EventPortlet", "Search"), "{keywords: [\"java\", \"portal\", \"portlet\"]");
     }
 
@@ -151,7 +151,7 @@ public class PortletTest #if(!$configType.contains('@java'))extends GenericPortl
     public void processEvent(EventRequest request, EventResponse response) throws PortletException, IOException{
         Object event = request.getEvent().getValue();
         log.debug("process event, QName: {}, local part: {}, event: {}", request.getEvent().getQName(), request.getEvent().getName(), event);
-        response.setRenderParameter("event", event.toString());
+        response.getRenderParameters().setValue("event", event.toString());
         // may be include other portlet
 
         response.setEvent("track", "{key:\"iMinusMinus\"}");
