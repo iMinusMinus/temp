@@ -171,6 +171,7 @@
                 <artifactId>logback-access</artifactId>
                 <version>1.2.3</version>
                 <scope>runtime</scope>
+                <optional>true</optional>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
