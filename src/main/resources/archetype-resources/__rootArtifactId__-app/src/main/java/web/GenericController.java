@@ -3,6 +3,7 @@ package ${package}.web;
 import ${package}.api.GenericService;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +20,7 @@ public class GenericController {
     //@Resource
     private GenericService genericService;
 
+//    @CrossOrigin(origins = {"http://static.iamwhatiam.ml", "https://static.iamwhatiam.ml"}, methods = {RequestMethod.POST}, allowedHeaders = "*", allowCredentials = "true")
     @RequestMapping(value = "/{service}", method = {RequestMethod.POST})
     @ResponseBody
     public Object invoke(@PathVariable("rpc") String rpc, @PathVariable("service") String service,

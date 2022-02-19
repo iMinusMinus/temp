@@ -39,8 +39,9 @@
     </bean>
 #{end}
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"#if(!$showComment) />#{else}>
-        <description>Optional. Given org.springframework.web.bind.annotation.RequestMapping on class and method,
-        when AnnotationMethodHandlerAdapter registered, invoke method</description>
+        <description>Optional. Deprecated! Given org.springframework.web.bind.annotation.RequestMapping on class and method,
+        when AnnotationMethodHandlerAdapter registered, invoke method.
+        NOT SUPPORT CORS!</description>
     </bean>
 #{end}
 #if($showComment)
@@ -129,7 +130,13 @@
         </property>
     </bean>
 #if($framework.contains('freemarker'))
-    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+#if($configType.contains('xml:'))
+    <mvc:freemarker-configurer#{if}(!$showDefault) />#{else}>
+        <mvc:template-loader-path location="/WEB-INF/"/>
+    </mvc:freemarker-configurer>
+#{end}
+#else
+    <bean id="mvcFreeMarkerConfigurer" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
 #if($showComment)
         <description>See org.springframework.web.servlet.view.freemarker.FreeMarkerView#autodetectConfiguration</description>
 #end
@@ -158,6 +165,7 @@
 #end
         </bean>
 #{end}
+#end
 #end
 #if($framework.contains('thymeleaf'))
     <bean id="${thymeleafTemplateResolvers}" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
@@ -196,7 +204,9 @@
     <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
 #if($showComment)
         <description>Find best match ViewResolver to resolve viewName with mediaType.
-        ViewName can attach extension with the help of contentNegotiationManager.</description>
+        ViewName can attach extension with the help of contentNegotiationManager.
+        Refer: org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter#viewResolver
+        </description>
 #end
 #if($showDefault)
         <property name="order" value="-2147483648" />
@@ -389,15 +399,46 @@
         <description>Find class with @Controller and class/method with @RequestMapping.
             It loads default argumentResolvers and returnValueHandlers.
             See org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter#afterPropertiesSet.
+            Refer: org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#requestMappingHandlerMapping.
+            Refer: org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.EnableWebMvcConfiguration#requestMappingHandlerMapping.
         </description>
 #end
         <property name="order" value="0" />
         <property name="contentNegotiationManager" ref="mvcContentNegotiationManager" />
         <property name="removeSemicolonContent" value="true" />
+
+        <!--
+        <property name="corsConfigurations">
+            <map>
+                <entry key="/**">
+                    <bean class="org.springframework.web.cors.CorsConfiguration">
+                        <property name="allowedOrigins">
+                            <list>
+                                <value>*</value>
+                            </list>
+                        </property>
+                        <property name="allowedMethods">
+                            <list>
+                                <value>GET</value>
+                                <value>HEAD</value>
+                                <value>POST</value>
+                            </list>
+                        </property>
+                        <property name="allowedHeaders" value="*" />
+                        <property name="allowCredentials" value="true" />
+                        <property name="maxAge" value="1800" />
+                    </bean>
+                </entry>
+            </map>
+        </property>
+        -->
     </bean>
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
 #if($showComment)
-        <description>@ControllerAdvice, @ModelAttribute, @RequestMapping, @InitBinder</description>
+        <description>@ControllerAdvice, @ModelAttribute, @RequestMapping, @InitBinder.
+            Refer: org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#requestMappingHandlerMapping
+            Refer: org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.EnableWebMvcConfiguration#requestMappingHandlerAdapter
+        </description>
 #end
         <property name="contentNegotiationManager" ref="mvcContentNegotiationManager" />
         <property name="webBindingInitializer" ref="${webBindingInitializer}" />
@@ -508,6 +549,15 @@
         -->
 #end
     </mvc:annotation-driven>
+#if($showComment)
+    <!-- spring-framework didn't support cors until version 4.2-->
+    <!--
+    <mvc:cors#{if}(!$showDefault) />#{else}>
+        <mvc:mapping path="/**" allowed-origins="*" allowed-methods="GET,HEAD,POST" allowed-headers="*" allow-credentials="true" max-age="1800"/>
+    </mvc:cors>
+#{end}
+    -->
+#end
 #if($configType.contains('@'))
     <context:component-scan base-package="${package}.web" use-default-filters="false" #if($showDefault)annotation-config="true"#{end}>
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />

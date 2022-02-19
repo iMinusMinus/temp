@@ -1,5 +1,9 @@
 package ${package};
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+
 import javax.validation.Validator;
 
 #if(!$configType.contains('xml'))
@@ -19,15 +23,21 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+#end
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+#if(!$configType.contains('xml'))
 import org.springframework.web.servlet.FlashMapManager;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
@@ -55,22 +65,24 @@ import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 #end
 #end
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Locale;
 
 /**
+ * Web mvc configuration
+ *
  * @see org.springframework.web.servlet.config.annotation.EnableWebMvc
- * @see org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
+ * @see org.springframework.web.servlet.config.annotation.WebMvcConfigurer
  */
+#if($showComment)
+## // Configuration annotation marker this class as Configuration class, then parse ComponentScan annotation and handle BeanMethod.
+## // EnableWebMvc annotation import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration.
+## // spring container inject this WebMvcConfigurer to configurers of DelegatingWebMvcConfiguration.
+#end
 #if(!$configType.contains('xml'))
 @Configuration
 @ComponentScan(value = "${package}", excludeFilters = @ComponentScan.Filter(value = {Service.class, Repository.class, Configuration.class}))
 @EnableWebMvc
 #end
-public class MvcConfig extends WebMvcConfigurationSupport {
+public class MvcConfig extends WebMvcConfigurerAdapter {
 
 #if(!$configType.contains('xml'))
 
@@ -126,6 +138,24 @@ public class MvcConfig extends WebMvcConfigurationSupport {
     @Value("${spring.thymeleaf.excludedViewNames}")
     private String[] excludedViewNames;
 #end
+
+    /**
+     * Add cors config for global settings. (Refer: org.springframework.web.servlet.handler.AbstractHandlerMapping)
+     * Another way by using @CrossOrigin on HandlerMethod/Controller. (Refer: org.springframework.web.servlet.handler.AbstractHandlerMethodMapping)
+     *
+     * @param registry
+     */
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+#if($showComment)
+//        registry.addMapping("/**")
+//                .allowedOrigins(CorsConfiguration.ALL)
+//                .allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name())
+//                .allowedHeaders(CorsConfiguration.ALL)
+//                .allowCredentials(false)
+//                .maxAge(1800L);
+#end
+    }
 
 ## // refer: org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration
     @Bean
