@@ -17,6 +17,9 @@
     <constant name="struts.custom.i18n.resources" value="global" />
     <constant name="struts.convention.result.path" value="/WEB-INF/jsp/" />
     <constant name="struts.beanValidation.providerClass" value="org.hibernate.validator.HibernateValidator"/>
+#if($framework.contains('websocket'))
+    <constant name="struts.action.excludePattern" value="/ws,/wss"></constant>
+#end
 #if($configType.contains('xml'))
 
     <package name="default" extends="struts-default,json-default,struts-bean-validation" namespace="/struts2">
