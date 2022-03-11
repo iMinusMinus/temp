@@ -78,6 +78,22 @@
         <param-value>${parentContextKey}</param-value>
     </context-param>
 #end
+#if($framework.contains('struts2'))
+    <context-param>
+#if($showComment)
+        <description>Optional. See javax.servlet.jsp.jstl.core.Config, org.apache.taglibs.standard.tag.common.fmt.BundleSupport</description>
+#end
+        <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+        <param-value>messages</param-value>
+    </context-param>
+#end
+    <context-param>
+#if($showComment)
+        <description>Optional. See javax.servlet.jsp.jstl.core.Config, org.apache.taglibs.standard.tag.common.fmt.BundleSupport</description>
+#end
+        <param-name>javax.servlet.jsp.jstl.fmt.fallbackLocale</param-name>
+        <param-value>zh_CN</param-value>
+    </context-param>
 
 #if($framework.contains('spring'))
     <listener>

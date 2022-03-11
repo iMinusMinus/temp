@@ -28,7 +28,12 @@
 <%--
 #end
 --%>
-        <noscript style="align: center; color: hsla(1,1,1,0.4);"><fmt:message key="JAVASCRIPT_DISABLED_WARNING" /></noscript>
+        <noscript style="align: center; color: hsla(1,1,1,0.4);">
+            <div>
+                <%-- struts2 not support jstl tag! Let tomcat handle it. --%>
+                <fmt:message key="JAVASCRIPT_DISABLED_WARNING" />
+            </div>
+        </noscript>
     </body>
 <%--
 #if($framework.contains('websocket'))
@@ -40,7 +45,7 @@
         const receiveBox = document.getElementById("receive-box")
 
         // 创建一个webSocket对象
-        const ws = new WebSocket("ws://127.0.0.1:8080/wss")
+        const ws = new WebSocket("ws<c:if test="${pageContext.request.secure}">s</c:if>://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/wss")
         ws.onopen = e => {
             // 连接后监听
             console.log(`WebSocket 连接状态： \${ws.readyState}`)
