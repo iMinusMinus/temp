@@ -9,7 +9,7 @@
     <!--</parent>-->
     <groupId>${groupId}</groupId>
     <artifactId>${artifactId}</artifactId>
-    <version>${version}</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
     <!-- #if(${packagingType} == "pom") -->
@@ -22,6 +22,8 @@
     <!-- #end -->
 
     <properties>
+        <revision>${version}</revision>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -88,6 +90,27 @@
         <findbugs.maxHeap>512</findbugs.maxHeap>
         <findbugs.timeout>600000</findbugs.timeout>
         <findbugs.skipEmptyReport>false</findbugs.skipEmptyReport>
+        <spotbugs.xmlOutput>false</spotbugs.xmlOutput>
+        <spotbugs.sarifOutput>false</spotbugs.sarifOutput>
+        <spotbugs.sarifFullPath>false</spotbugs.sarifFullPath>
+        <spotbugs.outputXmlFilename>spotbugsXml.xml</spotbugs.outputXmlFilename>
+        <spotbugs.includeTests>false</spotbugs.includeTests>
+        <spotbugs.addSourceDirs>false</spotbugs.addSourceDirs>
+        <spotbugs.threshold>Default</spotbugs.threshold>
+        <spotbugs.effort>Default</spotbugs.effort>
+        <spotbugs.debug>false</spotbugs.debug>
+        <spotbugs.relaxed>false</spotbugs.relaxed>
+        <spotbugs.nested>false</spotbugs.nested>
+        <spotbugs.trace>false</spotbugs.trace>
+        <spotbugs.skip>false</spotbugs.skip>
+        <spotbugs.failOnError>true</spotbugs.failOnError>
+        <spotbugs.fork>true</spotbugs.fork>
+        <spotbugs.maxHeap>512</spotbugs.maxHeap>
+        <spotbugs.timeout>600000</spotbugs.timeout>
+        <spotbugs.skipEmptyReport>false</spotbugs.skipEmptyReport>
+        <spotbugs.maxAllowedViolations>0</spotbugs.maxAllowedViolations>
+        <dependency-check.virtualSnapshotsFromReactor>true</dependency-check.virtualSnapshotsFromReactor>
+        <dependency-check.skip>false</dependency-check.skip>
         <jacoco.dataFile>${project.build.directory}/jacoco.exec</jacoco.dataFile>
         <maven.tomcat.url>http://localhost:8080/manager/text</maven.tomcat.url>
         <tomcat.username>admin</tomcat.username>
@@ -853,8 +876,9 @@
                 </plugin>
                 #*
                 Optional plugin, other ways below:
-                1. settings.xml add plugin group "org.jacoco" and "org.sonarsource.scanner.maven", first execute "mcn clean install",
-                then execut "mvn jacoco:prepare-agent checkstyle:checkstyle pmd:pmd findbugs:findbugs verify jacoco:report"
+                1. settings.xml add plugin group "org.jacoco" and "com.github.spotbugs",
+                first execute "mcn clean install",
+                then execute "mvn jacoco:prepare-agent checkstyle:checkstyle pmd:pmd findbugs:findbugs verify jacoco:report"
                 2. explicity command like this: mvn org.jacoco:jacoco-maven-plugin:prepare-agent verify org.jacoco:jacoco-maven-plugin：0.8.4:report sonar:sonar
                 *#
                 <plugin>
@@ -945,9 +969,76 @@
 #end
                 </plugin>
                 <plugin>
+                    <dependency>
+                        <groupId>com.github.spotbugs</groupId>
+                        <artifactId>spotbugs-maven-plugin</artifactId>
+                        <version>4.7.1.1</version>
+#if($showDefault)
+                        <configuration>
+                            <outputDirectory>${project.reporting.outputDirectory}</outputDirectory>
+                            <xmlOutput>${spotbugs.xmlOutput}</xmlOutput>
+                            <sarifOutput>${spotbugs.sarifFullPath}</sarifOutput>
+                            <sarifFullPath>${spotbugs.sarifFullPath}</sarifFullPath>
+                            <xmlOutputDirectory>${project.build.directory}</xmlOutputDirectory>
+                            <spotbugsXmlOutput>true</spotbugsXmlOutput>
+                            <spotbugsXmlOutputDirectory>${project.build.directory}</spotbugsXmlOutputDirectory>
+                            <spotbugsXmlOutputFilename>${spotbugs.outputXmlFilename}</spotbugsXmlOutputFilename>
+                            <classFilesDirectory>${project.build.outputDirectory}</classFilesDirectory>
+                            <testClassFilesDirectory>${project.build.testOutputDirectory}</testClassFilesDirectory>
+                            <xrefLocation>${project.reporting.outputDirectory}/xref</xrefLocation>
+                            <xrefTestLocation>${project.reporting.outputDirectory}/xref-test</xrefTestLocation>
+                            <includeTests>${spotbugs.includeTests}</includeTests>
+                            <addSourceDirs>${spotbugs.addSourceDirs}</addSourceDirs>
+                            <xmlEncoding>UTF-8</xmlEncoding>
+                            <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+                            <outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
+                            <threshold>${spotbugs.threshold}</threshold>
+                            <effort>${spotbugs.effort}</effort>
+                            <debug>${spotbugs.debug}</debug>
+                            <relaxed>${spotbugs.relaxed}</relaxed>
+                            <nested>${spotbugs.nested}</nested>
+                            <trace>${spotbugs.trace}</trace>
+                            <skip>${spotbugs.skip}</skip>
+                            <failOnError>${spotbugs.failOnError}</failOnError>
+                            <fork>${spotbugs.fork}</fork>
+                            <maxHeap>${spotbugs.maxHeap}</maxHeap>
+                            <timeout>${spotbugs.timeout}</timeout>
+                            <skipEmptyReport>${spotbugs.skipEmptyReport}</skipEmptyReport>
+                            <maxAllowedViolations>${spotbugs.maxAllowedViolations}</maxAllowedViolations>
+                        </configuration>
+#end
+                    </dependency>
+                </plugin>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>7.1.1</version>
+#if($showDefault)
+                    <configuration>
+                        <autoUpdate>false</autoUpdate>
+                        <failBuildOnCVSS>11</failBuildOnCVSS>
+                        <junitFailOnCVSS>0</junitFailOnCVSS>
+                        <failBuildOnAnyVulnerability>false</failBuildOnAnyVulnerability>
+                        <virtualSnapshotsFromReactor>${dependency-check.virtualSnapshotsFromReactor}</virtualSnapshotsFromReactor>
+                        <format>HTML</format>
+                        <connectionTimeout>10000</connectionTimeout>
+                        <readTimeout>60000</readTimeout>
+                        <versionCheckEnabled>true</versionCheckEnabled>
+                        <showSummary>true</showSummary>
+                        <skip>${dependency-check.skip}</skip>
+                        <skipTestScope>true</skipTestScope>
+                        <skipRuntimeScope>false</skipRuntimeScope>
+                        <skipProvidedScope>false</skipProvidedScope>
+                        <skipSystemScope>false</skipSystemScope>
+                        <skipDependencyManagement>true</skipDependencyManagement>
+                        <cveStartYear>2002</cveStartYear>
+                    </configuration>
+#end
+                </plugin>
+                <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
-                    <version>3.6.0.1398</version>
+                    <version>3.9.1.2184</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>## jar
