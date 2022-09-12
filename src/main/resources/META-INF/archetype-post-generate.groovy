@@ -24,7 +24,7 @@ for(int i = 0; i < resources.length; i++) {
             }
         }
         if(!request.properties.buildTool.contains("ANT")) {
-            List<String> antResources = Arrays.asList("build.xml", "build.properties")
+            List<String> antResources = Arrays.asList("build.xml", "build.properties", "ivy.xml")
             if(antResources.contains(resources[i].getName())) {
                 resources[i].delete()
             }

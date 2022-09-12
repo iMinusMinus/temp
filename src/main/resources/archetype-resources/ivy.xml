@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+#if($showComment)
+<!-- https://ant.apache.org/ivy/history/2.5.0/ivyfile.html -->
+#end
+<ivy-module version="2.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+    <info organisation="ml.iamhatiam" module="temp" revision="${version}" status="integration">
+        <license name="MIT" url="" />
+        <ivyauthor name="iMinusMinus" url="https://github.com/iMinusMinus" />
+        <repository name="ibiblio" url="http://mirrors.ibiblio.org/pub/mirrors/maven2/" #if($showDefault)ivys="false" artifacts="false"  #{end}/>
+        <description homepage="https://github.com/iMinusMinus/temp" />
+    </info>
+    <configurations #if($showDefault)confmappingoverride="false" #{end}>
+        <conf name="defaultconf" #if($showDefault)visibility="public" transitive="true" #{end} />
+    </configurations>
+    <publications>
+        <artifact name="${rootArtifactId}-api" #if($showDefault)type="jar" ext="jar" conf="defaultconf" #{end}/>
+    </publications>
+    <dependencies #if($showDefault)defaultconf="*->*" confmappingoverride="false" #{end}>
+        <dependency org="org.springframework" name="spring-webmvc" rev="4.3.20.RELEASE" #if($showDefault)revConstraint="rev" force="false" conf="defaultconf" transitive="true" changing="false" #{end}/>
+        <dependency org="org.hibernate" name="hibernate-validator" rev="5.4.3.Final" />
+    </dependencies>
+</ivy-module>

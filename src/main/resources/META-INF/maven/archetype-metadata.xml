@@ -127,9 +127,11 @@ under the License.
             <directory></directory>
             <includes>
                 <include>.gitignore</include>
-                <include>.travis.yml</include>
+                <include>.*.yml</include>
                 <include>build*</include>
+                <include>ivy.xml</include>
                 <include>Dockerfile</include>
+                <include>Jenkinsfile</include>
                 <include>gradle.properties</include>
                 <include>README.MD</include>
                 <include>settings.gradle</include>

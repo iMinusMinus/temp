@@ -4,70 +4,97 @@
          xmlns:jacoco="antlib:org.jacoco.ant"
          xmlns:sonar="antlib:org.sonar.ant">
 #if($showComment)
-    <!-- SeeAlso: http://maven.apache.org/plugins/maven-ant-plugin/index.html -->
+    <!-- mvn ant:ant generate build.xml! Please refer http://maven.apache.org/plugins/maven-ant-plugin/index.html -->
     <!-- SeeAlso: http://maven.apache.org/ref/3.6.2/maven-core/lifecycles.html -->
+    <!-- SeeAlso: https://maven.apache.org/ref/3.6.2/maven-core/default-bindings.html -->
+
+    <!-- SeeAlso: https://ant.apache.org/ivy/history/2.5.0/ant.html -->
 #end
     <property environment="env"/>
+    <property file="${basedir}/build.properties" />
+    <property file="${basedir}/sonar-project.properties" />
 
-    <patternset id="file.spring">
-
-    </patternset>
-    <patternset id="file.springMVC">
-
-    </patternset>
-    <patternset id="file.struts2">
-
-    </patternset>
-    <patternset id="file.dubbo">
-        <include name="${rootArtifactId}-infrastructure/src/main/resources/dubbo*" />
-    </patternset>
-    <patternset id="file.cxf">
-
-    </patternset>
-    <patternset id="file.mybatis">
-
-    </patternset>
-    <patternset id="file.hibernate">
-
-    </patternset>
-    <patternset id="file.swagger">
-
-    </patternset>
     <path id="build.classpath">
-        <pathelement location="" />
+        <pathelement location="${settings.localRepository}/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar"/>
+        <pathelement location="${settings.localRepository}/org/projectlombok/lombok/1.16.20/lombok-1.16.20.jar"/>
     </path>
     <path id="build.test.classpath">
+        <pathelement location="${settings.localRepository}/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar"/>
+        <pathelement location="${settings.localRepository}/org/projectlombok/lombok/1.16.20/lombok-1.16.20.jar"/>
+        <pathelement location="${settings.localRepository}/junit/junit/4.12/junit-4.12.jar"/>
+        <pathelement location="${settings.localRepository}/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"/>
+        <pathelement location="${settings.localRepository}/org/mockito/mockito-core/2.27.0/mockito-core-2.27.0.jar"/>
+        <pathelement location="${settings.localRepository}/net/bytebuddy/byte-buddy/1.9.10/byte-buddy-1.9.10.jar"/>
+        <pathelement location="${settings.localRepository}/net/bytebuddy/byte-buddy-agent/1.9.10/byte-buddy-agent-1.9.10.jar"/>
+        <pathelement location="${settings.localRepository}/org/objenesis/objenesis/2.6/objenesis-2.6.jar"/>
+    </path>
 
+    <path id="antlib">
+        <fileset dir="${settings.localRepository}/org/jacoco/org.jacoco.ant/0.8.5">
+            <include name="org.jacoco.ant-0.8.5.jar" />
+        </fileset>
+        <fileset dir="${settings.localRepository}/org/jacoco/org.jacoco.report/0.8.7">
+            <include name="org.jacoco.report-0.8.7.jar" />
+        </fileset>
+        <fileset dir="${settings.localRepository}/org/jacoco/org.jacoco.core/0.8.7">
+            <include name="org.jacoco.core-0.8.7.jar" />
+        </fileset>
+        <fileset dir="${settings.localRepository}/org/jacoco/org.jacoco.agent/0.8.7">
+            <include name="org.jacoco.agent-0.8.7.jar" />
+        </fileset>
+        <fileset dir="${settings.localRepository}/org/sonarsource/scanner/ant/sonarqube-ant-task/2.5">
+            <include name="sonarqube-ant-task-2.5.jar" />
+        </fileset>
+        <fileset dir="${settings.localRepository}/com/puppycrawl/tools/checkstyle/8.19">
+            <include name="checkstyle-8.19.jar" />
+        </fileset>
+        <fileset dir="${settings.localRepository}/net/sourceforge/pmd/pmd-core/6.13.0">
+            <include name="pmd-core-6.13.0.jar" />
+        </fileset>
+        <fileset dir="${settings.localRepository}/edu/umd/cs/findbugs/3.0.1">
+            <include name="fundbugs-ant.jar" />
+        </fileset>
+        <fileset dir="${settings.localRepository}/org/testng/testng/7.6.1">
+            <include name="testng-7.6.1.jar" />
+        </fileset>
     </path>
 
     <target name="help">
         <echo message="Please run: $ant -projecthelp" />
     </target>
-
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-        <classpath path="${settings.localRepository}/org/jacoco/ant/jacocoant/0.8.5/jacocoant-0.8.5.jar"/>
+        <classpath refid="antlib" />
     </taskdef>
-
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
-        <classpath path="${settings.localRepository}/org/sonarsource/scanner/ant/sonarqube-ant-task/2.5/sonarqube-ant-task-2.5.jar" />
+        <classpath refid="antlib" />
     </taskdef>
-
+    <taskdef resource="com/puppycrawl/tools/checkstyle/ant/checkstyle-ant-task.properties" classpathref="antlib" />
+    <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" classpathref="antlib" />
+    <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="antlib" />
+    <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpathref="antlib" />
+    <taskdef resource="tesngtasks" classpathref="antlib" />
 
 #if($showComment)
     <!-- clean lifecycyle -->
 #end
     <target name="pre-clean">
         <tstamp />
-        <property file="${basedir}/build.properties" />
-        <property file="${basedir}/sonar-project.properties" />
     </target>
-    <target name="clean" depends="pre-clean" description="remove previous generated files">
-		<delete dir="${project.build.outputDirectory}" />
-		<delete dir="${project.build.testOutputDirectory}" />
-        <delete dir="${project.build.directory}" />
-        <!--<ant antfile="build.xml" dir="${rootArtifactId}-*" target="clean" />-->
+    <target name="clean" depends="pre-clean" description="maven-clean-plugin:clean" unless="maven.clean.skip">
+#if($packagingType=="pom")
+        <ant #if($showDefault)antfile="build.xml" inheritAll="true" inheritRefs="false" useNativeBasedir="false" #{end}dir="${rootArtifactId}-api" target="clean" />
+        <ant antfile="build.xml" dir="${rootArtifactId}-domain" target="clean" />
+        <ant antfile="build.xml" dir="${rootArtifactId}-app" target="clean" />
+#end
+        <delete includeemptydirs="true" quiet="true">
+            <fileset dir="${project.build.outputDirectory}" />
+            <fileset dir="${project.build.testOutputDirectory}" />
+            <fileset dir="${projetc.reporting.outputDirectory}" />
+            <fileset dir="${project.build.directory}" />
+        </delete>
     </target>
     <target name="post-clean" depends="clean">
+        <ivy:cleancache />
         <tstamp />
         <echo message="clean success" />
     </target>
@@ -76,30 +103,52 @@
 #if($showComment)
     <!-- default lifecycle -->
 #end
-    <target name="validate" description="检查配置">
+    <target name="validate">
 
     </target>
-    <target name="initialize" depends="validate" description="初始化构建状态">
+    <target name="initialize" depends="validate" description="jacoco-maven-plugin:prepare-agent">
         <mkdir dir="${project.build.directory}" />
-        <ivy:retrieve />
-        <jacoco:agent enabled="true" />
+        <mkdir dir="${project.build.outputDirectory}" />
+        <mkdir dir="${project.build.testOutputDirectory}" />
+        <mkdir dir="${projetc.reporting.outputDirectory}" />
+        <ivy:retrieve pattern="${settings.localRepository}/[orgPath]/[artifact]/[revision]/[artifact]-[revision].[ext]" #if($showDefault)sync="false" #{end}/>
+#if($packagingType=="pom")
+        <ant dir="${rootArtifactId}-api" target="initialize" />
+        <ant dir="${rootArtifactId}-domain" target="initialize" />
+        <ant dir="${rootArtifactId}-app" target="initialize" />
+#else
+        <jacoco:agent enabled="${jacoco.skip}" property="${jacoco.propertyName}" />
+#end
     </target>
-    <target name="generate-sources" depends="initialize" description="生成编译阶段需要包含的任何源码文件">
+    <target name="generate-sources" depends="initialize">
 
     </target>
-    <target name="process-sources" depends="generate-sources" description="处理源代码">
+    <target name="process-sources" depends="generate-sources">
 
     </target>
-    <target name="generate-resources" description="生成需要包含的资源文件">
+    <target name="generate-resources" description="jacoco-maven-plugin:merge maven-ear-plugin:generate-application-xml">
         <copy file="${project.resources}/**" todir="${project.build.outputDirectory}" />
         <!--<jacoco:merge destfile="${jacoco.destFile}">-->
             <!--<fileset dir="${project.build.directory}" includes="*.exec"/>-->
         <!--</jacoco:merge>-->
     </target>
-    <target name="process-resources" depends="generate-resources" description="处理资源文件">
+    <target name="process-resources" depends="generate-resources" description="maven-resources-plugin:resources"
+            unless="maven.resources.skip">
+#if($packagingType=="pom")
+        <ant dir="${rootArtifactId}-api" target="process-resources" />
+        <ant dir="${rootArtifactId}-domain" target="process-resources" />
+        <ant dir="${rootArtifactId}-app" target="process-resources" />
+#else
         <native2ascii src="${project.resources}" dest="${project.build.outputDirectory}" includes="**/*" ext="properties" />
+#end
     </target>
-    <target name="compile" depends="process-sources,process-resources" description="编译">
+    <target name="compile" depends="process-sources,process-resources" description="maven-compiler-plugin:compile"
+            unless="maven.main.skip">
+#if($packagingType=="pom")
+        <ant dir="${rootArtifactId}-api" target="compile" />
+        <ant dir="${rootArtifactId}-domain" target="compile" />
+        <ant dir="${rootArtifactId}-app" target="compile" />
+#else
         <mkdir dir="${project.build.outputDirectory}" />
         <javac destdir="${project.build.outputDirectory}"
                source="${maven.compiler.source}" target="${maven.compiler.target}" encoding="${project.build.sourceEncoding}"
@@ -109,31 +158,50 @@
             <src>
                 <pathelement location="${project.build.sourceDirectory}" />
             </src>
-            <classpath refid="build.classpath" />
+            <classpath refid="build.classpath"/>
         </javac>
         <copy todir="${project.build.outputDirectory}">
             <fileset dir="${project.resources}" />
         </copy>
-        <!--<ant antfile="build.xml" dir="${rootArtifactId}-*" target="compile" />-->
+#end
     </target>
-    <target name="process-classes" depends="compile" description="处理编译生成的文件">
+    <target name="process-classes" depends="compile" description="jacoco-maven-plugin:instrucment">
         <!--<jacoco:instrument destdir="">-->
             <!--<fileset dir="${project.build.outputDirectory}" includes="**/*.class" />-->
         <!--</jacoco:instrument>-->
     </target>
-    <target name="generate-test-sources" description="">
+    <target name="generate-test-sources">
 
     </target>
-    <target name="process-test-sources" depends="generate-test-sources" description="">
+    <target name="process-test-sources" depends="generate-test-sources">
 
     </target>
-    <target name="generate-test-resources" description="">
+    <target name="generate-test-resources">
+#if($packagingType=="pom")
+        <ant dir="${rootArtifactId}-api" target="generate-test-resources" />
+        <ant dir="${rootArtifactId}-domain" target="generate-test-resources" />
+        <ant dir="${rootArtifactId}-app" target="generate-test-resources" />
+#else
         <copy file="${project.testResources}/**" todir="${project.build.testOutputDirectory}" />
+#end
     </target>
-    <target name="process-test-resources" depends="generate-test-resources" description="">
+    <target name="process-test-resources" depends="generate-test-resources" unless="maven.test.skip"
+            description="maven-resources-plugin:testResources">
+#if($packagingType=="pom")
+        <ant dir="${rootArtifactId}-api" target="process-test-resources" />
+        <ant dir="${rootArtifactId}-domain" target="process-test-resources" />
+        <ant dir="${rootArtifactId}-app" target="process-test-resources" />
+#else
         <native2ascii src="${project.testResources}" dest="${project.build.testOutputDirectory}" includes="**/*" ext="properties" />
+#end
     </target>
-    <target name="test-compile" depends="compile" description="compile-tests" unless="maven.test.skip">
+    <target name="test-compile" depends="compile, process-test-sources, process-test-resources"
+            description="maven-compiler-plugin:testCompile" unless="maven.test.skip">
+#if($packagingType=="pom")
+        <ant dir="${rootArtifactId}-api" target="test-compile" />
+        <ant dir="${rootArtifactId}-domain" target="test-compile" />
+        <ant dir="${rootArtifactId}-app" target="test-compile" />
+#else
         <mkdir dir="${project.build.testOutputDirectory}" />
         <javac destdir="${project.build.testOutputDirectory}"
                source="${maven.compiler.source}" target="${maven.compiler.target}" encoding="${project.build.sourceEncoding}"
@@ -141,7 +209,7 @@
                memoryinitialsize="${maven.compiler.meminitial}" memorymaximumsize="${maven.compiler.maxmem}"
                fork="${maven.compiler.fork}" deprecation="${maven.compiler.showDeprecation}" verbose="${maven.compiler.verbose}">
             <src>
-                <pathelement location="${project.build.testOutputDirectory}" />
+                <pathelement location="${project.build.testSourceDirectory}" />
             </src>
             <classpath>
                 <path refid="build.test.classpath" />
@@ -151,12 +219,17 @@
         <copy todir="${project.build.testOutputDirectory}">
             <fileset dir="${project.testResources}" />
         </copy>
-        <!--<ant antfile="build.xml" dir="${rootArtifactId}-*" target="test-compile" />-->
+#end
     </target>
-    <target name="process-test-classes" depends="test-compile" description="">
+    <target name="process-test-classes" depends="test-compile">
 
     </target>
-    <target name="test" depends="test-compile" description="run unit test">
+    <target name="test" depends="process-test-classes" description="maven-surefire-plugin:test" unless="skipTests || maven.test.skip">
+#if($packagingType=="pom")
+        <ant dir="${rootArtifactId}-api" target="test" />
+        <ant dir="${rootArtifactId}-domain" target="test" />
+        <ant dir="${rootArtifactId}-app" target="test" />
+#else
         <mkdir dir="${project.build.directory}/surefire-reports" />
         <junit printsummary="${surefire.printSummary}" haltonerror="off" haltonfailure="off" fork="off"
             jvm="java" newenvironment="false" includeantruntime="true">
@@ -193,12 +266,19 @@
             </batchtest>
         </junit>
         <sonar:sonar />
-        <!--<ant antfile="build.xml" dir="${rootArtifactId}-*" target="test" />-->
+#end
     </target>
-    <target name="prepare-package" depends="compile, test" description="">
-
+    <target name="prepare-package" depends="compile, test" description="jacoco-maven-plugin:restore-instrucmented-classes">
+        <!-- jacoco:restore-instrumented-classes -->
     </target>
-    <target name="package" depends="prepare-package" description="">
+    <target name="package" depends="prepare-package"
+            description="maven-war-plugin:war maven-jar-plugin:jar maven-ejb-plugin:ejb maven-ear-plugin:ear"
+            unless="maven.war.skip">
+#if($packagingType=="pom")
+        <ant dir="${rootArtifactId}-api" target="package" />
+        <ant dir="${rootArtifactId}-domain" target="package" />
+        <ant dir="${rootArtifactId}-app" target="package" />
+#else
         <!--<javadoc />-->
         <jar destfile="${project.build.finalName}.jar" includes="**/**" excludes="**/package.html">
             <manifest file="MANIFEST.MF">
@@ -237,6 +317,8 @@
                 <provider classname="" />
             </service>-->
         </jar>
+        <copy file="${settings.localRepository}/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar"
+              todir="${project.build.director}/${project.build.finalName}/WEB-INF/lib"/>
         <war encoding="${project.build.sourceEncoding}" includes="**" whenmanifestonly="create"
              webxml="${project.basedir}/src/main/webapp/WEB-INF/web.xml"
              destfile="${project.build.director}/${project.build.finalName}-${project.version}.war">
@@ -244,40 +326,65 @@
             <classes>${project.build.outputDirectory}</classes>
             <fileset dir="${tomcat.warSourceDirectory}" excludes="WEB-INF/web.xml" />
         </war>
-        <!--<ant antfile="build.xml" dir="${rootArtifactId}-*" target="package" />-->
+#end
     </target>
-    <target name="pre-integration-test">
-
+    <target name="pre-integration-test" description="jacoco-maven-plugin:prepare-agent-integration">
+#if($packagingType=="pom")
+        <ant dir="${rootArtifactId}-api" target="pre-integration-test" />
+        <ant dir="${rootArtifactId}-domain" target="pre-integration-test" />
+        <ant dir="${rootArtifactId}-app" target="pre-integration-test" />
+#else
+        <jacoco:agent enabled="${jacoco.skip}" property="${jacoco.propertyName}" />
+#end
     </target>
-    <target name="integration-test" depends="pre-integration-test" description="集成测试">
-
+    <target name="integration-test" depends="pre-integration-test">
+#if($packagingType=="pom")
+        <ant dir="${rootArtifactId}-api" target="integration-test" />
+        <ant dir="${rootArtifactId}-domain" target="integration-test" />
+        <ant dir="${rootArtifactId}-app" target="integration-test" />
+#else
+        <jacoco:coverage enabled="true" destfile="${project.build.directory}/jacoco-it.exec" append="true" includes="*"
+                         exclclassloader="sun.reflect.DelegatingClassLoader" inclbootstrapclasses="false" jmx="false"
+                         inclnolocationclasses="false" dumponexit="true" output="file" address="127.0.0.1" port="6300">
+            <testng fork="true" forkmode="once" mode="testng" classpathref="antlib" xmlPathInJar="testng.xml">
+                <classfileset dir="${project.build.testOutputDirectory}" includes="**/*Test.class" />
+            </testng>
+        </jacoco:coverage>
+#end
     </target>
-    <target name="post-integration-test" depends="integration-test">
-        <jacoco:dump destfile="${jacoco.dataFile}" address="localhost" port="${jacoco.port}"
+    <target name="post-integration-test" depends="integration-test" description="jacoco-maven-plugin:dump">
+#if($packagingType=="pom")
+        <ant dir="${rootArtifactId}-api" target="post-integration-test" />
+        <ant dir="${rootArtifactId}-domain" target="post-integration-test" />
+        <ant dir="${rootArtifactId}-app" target="post-integration-test" />
+#else
+        <jacoco:dump destfile="${jacoco.destFile}" address="${jacoco.address}" port="${jacoco.port}"
                      retryCount="${jacoco.retryCount}" dump="${jacoco.dump}" reset="${jacoco.reset}" append="${jacoco.append}" />
+#end
     </target>
-    <target name="verify" description="">
-        <taskdef name="checkstyle" resource="com/puppycrawl/tools/checkstyle/ant/checkstyle-ant-task.properties"
-                 classpath="${settings.localRepository}/com/puppycrawl/tools/checkstyle/8.27/checkstyle-8.27.jar" />
-        <checkstyle config="${checkstyle.config.location}" failOnViolation="${checkstyle.failOnViolation}" maxErrors="0" maxWarnings="2147483647">
+
+    <target name="checkstyle-maven-plugin:check" unless="checkstyle.skip">
+        <checkstyle config="${checkstyle.config.location}" failOnViolation="${checkstyle.failOnViolation}"
+                    maxErrors="0" maxWarnings="2147483647">
             <fileset dir="${project.build.sourceDirectory}" includes="${checkstyle.includes}" />
             <formatter type="${checkstyle.output.format}" toFile="${checkstyle.output.file}" useFile="true" />
         </checkstyle>
-
-        <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" />
+    </target>
+    <target name="maven-pmd-plugin:cpd-check" unless="cpd.skip">
         <cpd minimumtokencount="100" format="text" outputfile="${project.build.directory}/cpd.xml" language="java"
              ignoreLiterals="${cpd.ignoreLiterals}" ignoreIdentifiers="${cpd.ignoreIdentifiers}" ignoreAnnotations="${cpd.ignoreAnnotations}"
              skipDuplicateFiles="false" skipLexicalErrors="false" />
-        <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" />
+    </target>
+    <target name="maven-pmd-plugin:check" unless="pmd.skip">
         <pmd failOnRuleViolation="${pmd.failOnViolation}" suppressMarker="NOPMD" maxRuleViolations="${pmd.maxAllowedViolations}">
             <formatter type="xml" showSuppressed="false" toFile="${project.build.directory}/pmd.xml" toConsole="false" />
             <sourceLanguage name="java" version="1.8"/>
             <ruleset>rulesets/java/design.xml</ruleset>
             <ruleset>java-basic</ruleset>
         </pmd>
-
+    </target>
+    <target name="findbugs-maven-plugin:check" unless="findbugs.skip">
         <echo message="SpotBugs is the spiritual successor of FindBugs" />
-        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.home}/lib/findbugs-ant.jar"/>
         <findbugs home="${findbugs.home}" quietErrors="false" reportLevel="medium" debug="${findbugs.debug}"
                   effort="${findbugs.effort}" timeout="${findbugs.timeout}" failOnError="${findbugs.failOnError}"
                   setExitCode="true" output="xml" outputFile="${project.build.directory}/findbugsXml.xml">
@@ -285,7 +392,8 @@
             <!--<auxClasspath path="${project.build.testOutputDirectory}" />-->
             <!--<sourcePath path="${project.basedir}/src/main/java"/>-->
         </findbugs>
-
+    </target>
+    <target name="jacoco-maven-plugin:report" unless="jacoco.skip">
         <jacoco:report>
             <executiondata>
                 <file file="${jacoco.dataFile}" />
@@ -298,13 +406,69 @@
                     <fileset dir="${project.build.sourceDirectory}" />
                 </sourcefiles>
             </structure>
-            <html destdir="" destfile="" encoding="${project.reporting.outputEncoding}" locale="zh_CN" />
+            <html destdir="${projetc.reporting.outputDirectory}/jacoco" destfile="index.html" encoding="${project.reporting.outputEncoding}" locale="zh_CN" />
+            <xml destfile="${projetc.reporting.outputDirectory}/jacoco/jacoco.xml" encoding="${project.reporting.outputEncoding}" />
+            <csv destfile="${projetc.reporting.outputDirectory}/jacoco/jacoco.csv" encoding="${project.reporting.outputEncoding}" />
         </jacoco:report>
     </target>
-    <target name="install" description="安装到本地仓库">
-
+    <target name="jacoco-maven-plugin:report-integration" unless="jacoco.skip">
+        <jacoco:report>
+            <executiondata>
+                <file file="${project.build.directory}/jacoco-it.exec" />
+            </executiondata>
+            <structure name="${ant.project.name}">
+                <classfiles>
+                    <fileset dir="${project.build.outputDirectory}" />
+                </classfiles>
+                <sourcefiles encoding="${project.build.sourceEncoding}">
+                    <fileset dir="${project.build.sourceDirectory}" />
+                </sourcefiles>
+            </structure>
+            <xml destfile="${projetc.reporting.outputDirectory}/jacoco/jacoco.xml" encoding="${project.reporting.outputEncoding}" />
+        </jacoco:report>
     </target>
-    <target name="deploy" depends="package" description="发布到远程仓库或部署到应用服务器">
+    <target name="verify">
+#if($packagingType=="pom")
+        <ant dir="${rootArtifactId}-api" target="verify" />
+        <ant dir="${rootArtifactId}-domain" target="verify" />
+        <ant dir="${rootArtifactId}-app" target="verify" />
+        <antcall target="checkstyle-maven-plugin:check-aggregator" />
+        <antcall target="maven-pmd-plugin:cpd-check">
+            <param name="aggregate" value="true" />
+        </antcall>
+        <antcall target="maven-pmd-plugin:check">
+            <param name="aggregate" value="true" />
+        </antcall>
+        <antcall target="jacoco-maven-plugin:report-aggregator" />
+#else
+        <antcall target="checkstyle-maven-plugin:check" />
+        <antcall target="maven-pmd-plugin:cpd-check" />
+        <antcall target="maven-pmd-plugin:check" />
+        <antcall target="findbugs-maven-plugin:check" />
+        <antcall target="jacoco-maven-plugin:report" />
+        <antcall target="jacoco-maven-plugin:report-integration" />
+#end
+    </target>
+    <target name="install" depends="package" description="maven-install-plugin:install" unless="maven.install.skip">
+#if($packagingType=="pom")
+        <ant dir="${rootArtifactId}-api" target="install" />
+        <ant dir="${rootArtifactId}-domain" target="install" />
+        <ant dir="${rootArtifactId}-app" target="install" />
+#else
+        <ivy:publish artifactspattern="${settings.localRepository}/[orgPath]/[artifact]/[revision]/[artifact]-[revision].[ext]"
+                     resolver="local"
+                     publishivy="false" />
+<!--        <mkdir dir="${settings.localRepository}/${groupId}/${rootArtifactId}/${version}" />-->
+<!--        <copy file="${project.build.outputDirectory}/${project.build.finalName}.jar" -->
+<!--              tofile="${settings.localRepository}/${groupId}/${rootArtifactId}/${version}/${project.build.finalName}.jar" />-->
+#end
+    </target>
+    <target name="deploy" depends="package" description="maven-deploy-plugin:deploy" unless="maven.deploy.skip">
+#if($packagingType=="pom")
+        <ant dir="${rootArtifactId}-api" target="deploy" />
+        <ant dir="${rootArtifactId}-domain" target="deploy" />
+        <ant dir="${rootArtifactId}-app" target="deploy" />
+#else
         <exec executable="curl">
             <arg value="-F 'filename=@${rootArtifactId}-api/${project.build.directory}/${rootArtifactId}-api-${project.version}.jar'" />
             <arg value="${project.distributionManagement.repository.url}" />
@@ -330,6 +494,7 @@
             <start url="${maven.tomcat.url}" username="${tomcat.username}" password="${tomcat.password}" path="${maven.tomcat.path}" />
 #end
         </serverdeploy>
+#end
     </target>
 
 
@@ -339,7 +504,7 @@
     <target name="pre-site">
 
     </target>
-    <target name="site" depends="pre-site" description="">
+    <target name="site" depends="pre-site" description="maven-site-plugin:site" unless="maven.site.skip">
         <!--<jjdoc target="${project.basedir}/src/main/site/parser.jj"
         outputfile="${project.build.directory}/site/index.md"
         javacchome="" />-->
@@ -347,7 +512,7 @@
     <target name="post-site" depends="site">
 
     </target>
-    <target name="site-deploy" description="">
+    <target name="site-deploy" description="maven-site-plugin:deploy" unless="maven.site.deploy.skip">
 
     </target>
 </project>
