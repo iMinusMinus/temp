@@ -969,45 +969,43 @@
 #end
                 </plugin>
                 <plugin>
-                    <dependency>
-                        <groupId>com.github.spotbugs</groupId>
-                        <artifactId>spotbugs-maven-plugin</artifactId>
-                        <version>4.7.1.1</version>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>4.7.1.1</version>
 #if($showDefault)
-                        <configuration>
-                            <outputDirectory>${project.reporting.outputDirectory}</outputDirectory>
-                            <xmlOutput>${spotbugs.xmlOutput}</xmlOutput>
-                            <sarifOutput>${spotbugs.sarifFullPath}</sarifOutput>
-                            <sarifFullPath>${spotbugs.sarifFullPath}</sarifFullPath>
-                            <xmlOutputDirectory>${project.build.directory}</xmlOutputDirectory>
-                            <spotbugsXmlOutput>true</spotbugsXmlOutput>
-                            <spotbugsXmlOutputDirectory>${project.build.directory}</spotbugsXmlOutputDirectory>
-                            <spotbugsXmlOutputFilename>${spotbugs.outputXmlFilename}</spotbugsXmlOutputFilename>
-                            <classFilesDirectory>${project.build.outputDirectory}</classFilesDirectory>
-                            <testClassFilesDirectory>${project.build.testOutputDirectory}</testClassFilesDirectory>
-                            <xrefLocation>${project.reporting.outputDirectory}/xref</xrefLocation>
-                            <xrefTestLocation>${project.reporting.outputDirectory}/xref-test</xrefTestLocation>
-                            <includeTests>${spotbugs.includeTests}</includeTests>
-                            <addSourceDirs>${spotbugs.addSourceDirs}</addSourceDirs>
-                            <xmlEncoding>UTF-8</xmlEncoding>
-                            <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-                            <outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
-                            <threshold>${spotbugs.threshold}</threshold>
-                            <effort>${spotbugs.effort}</effort>
-                            <debug>${spotbugs.debug}</debug>
-                            <relaxed>${spotbugs.relaxed}</relaxed>
-                            <nested>${spotbugs.nested}</nested>
-                            <trace>${spotbugs.trace}</trace>
-                            <skip>${spotbugs.skip}</skip>
-                            <failOnError>${spotbugs.failOnError}</failOnError>
-                            <fork>${spotbugs.fork}</fork>
-                            <maxHeap>${spotbugs.maxHeap}</maxHeap>
-                            <timeout>${spotbugs.timeout}</timeout>
-                            <skipEmptyReport>${spotbugs.skipEmptyReport}</skipEmptyReport>
-                            <maxAllowedViolations>${spotbugs.maxAllowedViolations}</maxAllowedViolations>
-                        </configuration>
+                    <configuration>
+                        <outputDirectory>${project.reporting.outputDirectory}</outputDirectory>
+                        <xmlOutput>${spotbugs.xmlOutput}</xmlOutput>
+                        <sarifOutput>${spotbugs.sarifFullPath}</sarifOutput>
+                        <sarifFullPath>${spotbugs.sarifFullPath}</sarifFullPath>
+                        <xmlOutputDirectory>${project.build.directory}</xmlOutputDirectory>
+                        <spotbugsXmlOutput>true</spotbugsXmlOutput>
+                        <spotbugsXmlOutputDirectory>${project.build.directory}</spotbugsXmlOutputDirectory>
+                        <spotbugsXmlOutputFilename>${spotbugs.outputXmlFilename}</spotbugsXmlOutputFilename>
+                        <classFilesDirectory>${project.build.outputDirectory}</classFilesDirectory>
+                        <testClassFilesDirectory>${project.build.testOutputDirectory}</testClassFilesDirectory>
+                        <xrefLocation>${project.reporting.outputDirectory}/xref</xrefLocation>
+                        <xrefTestLocation>${project.reporting.outputDirectory}/xref-test</xrefTestLocation>
+                        <includeTests>${spotbugs.includeTests}</includeTests>
+                        <addSourceDirs>${spotbugs.addSourceDirs}</addSourceDirs>
+                        <xmlEncoding>UTF-8</xmlEncoding>
+                        <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+                        <outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
+                        <threshold>${spotbugs.threshold}</threshold>
+                        <effort>${spotbugs.effort}</effort>
+                        <debug>${spotbugs.debug}</debug>
+                        <relaxed>${spotbugs.relaxed}</relaxed>
+                        <nested>${spotbugs.nested}</nested>
+                        <trace>${spotbugs.trace}</trace>
+                        <skip>${spotbugs.skip}</skip>
+                        <failOnError>${spotbugs.failOnError}</failOnError>
+                        <fork>${spotbugs.fork}</fork>
+                        <maxHeap>${spotbugs.maxHeap}</maxHeap>
+                        <timeout>${spotbugs.timeout}</timeout>
+                        <skipEmptyReport>${spotbugs.skipEmptyReport}</skipEmptyReport>
+                        <maxAllowedViolations>${spotbugs.maxAllowedViolations}</maxAllowedViolations>
+                    </configuration>
 #end
-                    </dependency>
                 </plugin>
                 <plugin>
                     <groupId>org.owasp</groupId>
@@ -1144,6 +1142,15 @@
         </plugins>
         *#
     </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>3.3.0</version>
+            </plugin>
+        </plugins>
+    </reporting>
     <profiles>
         <profile>
             <id>dev</id>
