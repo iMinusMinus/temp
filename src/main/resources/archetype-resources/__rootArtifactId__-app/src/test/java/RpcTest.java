@@ -33,7 +33,7 @@ import feign.Feign;
 #end
 import feign.Logger.Level;
 import feign.Response;
-import feign.Retryer;;
+import feign.Retryer;
 import feign.slf4j.Slf4jLogger;
 #end
 import org.junit.After;
