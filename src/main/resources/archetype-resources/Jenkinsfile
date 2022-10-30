@@ -1,0 +1,454 @@
+// #!/usr/bin/env groovy
+#if($showComment)
+// DevOps refer:
+// https://docs.gitlab.com/ee/topics/autodevops/stages.html
+// https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Auto-DevOps.gitlab-ci.yml
+
+// *AST refer:
+// https://www.imperva.com/learn/application-security/sast-iast-dast/
+
+// Jenkins pipeline refer:
+// https://www.jenkins.io/zh/doc/book/pipeline/syntax/
+// https://www.jenkins.io/zh/doc/pipeline/steps/
+
+// Validate Jenkinsfile:
+// JENKINS_CRUMB=`curl "$JENKINS_URL/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)"`
+// curl -X POST -H $JENKINS_CRUMB -F "jenkinsfile=${WORKSPACE}/Jenkinsfile" $JENKINS_URL/pipeline-model-converter/validate
+
+// please install those plugins: workflow-scm-step, git, dependency-check-jenkins-plugin, sonar, warnings-ng, jacoco, zap-pipeline, nexus-jenkins-plugin, webhook-step, deploy, kubernetes
+// please setup email, sonarqube, nexus, zap in "Configure System"; 
+// please install and setup git, jdk, maven, sonarqube-scaner, dependency-check in "Global Tool Configuration";
+// please setup kubernetes in "`Manage Nodes and Clouds`->`Configure Clouds`".
+#end
+
+pipeline {
+    agent {
+        node {
+            label 'linux'
+        }
+    }
+
+    options {
+        timestamps()
+        retry(1)
+    }
+    parameters {
+        string(name: 'SCM_URL', defaultValue: 'git://vcs.iamwhatiam.ml/iMinusMinuis/temp.git', description: '源代码地址')  #if($showComment)// or "https://vcs.iamwhatiam.ml/iMinusMinuis/temp.git"#end
+
+        string(name: 'BRANCH_NAME', defaultValue: '*/master', description: '源代码分支，SonarQube社区版仅支持master或main分支')
+        string(name: 'RECIPIENTS', defaultValue: 'projectGroup@iamwhatiam.ml', description: '通知人')
+        string(name: 'TOMCAT_CREDENTIALS_ID', description: 'tomcat管理口令，用户必需有manager-script角色权限')  #if($showComment)// 通过在其他工具下添加凭据方式生成tomcat所需凭据#end
+
+        string(name: 'SERVER_HOST', defaultValue: 'localhost', description: '部署服务器域名')
+        string(name: 'SERVER_PORT', defaultValue: '8080', description: '部署服务器管理端口')
+        string(name: 'CONTEXT_PATH', defaultValue: '${rootArtifactId}', description: '部署服务器上下文，默认项目名')
+        string(name: 'VERSION', defaultValue: '1.0.0', description: '二方包版本')
+        string(name: 'NEW_VERSION', description: '新项目版本')
+        booleanParam(name: 'DISTRIBUTABLE', defaultValue: false, description: '本次构建是否需要发布二方包')
+        string(name: 'WEBHOOK_AUTH_TOKEN', defaultValue: 'WhosYourDaddy', description: 'webhook令牌，仅用于增加安全性')
+        booleanParam(name: 'RUN_IN_CONTAINER', defaultValue: false, description: '容器运行')
+    }
+
+    environment {
+        DEPENDENCY_CHECK_NAME='dependency-check-7.1.1'
+        SONAR_SCANNER_NAME='sonar-scanner-4.7.0.2747'
+        SONARQUBE_NAME='sonarqube8.9.5'
+        OPENRASP_VERSION='1.3.7'
+        NEXUS_ID='nexus-3.37.1'
+        NEXUS_VERSION='nexus3'
+        NEXUS_SNAPSHOT_REPOSITORY_ID='maven-snapshots'
+        NEXUS_RELEASE_REPOSITORY_ID='maven-releases'
+
+        SCM_CREDENTIALS_ID='git_readonly' #if($showComment)// not credentials('git_readonly')#end
+
+        SONARQUBE_CREDENTIALS_ID='sonarqube' #if($showComment)// not credentials('sonarqube')#end
+
+        NEXUS_CREDENTIALS_ID='nexus' #if($showComment)// not credentials('nexus')#end
+
+        NEXUS_USER_NAME='admin' #if($showComment)// Deprecated#end
+
+        NEXUS_PASSWORD='admin123' #if($showComment)// Deprecated#end
+
+
+        DEPLOY_USER='ops'
+        DEPLOY_TOKEN='Dev0p$'
+        REPO_PROTOCOL='http'
+        REPO_URL='localhost:8081'
+        HUB_URL='https://hub.iamwhatiam.ml/iMinusMinuis' #if($showComment)// harbor, docker registry or nexus server#end
+
+        SCM_AUTHOR='cicd robot<cicd_robot@iamwhatiam.ml>'
+    }
+
+    stages {
+        stage('Initialize') {
+            steps {
+                // checkout filesystem(path: '')
+                checkout scm:[
+                        $class: 'GitSCM',
+                        branches: [[name: "${params.BRANCH_NAME}"]], // [[name: '*/master'], [name: '*/main']]
+                        userRemoteConfigs: [[credentialsId: env.SCM_CREDENTIALS_ID, url: "${params.SCM_URL}"]]
+                    ],
+                    polling: true
+            }
+        }
+        stage('Software Composition Analysis') { #{if}($showComment)// 评估安全性、许可证合规性和代码质量#{end}
+
+            parallel {
+                stage('unit test') {
+                    environment {
+                        SPRING_PROFILES_ACTIVE='junit'
+                    }
+                    steps {
+                        sh 'mvn org.jacoco:jacoco-maven-plugin:0.8.8:prepare-agent test org.jacoco:jacoco-maven-plugin:0.8.8:report'
+                    }
+                }
+                stage('static analysis') {
+                    steps {
+                        timestamps {
+                            sh 'mvn checkstyle:check pmd:cpd-check pmd:check com.github.spotbugs:spotbugs-maven-plugin:check verify -Dmaven.main.skip=true -Dmaven.test.skip=true'
+                        }
+                    }
+                }
+                stage('Static Application Security Testing') { #{if}($showComment)// 针对源代码使用静态代码分析工具进行自动化检测，速度较快、语言相关、覆盖率较高、误报率较高。如Fortify将源代码生成中间代码，进行语义分析、数据流分析、控制流分析#{end}
+
+                    environment {
+                        scannerHome = tool(name: env.SONAR_SCANNER_NAME)
+                    }
+                    steps {
+#if($showComment)
+                        echo '''Static application security testing
+                                (SAST) is a set of technologies designed to analyze application source code, byte code and binaries
+                                for coding and design conditions that are indicative of security vulnerabilities.
+                                SAST solutions analyze an application from the “inside out” in a nonrunning state.'''
+#end
+                        // sh "gitleaks detect #{if}($showDefault)--config ${WORKSPACE}/.gitleaks.toml --report-format string json --log-level info --source . #{end}--no-banner" #if($showComment)// https://github.com/zricethezav/gitleaks#end
+
+                        dependencyCheck additionalArguments: """#if($showDefault)--project ${env.JOB_NAME} --scan ${env.WORKSPACE}#end --format JSON
+                        --disablePyDist --disablePyPkg --disableMSBuild --disableNodeJS	--disableYarnAudit --disablePnpmAudit
+                        --disableNodeAudit --disableNodeAuditCache --disableRetireJS --disableRubygems --disableBundleAudit
+                        --disableCocoapodsAnalyzer --disableSwiftPackageManagerAnalyzer	--disableSwiftPackageResolvedAnalyzer
+                        --disableAutoconf --disableCmake --disableComposer --disableCpan --disableNuspec --disableNugetconf --disableAssembly
+                        --disableGolangDep --disableGolangMod --disableMixAudit""",
+                            odcInstallation: env.DEPENDENCY_CHECK_NAME#if($showComment)// https://jeremylong.github.io/DependencyCheck/dependency-check-cli/arguments.html#end
+
+                        withSonarQubeEnv(installationName: env.SONARQUBE_NAME, credentialsId: env.SONARQUBE_CREDENTIALS_ID, envOnly: false) { // use codeclimate image
+                            // sh "${scannerHome}/bin/sonar-scanner -Dsonar.dependencyCheck.jsonReportPath=${WORKSPACE}/dependency-check-report.json" #if($showComment)// https://docs.sonarqube.org/latest/analysis/analysis-parameters/#end
+
+                            sh "mvn sonar:sonar"
+                        }
+
+                        // license_finder #if($showComment)// https://github.com/pivotal/LicenseFinder#end
+
+                    }
+                }
+            }
+            post {
+                always {
+                    recordIssues enabledForFailure: true, tools: [ // https://www.jenkins.io/doc/pipeline/steps/warnings-ng/
+                        checkStyle(reportEncoding: 'UTF-8'#if($showDefault), pattern: '**/checkstyle-result.xml'#end),
+                        cpd(reportEncoding: 'UTF-8'#if($showDefault), pattern: '**/target/cpd.xml'#end),
+                        pmdParser(reportEncoding: 'UTF-8'#if($showDefault), pattern: '**/pmd.xml'#end),
+                        spotBugs(reportEncoding: 'UTF-8'#if($showDefault), pattern: '**/spotbugsXml.xml'#end),
+                        junitParser(reportEncoding: 'UTF-8', #if($showDefault), pattern: '**/target/surefire-reports/*.xml'#end),
+                        owaspDependencyCheck(reportEncoding: 'UTF-8'#if($showDefault), pattern: '**/dependency-check-report.json'#end)
+                    ]
+                    jacoco #{if}($showDefault)sourcePattern: '**/src/main/java', #{end}sourceInclusionPattern: '**/*.java', classPattern: '**/target/classes', execPattern: '**/target/jacoco*.exec'
+                }
+                failure {
+                    // publishMQMessage/sendCIMessage/rabbitMQPublisher, dingding(accessToken:'', jsonFilePath:''), qyWechatNotification, slackSend, telegramSend(message:'', chatId: 120)
+                    mail subject:"$currentBuild.projectName - Build # $BUILD_NUMBER - $currentBuild.currentResult!",
+                        body:"""$currentBuild.projectName - Build # $BUILD_NUMBER - $currentBuild.currentResult:
+                        Check console output at $BUILD_URL to view the results.
+                        """,
+                        to:"${params.RECIPIENTS}"#if($showDefault), charset:'UTF-8', mimeType:'text/plain'#end
+
+                }
+            }
+
+        }
+        stage('Quality Gates') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+#if($showComment)
+                    // SonarQube可以导入外部（checkstyle, pmd, FindBugs/FindSecBugs/SpotBugs）问题：https://docs.sonarqube.org/latest/analysis/external-issues/
+                    // 需要在sonarqube服务器（的"配置"->"网络调用"）创建webhook指向jenkins服务器（${JENKINS_URL}/sonarqube-webhook/），注意jenkins服务器和sonarqube服务器需在不同IP（也可以在sonar.properties添加"sonar.validateWebhooks=false"来避免检测）。如果设置了密码，需要在jenkins服务器（的"Configure System"->"SonarQube Servers"->"Webhook Secret"）设置回调验证密码
+#end
+                    waitForQualityGate abortPipeline: true, credentialsId: env.SONARQUBE_CREDENTIALS_ID #if($showComment)// #[[https://www.jenkins.io/doc/pipeline/steps/sonar/#withsonarqubeenv-prepare-sonarqube-scanner-environment]]##end
+
+                }
+            }
+        }
+        stage('Build') {
+            parallel {
+                stage('构建打包') {
+                    when {
+                        expression {
+                            return !params.RUN_IN_CONTAINER
+                        }
+                    }
+                    steps {
+                        // withMaven(
+                            // jdk: 'openjdk8',
+                            // maven: 'maven3', #if($showComment)// Maven installation declared in the Jenkins "Global Tool Configuration"#end
+
+#if($showDefault)
+                            // globalMavenSettingsFilePath: "$M2_HOME/conf/settings.xml",
+                            // mavenLocalRepo: '~/.m2/repository', #if($showComment)// a local repository folder is specified to avoid shared repositories#end
+
+                            // mavenSettingsFilePath: "${user.home}/.m2/settings.xml", #if($showComment)// specifies a specific settings.xml configuration from Config File Provider Plugin, allowing the replacement of variables and credentials#end
+
+                            // options: [
+                                // junitPublisher(healthScaleFactor: 10.0), #if($showComment)// 10% of tests failing will score 0% health#end
+
+                                // jacocoPublisher(disabled: true)
+                            // ]
+#end
+                        // ) { #if($showComment)#[[// https://www.jenkins.io/doc/pipeline/steps/pipeline-maven/#withmaven-provide-maven-environment]]##end
+
+                            timestamps {
+                                sh 'mvn clean package -Dmaven.test.skip=true' #if($showComment)// -Dmaven.test.skip=true(no compile, no execute), -DskipTests(all test, include unit test and integration test)， -DskipITs(only integration test)#end
+
+                                archiveArtifacts(artifacts:'**/${rootArtifactId}-api/**/*.jar,**/${rootArtifactId}-domain/**/*.jar,**/${rootArtifactId}-app/**/*.war', onlyIfSuccessful:true, defaultExcludes: '**/WEB-INF/lib/*.jar'#if($showDefault), allowEmptyArchive:false, followSymlinks:false, fingerprint:false, caseSensitive:true#end)
+                            }
+                        // }
+                    }
+                }
+                stage('构建镜像') {
+#if($showComment)
+                    // 指定agent为kubernetes时，先启动pod，然后执行when语句的判断
+#end
+                    // agent {
+                    //     kubernetes { #if($showComment)// 需要启用jenkins代理端口（"Configure Global Security"->"Agents"） #end
+                    //
+                    //         // yamlFile 'pod.yml'
+                    //         yaml '''
+                    //             kind: Pod
+                    //             spec:
+                    //                 containers:
+                    //                     - name: kaniko
+                    //                       image: gcr.io/kaniko-project/executor:debug # v1.9.0-debug
+                    //                       imagePullPolicy: IfNotPresent
+                    //                       command:
+                    //                           - sleep
+                    //                       args:
+                    //                           - 1d
+                    //                       volumeMounts:
+                    //                           - name: jenkins-docker-cfg
+                    //                             mountPath: /kaniko/.docker
+                    //                 volumes:
+                    //                     - name: jenkins-docker-cfg
+                    //                       projected:
+                    //                           sources:
+                    //                               - secret:
+                    //                                     name: regcred # kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=username --docker-password=password --docker-email=author@domain
+                    //                                     items:
+                    //                                         - key: .dockerconfigjson
+                    //                                           path: config.json
+                    //         '''
+                    //     }
+                    // }
+                    when {
+                        expression {
+                            return params.RUN_IN_CONTAINER
+                        }
+                    }
+                    steps {
+                        echo '镜像镜像'
+                        // sh "docker build -f Dockerfile -t ${rootArtifactId}:${params.VERSION}-${BUILD_ID} ."
+                        // sh "docker tag ${rootArtifactId}:${params.VERSION} ${env.HUB_URL}/${rootArtifactId}:${params.VERSION}-${BUILD_ID}"
+                        // sh "docker push ${env.HUB_URL}/${rootArtifactId}:${params.VERSION}-${BUILD_ID}"
+                        // sh "docker rmi ${rootArtifactId}:${params.VERSION}-${BUILD_ID}"
+
+#if($showComment)
+                        // build image with BuildKit or kaniko
+
+                        // refer: https://github.com/jenkinsci/kubernetes-plugin/blob/master/examples/kaniko-declarative.groovy
+                        // refer: https://github.com/GoogleContainerTools/kaniko
+#end
+                        // container('kaniko') {
+                        //     sh "/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=true --destination=${env.HUB_URL}/${rootArtifactId}:${params.VERSION}-${BUILD_ID}"
+                        // }
+                    }
+                }
+            }
+        }
+        stage('Test') { #if($showComment)// 部署测试环境，功能性测试/性能测试（e.g. grafana k6）/兼容性测试/渗透测试#end
+
+            parallel {
+                stage('分发快照版本二方包') {
+                    when {
+                        expression {
+                            return params.DISTRIBUTABLE
+                        }
+                    }
+                    steps {
+#if($showComment)
+                        // 0. deploy:deploy-file, 此方式需要的参数过多，没有很好利用pom.xml; 1. nexusArtifactUploader, 此方式用于非maven项目上传jar，缺少pom.xml相关文件; 2. nexusPublisher, nexus不支持使用此方式将SNAPSHOT包上传到snapshots仓库
+#end
+                        sh "mvn -f ${rootArtifactId}-api/pom.xml install deploy:deploy"
+                        // sh "mvn -f ${rootArtifactId}-api/pom.xml deploy:deploy-file -Dfile=target/${rootArtifactId}-api-${params.VERSION}-SNAPSHOT.jar -DrepositoryId=${env.NEXUS_SNAPSHOT_REPOSITORY_ID} -Durl=${env.REPO_PROTOCOL}://${env.NEXUS_USER_NAME}:${env.NEXUS_PASSWORD}@${env.REPO_URL}/repository/${env.NEXUS_SNAPSHOT_REPOSITORY_ID} -DpomFile=pom.xml -DgroupId=${groupId} -DartifactId=${rootArtifactId}-api -Dversion=${params.VERSION}-SNAPSHOT -Dpackaging=jar"
+
+#if($showComment)
+                        // nexusArtifactUploader ( // https://www.jenkins.io/doc/pipeline/steps/nexus-artifact-uploader/
+                        //     nexusVersion: env.NEXUS_VERSION,
+                        //     protocol: env.REPO_PROTOCOL,
+                        //     nexusUrl: env.REPO_URL,
+                        //     credentialsId: env.NEXUS_CREDENTIALS_ID,
+                        //     groupId: '${groupId}',
+                        //     version: "${params.VERSION}-SNAPSHOT",
+                        //     repository: env.NEXUS_SNAPSHOT_REPOSITORY_ID,
+                        //     artifacts:[[
+                        //         artifactId: '${rootArtifactId}-api',
+                        //         file: "${rootArtifactId}-api/target/${rootArtifactId}-api-${params.VERSION}-SNAPSHOT.jar",
+                        //         type: 'jar',
+                        //         classifier: ''
+                        //     ]]
+                        // )
+#end
+                    }
+                }
+                stage('部署测试环境') {
+                    when {
+                        expression {
+                            return !params.RUN_IN_CONTAINER
+                        }
+                    }
+                    steps {
+#if($showComment)
+                        // refer: https://rasp.baidu.com/doc/
+                        // 设置tomcat启动参数：JAVA_OPTS="-javaagent:${CATALINA_HOME}/rasp/rasp.jar ${JAVA_OPTS}"；或下载安装：
+                        // sh "wget https://packages.baidu.com/app/openrasp/release/${env.OPENRASP_VERSION}/rasp-java.zip"
+                        // sh 'unzip rasp-java.zip & cd rasp-* '
+                        // sh "java -jar RaspInstall.jar -install <tomcat_root> -backendurl http://XXX -appsecret XXX -appid XXX"
+#end
+                        deploy(adapters: [tomcat9(credentialsId: "${params.TOMCAT_CREDENTIALS_ID}", url: "http://${params.SERVER_HOST}:${params.SERVER_PORT}", path: '/manager/text')],
+                            contextPath: "${params.CONTEXT_PATH}",
+                            war: '**/*.war'
+                            ) #if($showComment)#[[// https://www.jenkins.io/doc/pipeline/steps/deploy/#deploy-deploy-warear-to-a-container]]##end
+
+                    }
+                }
+                stage('部署测试环境（容器）') {
+                    when {
+                        expression {
+                            return params.RUN_IN_CONTAINER
+                        }
+                    }
+                    steps {
+                        echo '多个测试环境可并行发布，测试执行互不干扰，资源最小化。注意kubernetes的Service等资源命名需遵循DNS命名规范'
+                        // kubernetes
+                        // local: 
+                        // sh "kubectl run ${rootArtifactId} --image=${rootArtifactId}:${params.VERSION}-${BUILD_ID} --env='SPRING_PROFILES_ACTIVE=test' --port=${params.SERVER_PORT}"
+                        // remote: 
+                        // sh 'scp src/main/kubernetes/Deployment.yml ${DEPLOY_USER}@${DEPLOY_SERVER}/home/${DEPLOY_USER}/${rootArtifactId}/Deployment.yml & ssh ${DEPLOY_USER}@${DEPLOY_SERVER} 'kubectl apply ${rootArtifactId}/Deployment.yml'
+                    }
+                }
+            }
+        }
+        stage('dast') { // 语言无关、覆盖范围有限，定位漏洞位置困难
+            steps {
+#if($showComment)
+                echo '''Dynamic application security testing
+                (DAST) technologies are designed to detect conditions indicative of a security vulnerability in an application in its running state.
+                Most DAST solutions test only the exposed HTTP and HTML interfaces of Web-enabled applications;
+                however, some solutions are designed specifically for non-Web protocol and data malformation (for example, remote procedure call, Session Initiation Protocol [SIP] and so on).'''
+#end
+                // runZapAttack #if($showComment)// https://www.jenkins.io/doc/pipeline/steps/zap-pipeline/#end
+
+            }
+        }
+        stage('iast') { #if($showComment)// 语言相关、误报率低、覆盖度高。基于http代理或虚拟机插桩等原理#end
+
+            steps {
+#if($showComment)
+                echo '''Runtime application self-protection
+                (RASP) is a security technology that is built or linked into an application or application runtime environment,
+                and is capable of controlling application execution and detecting and preventing real-time attacks.'''
+#end
+                // OWASP AppSensor
+                // OpenRASP
+            }
+        }
+        stage('Deploy') {
+            stages {
+                stage('发布前确认') {
+                    steps {
+                        script {
+                            hook = registerWebhook(authToken: "${params.WEBHOOK_AUTH_TOKEN}", token: "${JOB_NAME}-${BUILD_ID}")
+#if($showComment)
+                            // hook.url: ${JENKINS_URL}/webhook-step/${JOB_NAME}-${BUILD_ID}, hook.token: ${JOB_NAME}-${BUILD_ID}
+                            // echo "Get crumbs: curl -G 'http://${JENKINS_URL}/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)'" // 默认开启CSRF，而"CSRF tokens (crumbs)"仅对web会话请求有效，使用API Token避免
+#end
+                            echo "Waiting for request: curl -X POST --user ${env.DEPLOY_USER}:${env.DEPLOY_TOKEN} -d '{changeit}' -H \"Authorization: ${params.WEBHOOK_AUTH_TOKEN}\" ${hook.url}"
+                            data = waitForWebhook(webhookToken: hook, withHeaders: true)
+#if($showComment)
+                            // type of data {headers: Map<String, String>, content: String}
+                            echo "webhook response body: ${data.content}"
+                            // if(data.headers['X-SOME-KEY'] != 'YourValue') {
+                            //     error("No Deploying to Prod Environment: expect 'YourValue', but `${data.headers['X-SOME-KEY']}`")
+                            // }
+#end
+                        }
+                    }
+                }
+                stage('发布') {
+                    parallel {
+                        stage('分发正式二方包') {
+                            when {
+                                expression {
+                                    return params.DISTRIBUTABLE
+                                }
+                            }
+                            steps {
+#if($showComment)
+                                // maven deploy方式配置少，但需事先设置好项目的distributionManagement.repository以及settings.xml的servers.server; nexusPublisher方式参数多，但无需项目和maven过多配置
+#end
+                                sh 'mvn versions:set -DremoveSnapshot=true'
+
+                                sh 'mvn -f ${rootArtifactId}-api/pom.xml clean install deploy:deploy'
+
+                                // sh "cp ${rootArtifactId}-api/target/${rootArtifactId}-api-${params.VERSION}-SNAPSHOT.jar ${rootArtifactId}-api/target/${rootArtifactId}-api-${params.VERSION}.jar"
+                                // nexusPublisher(nexusInstanceId: env.NEXUS_ID,
+                                //     nexusRepositoryId: env.NEXUS_RELEASE_REPOSITORY_ID,
+                                //     packages: [
+                                //         [
+                                //         $class: 'MavenPackage',
+                                //         mavenCoordinate: [artifactId: '${rootArtifactId}-api', groupId: '${groupId}', packaging: 'jar', version: "${params.VERSION}"],
+                                //         mavenAssetList: [[classifier: '', extension: '', filePath: "${WORKSPACE}/${rootArtifactId}-api/target/${rootArtifactId}-api-${params.VERSION}"]]
+                                //         ]
+                                //     ]
+                                // )
+
+                                sh 'mvn versions:revert'
+                            }
+                        }
+                        stage('部署生产环境') {
+                            when {
+                                expression {
+                                    return params.RUN_IN_CONTAINER
+                                }
+                            }
+                            steps {
+                                echo 'Blue-Green Deployment, Canary Deployment'
+                                // kubernetes
+                            }
+                        }
+                    }
+                }
+                stage('发布后处理') {
+                    steps {
+                        echo '本次发布的清理工作，下个迭代的初始化工作'
+#if($showComment)
+                        // versions插件能修改项目的version及parent.version，而不是仅修改聚合项目的version property（如本项目的风格为revision）
+                        // sh 'mvn versions:set -DnextSnapshot=true'
+                        // sh 'mvn versions:commit'
+#end
+                        sh "sed -i 's/<revision>${params.VERSION}-SNAPSHOT<\\/revision>/<revision>${params.NEW_VERSION}-SNAPSHOT<\\/revision>/' ${WORKSPACE}/pom.xml"
+                        sh "git commmit --author='${env.SCM_AUTHOR}' -m 'auto update project version'"
+                        sh "git push origin master:master"
+                    }
+                }
+            }
+        }
+    }
+}
