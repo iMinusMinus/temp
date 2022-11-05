@@ -38,14 +38,14 @@
 
     <distributionManagement>
         <repository>
-            <id>releases</id>
+            <id>maven-releases</id>
             <name>Repository for releases</name>
-            <url>http://repo.iamwhatiam.ml/repository/iamwhatiam-releases/</url>
+            <url>http://repo.iamwhatiam.ml/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>snapshots</id>
+            <id>maven-snapshots</id>
             <name>Repository for snapshots</name>
-            <url>http://repo.iamwhatiam.ml/repository/iamwhatiam-snapshots/</url>
+            <url>http://repo.iamwhatiam.ml/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
