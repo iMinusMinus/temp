@@ -48,6 +48,7 @@
         </if>
     </select>
 
+    <!--
     <insert id="save" parameterType="metaClass">
         <selectKey databaseId="pg" order="AFTER">
             SELECT currval('meta_class_id_seq')
@@ -57,4 +58,5 @@
         pg can use RETURNING id append insert clause, but mybatis get -1
         *#
     </insert>
+    -->
 </mapper>
