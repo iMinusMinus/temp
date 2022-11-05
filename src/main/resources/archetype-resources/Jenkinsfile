@@ -15,8 +15,8 @@
 // JENKINS_CRUMB=`curl "$JENKINS_URL/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)"`
 // curl -X POST -H $JENKINS_CRUMB -F "jenkinsfile=${WORKSPACE}/Jenkinsfile" $JENKINS_URL/pipeline-model-converter/validate
 
-// please install those plugins: workflow-scm-step, git, dependency-check-jenkins-plugin, sonar, warnings-ng, jacoco, zap-pipeline, nexus-jenkins-plugin, webhook-step, deploy, kubernetes
-// please setup email, sonarqube, nexus, zap in "Configure System"; 
+// please install those plugins: workflow-scm-step, git, dependency-check-jenkins-plugin, dependency-track, sonar, warnings-ng, jacoco, zap-pipeline, nexus-jenkins-plugin, webhook-step, deploy, kubernetes
+// please setup E-mail, SonarQube servers, Sonatype Nexus, ZAP, Dependency-Track in "Configure System"; 
 // please install and setup git, jdk, maven, sonarqube-scaner, dependency-check in "Global Tool Configuration";
 // please setup kubernetes in "`Manage Nodes and Clouds`->`Configure Clouds`".
 #end
@@ -65,10 +65,14 @@ pipeline {
 
         NEXUS_CREDENTIALS_ID='nexus' #if($showComment)// not credentials('nexus')#end
 
+        DEPENDENCY_TRACK_CREDENTIALS_ID = 'dependencyTrack' #if($showComment)// 从Dependency Track的"Administration->Access Management->Teams->API Keys"菜单获取，作为secret text添加到jenkins"Configure System->Dependency-Track->API key"。注意检测连接时提示的权限最好都加上，避免报403错误#end
+
         NEXUS_USER_NAME='admin' #if($showComment)// Deprecated#end
 
         NEXUS_PASSWORD='admin123' #if($showComment)// Deprecated#end
 
+
+        // ANDROID_NAME='commandlinetools-linux-8512546'
 
         DEPLOY_USER='ops'
         DEPLOY_TOKEN='Dev0p$'
@@ -109,10 +113,35 @@ pipeline {
                         }
                     }
                 }
+                stage('Component Analysis') {
+                    steps {
+                        // sh "gitleaks detect #{if}($showDefault)--config ${WORKSPACE}/.gitleaks.toml --report-format string json --log-level info --source . #{end}--no-banner" #if($showComment)// https://github.com/zricethezav/gitleaks#end
+
+                        dependencyCheck additionalArguments: """#if($showDefault)--project ${env.JOB_NAME} --scan ${env.WORKSPACE}#end --format JSON
+                            --disablePyDist --disablePyPkg --disableMSBuild --disableNodeJS	--disableYarnAudit --disablePnpmAudit
+                            --disableNodeAudit --disableNodeAuditCache --disableRetireJS --disableRubygems --disableBundleAudit
+                            --disableCocoapodsAnalyzer --disableSwiftPackageManagerAnalyzer	--disableSwiftPackageResolvedAnalyzer
+                            --disableAutoconf --disableCmake --disableComposer --disableCpan --disableNuspec --disableNugetconf --disableAssembly
+                            --disableGolangDep --disableGolangMod --disableMixAudit""",
+                            odcInstallation: env.DEPENDENCY_CHECK_NAME#if($showComment)// https://jeremylong.github.io/DependencyCheck/dependency-check-cli/arguments.html#end
+
+
+#if($showComment)
+                        // 生成SBOM：cyclonedx由OWASP等维护，信息最丰富；spdx由Linux基金会维护，信息次之。Refer: https://www.settletop.com/insights/understanding-sbom-standards-cyclonedx-spdx-swid
+#end
+                        sh 'mvn org.cyclonedx:cyclonedx-maven-plugin:2.7.2:#{if}($packagingType=="pom")makeAggregateBom#{else}makeBom#{end} -DprojectType=application #{if}($showDefault)-DschemaVersion=1.4 -DoutputName=bom -DincludeCompileScope=true -DincludeProvidedScope=true -DincludeRuntimeScope=true -DincludeTestScope=false -DincludeSystemScope=true -DincludeLicenseText=false #{end} -DoutputFormat=xml' #if($showComment)// 默认在package阶段生成target/bom.xml和target/bom.json(outputFormat=all)#end
+
+                        // sh 'mvn org.spdx:spdx-maven-plugin:0.6.3:createSPDX -DskipTests' // 默认在verify阶段生成${project.reporting.outputDirectory}/${project.groupId}_${project.artifactId}-${project.version}.spdx.json
+                        // sh 'mvn com.labs64.mojo:swid-maven-plugin:0.1.0:generate' // 默认在process resources阶段生成${project.build.directory}/classes/META-INF/SWIDTAG/swid-tag.xml
+
+                        // license_finder #if($showComment)// https://github.com/pivotal/LicenseFinder#end
+
+                    }
+                }
                 stage('Static Application Security Testing') { #{if}($showComment)// 针对源代码使用静态代码分析工具进行自动化检测，速度较快、语言相关、覆盖率较高、误报率较高。如Fortify将源代码生成中间代码，进行语义分析、数据流分析、控制流分析#{end}
 
                     environment {
-                        scannerHome = tool(name: env.SONAR_SCANNER_NAME)
+                        SCANNER_HOME = tool(name: env.SONAR_SCANNER_NAME)
                     }
                     steps {
 #if($showComment)
@@ -121,24 +150,11 @@ pipeline {
                                 for coding and design conditions that are indicative of security vulnerabilities.
                                 SAST solutions analyze an application from the “inside out” in a nonrunning state.'''
 #end
-                        // sh "gitleaks detect #{if}($showDefault)--config ${WORKSPACE}/.gitleaks.toml --report-format string json --log-level info --source . #{end}--no-banner" #if($showComment)// https://github.com/zricethezav/gitleaks#end
-
-                        dependencyCheck additionalArguments: """#if($showDefault)--project ${env.JOB_NAME} --scan ${env.WORKSPACE}#end --format JSON
-                        --disablePyDist --disablePyPkg --disableMSBuild --disableNodeJS	--disableYarnAudit --disablePnpmAudit
-                        --disableNodeAudit --disableNodeAuditCache --disableRetireJS --disableRubygems --disableBundleAudit
-                        --disableCocoapodsAnalyzer --disableSwiftPackageManagerAnalyzer	--disableSwiftPackageResolvedAnalyzer
-                        --disableAutoconf --disableCmake --disableComposer --disableCpan --disableNuspec --disableNugetconf --disableAssembly
-                        --disableGolangDep --disableGolangMod --disableMixAudit""",
-                            odcInstallation: env.DEPENDENCY_CHECK_NAME#if($showComment)// https://jeremylong.github.io/DependencyCheck/dependency-check-cli/arguments.html#end
-
                         withSonarQubeEnv(installationName: env.SONARQUBE_NAME, credentialsId: env.SONARQUBE_CREDENTIALS_ID, envOnly: false) { // use codeclimate image
-                            // sh "${scannerHome}/bin/sonar-scanner -Dsonar.dependencyCheck.jsonReportPath=${WORKSPACE}/dependency-check-report.json" #if($showComment)// https://docs.sonarqube.org/latest/analysis/analysis-parameters/#end
+                            // sh "${SCANNER_HOME}/bin/sonar-scanner -Dsonar.dependencyCheck.jsonReportPath=${WORKSPACE}/dependency-check-report.json" #if($showComment)// https://docs.sonarqube.org/latest/analysis/analysis-parameters/#end
 
                             sh "mvn sonar:sonar"
                         }
-
-                        // license_finder #if($showComment)// https://github.com/pivotal/LicenseFinder#end
-
                     }
                 }
             }
@@ -153,6 +169,16 @@ pipeline {
                         owaspDependencyCheck(reportEncoding: 'UTF-8'#if($showDefault), pattern: '**/dependency-check-report.json'#end)
                     ]
                     jacoco #{if}($showDefault)sourcePattern: '**/src/main/java', #{end}sourceInclusionPattern: '**/*.java', classPattern: '**/target/classes', execPattern: '**/target/jacoco*.exec'
+                }
+                success {
+#if($showComment)
+                    // OWASP Dependency Track既可以检查依赖是否存在许可问题，也可以检查依赖是否存在安全问题
+                    // refer: https://docs.dependencytrack.org/usage/policy-compliance/
+#end
+                    withCredentials([string(credentialsId: env.DEPENDENCY_TRACK_CREDENTIALS_ID, variable: 'API_KEY')]) {
+                        dependencyTrackPublisher artifact: 'target/bom.xml', projectName: '${rootArtifactId}', projectVersion: "${params.VERSION}"#{if}($showDefault), autoCreateProjects: true, synchronous: false#{end}, dependencyTrackApiKey: API_KEY #if($showComment)// projectId可以从Dependency Track的"Projects-->Project Details-->Object Identifier"获取，或者设置autoCreateProjects为true来自动创建项目（需给API key对应角色授予"PROJECT_CREATION_UPLOAD"权限）#end
+
+                    }
                 }
                 failure {
                     // publishMQMessage/sendCIMessage/rabbitMQPublisher, dingding(accessToken:'', jsonFilePath:''), qyWechatNotification, slackSend, telegramSend(message:'', chatId: 120)
@@ -431,6 +457,19 @@ pipeline {
                             steps {
                                 echo 'Blue-Green Deployment, Canary Deployment'
                                 // kubernetes
+                            }
+                        }
+                        stage('发布App到应用市场') {
+                            // environment {
+                            //     ANDROID_HOME = tool(name: env.ANDROID_NAME)
+                            //     ANDROID_ZIPALIGN = ''
+                            // }
+                            steps {
+                                echo '前后端项目分离，此处仅作为Jenkins pipeline样例，一般包含混淆/加固、签名、发布等步骤'
+                                // signAndroidApks apksToSign:'**/*-unsigned.apk', keyAlias: '', keyStoreId: ''
+                                // httpRequest(url: "", authentication: "", httpMode: '', httpProxy: "", proxyAuthentication:"", uploadFile : "", validResponseCodes: '200, 404')
+                                // step([$class: 'PreflightBuilder'])#if($showComment)https://plugins.jenkins.io/preflight-integration/#end
+
                             }
                         }
                     }
