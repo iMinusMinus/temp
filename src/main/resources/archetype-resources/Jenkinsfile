@@ -11,11 +11,14 @@
 // https://www.jenkins.io/zh/doc/book/pipeline/syntax/
 // https://www.jenkins.io/zh/doc/pipeline/steps/
 
+// Ansible refer:
+// https://docs.ansible.com/ansible/latest/getting_started/index.html
+
 // Validate Jenkinsfile:
 // JENKINS_CRUMB=`curl "$JENKINS_URL/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)"`
 // curl -X POST -H $JENKINS_CRUMB -F "jenkinsfile=${WORKSPACE}/Jenkinsfile" $JENKINS_URL/pipeline-model-converter/validate
 
-// please install those plugins: workflow-scm-step, git, dependency-check-jenkins-plugin, dependency-track, sonar, warnings-ng, jacoco, zap-pipeline, nexus-jenkins-plugin, webhook-step, deploy, kubernetes
+// please install those plugins: workflow-scm-step, git, dependency-check-jenkins-plugin, dependency-track, sonar, warnings-ng, jacoco, zap-pipeline, nexus-jenkins-plugin, webhook-step, deploy, kubernetes, ansible
 // please setup E-mail, SonarQube servers, Sonatype Nexus, ZAP, Dependency-Track in "Configure System"; 
 // please install and setup git, jdk, maven, sonarqube-scaner, dependency-check in "Global Tool Configuration";
 // please setup kubernetes in "`Manage Nodes and Clouds`->`Configure Clouds`".
@@ -42,11 +45,13 @@ pipeline {
         string(name: 'SERVER_HOST', defaultValue: 'localhost', description: '部署服务器域名')
         string(name: 'SERVER_PORT', defaultValue: '8080', description: '部署服务器管理端口')
         string(name: 'CONTEXT_PATH', defaultValue: '${rootArtifactId}', description: '部署服务器上下文，默认项目名')
-        string(name: 'VERSION', defaultValue: '1.0.0', description: '二方包版本')
-        string(name: 'NEW_VERSION', description: '新项目版本')
         booleanParam(name: 'DISTRIBUTABLE', defaultValue: false, description: '本次构建是否需要发布二方包')
+        string(name: 'VERSION', defaultValue: '1.0.0', description: '二方包版本')
+        booleanParam(name: 'AUTO_PUSH', defaultValue: false, description: '是否自动push代码到主干')
+        string(name: 'MASTER_BRANCH_NAME', defaultValue: 'master', description: '主干名称')
         string(name: 'WEBHOOK_AUTH_TOKEN', defaultValue: 'WhosYourDaddy', description: 'webhook令牌，仅用于增加安全性')
         booleanParam(name: 'RUN_IN_CONTAINER', defaultValue: false, description: '容器运行')
+        choice(name: 'DEPLOYMENT_STRATEGY', choices: ['Rolling', 'Blue-Green', 'Canary'], description: '发布方式')
     }
 
     environment {
@@ -76,6 +81,7 @@ pipeline {
 
         DEPLOY_USER='ops'
         DEPLOY_TOKEN='Dev0p$'
+        DEPLOY_CREDDENTIALS_ID='deploy'
         REPO_PROTOCOL='http'
         REPO_URL='localhost:8081'
         HUB_URL='https://hub.iamwhatiam.ml/iMinusMinuis' #if($showComment)// harbor, docker registry or nexus server#end
@@ -84,7 +90,7 @@ pipeline {
     }
 
     stages {
-        stage('Initialize') {
+        stage('.pre') {
             steps {
                 // checkout filesystem(path: '')
                 checkout scm:[
@@ -115,6 +121,8 @@ pipeline {
                 }
                 stage('Component Analysis') {
                     steps {
+                        // secret detect: password, API token, private-key, key, etc. May be IDE inspection tool or pre-commit hook better. #if($showComment) https://spectralops.io/blog/top-9-git-secret-scanning-tools/ #{end}
+
                         // sh "gitleaks detect #{if}($showDefault)--config ${WORKSPACE}/.gitleaks.toml --report-format string json --log-level info --source . #{end}--no-banner" #if($showComment)// https://github.com/zricethezav/gitleaks#end
 
                         dependencyCheck additionalArguments: """#if($showDefault)--project ${env.JOB_NAME} --scan ${env.WORKSPACE}#end --format JSON
@@ -204,7 +212,7 @@ pipeline {
                 }
             }
         }
-        stage('Build') {
+        stage('build') {
             parallel {
                 stage('构建打包') {
                     when {
@@ -298,7 +306,7 @@ pipeline {
                 }
             }
         }
-        stage('Test') { #if($showComment)// 部署测试环境，功能性测试/性能测试（e.g. grafana k6）/兼容性测试/渗透测试#end
+        stage('test') { #if($showComment)// 部署测试环境，功能性测试/性能测试（e.g. grafana k6）/兼容性测试/渗透测试#end
 
             parallel {
                 stage('分发快照版本二方包') {
@@ -371,7 +379,7 @@ pipeline {
                 }
             }
         }
-        stage('dast') { // 语言无关、覆盖范围有限，定位漏洞位置困难
+        stage('Dynamic application security testing') { // 语言无关、覆盖范围有限，定位漏洞位置困难
             steps {
 #if($showComment)
                 echo '''Dynamic application security testing
@@ -383,7 +391,7 @@ pipeline {
 
             }
         }
-        stage('iast') { #if($showComment)// 语言相关、误报率低、覆盖度高。基于http代理或虚拟机插桩等原理#end
+        stage('Interactive Application Security Testing') { #if($showComment)// 语言相关、误报率低、覆盖度高。基于http代理或虚拟机插桩等原理#end
 
             steps {
 #if($showComment)
@@ -395,10 +403,13 @@ pipeline {
                 // OpenRASP
             }
         }
-        stage('Deploy') {
+        stage('deploy') {
             stages {
-                stage('发布前确认') {
+                stage('deploy:.pre') {
                     steps {
+                        echo '请在测试通过后保护分支，禁止代码提交'
+                        echo '如有必要，请在发布前为分支创建tag'
+
                         script {
                             hook = registerWebhook(authToken: "${params.WEBHOOK_AUTH_TOKEN}", token: "${JOB_NAME}-${BUILD_ID}")
 #if($showComment)
@@ -451,6 +462,19 @@ pipeline {
                         stage('部署生产环境') {
                             when {
                                 expression {
+                                    return !params.RUN_IN_CONTAINER
+                                }
+                            }
+                            steps {
+                                echo "${params.DEPLOYMENT_STRATEGY}"
+                                // ansibleAdhoc(hosts: 'asg:&prd', credentialsId: "$env.DEPLOY_CREDDENTIALS_ID", inventory: '/etc/ansible/hosts', moduleArguments: "scp ${WORKSPACE}/${rootArtifactId}-app/target/${rootArtifactId}-app-${params.VERSION}.war ${env.DEPLOY_USER}@${params.SERVER_HOST}:/tmp/${rootArtifactId} && bin/shutdown && rm webapps/${rootArtifactId}-app.war && cp /tmp/${rootArtifactId}/${rootArtifactId}-app-${params.VERSION}.war webapps/${rootArtifactId}-app.war && bin/startup.sh")
+                                echo '等待应用就绪（/health/readiness），再发布另一个分组'
+                                // ansiblePlaybook(playbook: '', credentialsId: "$env.DEPLOY_CREDDENTIALS_ID")
+                            }
+                        }
+                        stage('部署生产环境（容器）') {
+                            when {
+                                expression {
                                     return params.RUN_IN_CONTAINER
                                 }
                             }
@@ -474,19 +498,29 @@ pipeline {
                         }
                     }
                 }
-                stage('发布后处理') {
+                stage('deploy:.post') {
                     steps {
-                        echo '本次发布的清理工作，下个迭代的初始化工作'
-#if($showComment)
-                        // versions插件能修改项目的version及parent.version，而不是仅修改聚合项目的version property（如本项目的风格为revision）
-                        // sh 'mvn versions:set -DnextSnapshot=true'
-                        // sh 'mvn versions:commit'
-#end
-                        sh "sed -i 's/<revision>${params.VERSION}-SNAPSHOT<\\/revision>/<revision>${params.NEW_VERSION}-SNAPSHOT<\\/revision>/' ${WORKSPACE}/pom.xml"
-                        sh "git commmit --author='${env.SCM_AUTHOR}' -m 'auto update project version'"
-                        sh "git push origin master:master"
+                        echo '本次发布的清理工作'
                     }
                 }
+            }
+        }
+        stage('.post') {
+            when {
+                not {
+                    branch "${params.MASTER_BRANCH_NAME}"
+                }
+            }
+            steps {
+                echo '本轮CI/CD的清理工作，下个迭代的初始化工作'
+#if($showComment)
+                // versions插件能修改项目的version及parent.version，而不是仅修改聚合项目的version property（如本项目的风格为revision）
+                // sh 'mvn versions:set -DnextSnapshot=true' or sh "mvn versions:set -DnewVersion=${params.NEW_VERSION}" when NEW_VERSION specified.
+                // sh 'mvn versions:commit'
+#end
+                // sh "sed -i 's/<revision>${params.VERSION}-SNAPSHOT<\\/revision>/<revision>${params.NEW_VERSION}-SNAPSHOT<\\/revision>/' ${WORKSPACE}/pom.xml"
+                // sh "git commmit --author='${env.SCM_AUTHOR}' -m 'auto update project version'"
+                sh "git push origin ${params.MASTER_BRANCH_NAME}"
             }
         }
     }
