@@ -517,6 +517,12 @@ pipeline {
                 // versions插件能修改项目的version及parent.version，而不是仅修改聚合项目的version property（如本项目的风格为revision）
                 // sh 'mvn versions:set -DnextSnapshot=true' or sh "mvn versions:set -DnewVersion=${params.NEW_VERSION}" when NEW_VERSION specified.
                 // sh 'mvn versions:commit'
+
+                // https://maven.apache.org/maven-release/maven-release-plugin/usage/prepare-release.html
+                // release插件同样会修改项目的version及parent.version，而不是仅修改聚合项目的version property。
+                // release插件要求提供scm.connection或scm.developerConnection，在执行前做必要检查，执行时会交互提示输入当前版本和下一个版本，执行完可以提交变更到远程仓库
+                // sh 'mvn release:prepare'
+                // sh 'mvn release:perform'
 #end
                 // sh "sed -i 's/<revision>${params.VERSION}-SNAPSHOT<\\/revision>/<revision>${params.NEW_VERSION}-SNAPSHOT<\\/revision>/' ${WORKSPACE}/pom.xml"
                 // sh "git commmit --author='${env.SCM_AUTHOR}' -m 'auto update project version'"
